@@ -39,3 +39,11 @@
 /target-eclipse/
 /lib/
 /scripts/
+
+
+
+# personal
+/grails-app/domain
+/grails-app/i18n
+/grails-app/utils
+/grails-app/conf/hibernate 
