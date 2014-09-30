@@ -26,9 +26,16 @@ class Policy {
 	 * @return
 	 * 		true if the ruleset is satisfied, false otherwise
 	 */
-	Boolean evaluate(Object obj, Closure c = {}) {
-		if (rs.evaluate(obj)) {
-			c()
+	Boolean evaluate(Map req, Closure c = {}) {
+		def res = rs.evaluate(req)
+		if (res.decision == true) {
+			
+			c(res.status)
+			
+			// XACML-way
+
+//			c(res)
+			
 			return true
 		}
 		else {

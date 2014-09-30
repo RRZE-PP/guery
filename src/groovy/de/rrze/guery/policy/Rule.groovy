@@ -12,7 +12,7 @@ class Rule {
 	
 	Filter		filter
 	Operator 	operator
-	Object 		value
+	Object 		val
 	
 	
 	def Rule(QueryBase qb, Map qm) {
@@ -20,18 +20,26 @@ class Rule {
 		parseQueryMap(qm)
 	}
 	
-	def parseQueryMap(Map qm) {
+	private void parseQueryMap(Map qm) {
 		this.filter = qb.filters?.get(qm.id)
 		if (!this.filter) throw new RuntimeException("Could not resolve filter id in given query base: ${qm.id}")
 		
 		this.operator = qb.operators?.get(qm.operator)
 		if (!this.operator) throw new RuntimeException("Could not resolve operator in given query base: ${qm.operator}")
 		
-		this.value = qm.value
+		this.val = qm.value
 	}
 	
-	Boolean evaluate(Object obj) {
-		this.operator.apply(value, obj)
+	Object evaluate(Map req, Map res) {
+		this.operator.apply(val, req, res)
+	}
+	
+	String getType() {
+		operator.type
+	}
+	
+	String getFilterId() {
+		filter.id
 	}
 	
 }

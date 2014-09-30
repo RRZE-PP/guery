@@ -28,14 +28,33 @@ class RulesController {
 		
 		
 		def user = [uid:'asd']
-		def req = [user:user]
-		println "Request: " + req
 		
-		def policyApplied =  policy.evaluate(req) {
-			user.admin = true
+		def entitlements = [
+			[type: 'EntitlementAD', uid:'grr'],
+			[type: 'EntitlementAD', uid:'asd'],
+			[type: 'EntitlementAccount', uid:'grr'],
+			[type: 'EntitlementAccount', uid:'asd'],
+			]
+		
+		def msg = [user:user, entitlements:entitlements]
+		
+		msg.entitlements.each {
+			
+			def req = [
+				resource	: it, 
+				environment	: msg,
+//				subject		: null,
+//				action		: null,
+			]
+			
+			policy.evaluate(req) { res ->
+				user.admin = true
+			}
+			
+			
 		}
-		println "Policy applied: " + policyApplied
-		println "Output: " + user
+		
+		
 		
 	}
 	
@@ -54,19 +73,22 @@ class RulesController {
 			sortable true
 			
 			filter(id:'policy') {
-				applicable { val, obj -> PolicyRegistry.get(val).evaluate(obj) }
+				applicable { val, req -> PolicyRegistry.get(val).evaluate(req) }
 			}
 			
-			filter(id:"username") {
-				equal { val, obj, id ->	
-					println id + " called!"
-					return val == obj?.user?.uid 
-				}
+			filter(id:"user") {
+				uidEqual { val, req -> val == req?.user?.uid }
 			}
 			
-			filter(id:"idmGroupMembership", input:'select', values:idmGroupMap) { 
-				equal { val, obj ->	obj?.user?.groupMembership.contains(val) }
-				exist(accept_values:false) { val, obj -> obj?.user?.groupMembership as Boolean }
+			filter(id:"entitlement") {
+				typeEqual { val, req -> req?.entitlements?.findAll { it.type == val } }
+				uidEqual { val, req -> req?.entitlements?.find { it.uid == val } }
+				uidEqualsUser(accept_values:false) { req -> req?.entitlements?.findAll { it.uid == req?.user?.uid } }
+			}
+			
+			filter(id:"groupMembership", input:'select', values:idmGroupMap) { 
+				equal { val, req ->	req?.user?.groupMembership.contains(val) }
+				exist(accept_values:false) { req -> req?.user?.groupMembership as Boolean }
 			}
 				
 						
