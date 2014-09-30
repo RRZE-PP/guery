@@ -4,7 +4,7 @@
 		<title>Rules</title>
 		<meta name="layout" content="main">
 		
-		<r:require modules="jquery, jquery-ui, jq_queryBuilder" />
+		<r:require modules="jq_queryBuilder" />
 		
 	</head>
 	<body>
@@ -16,50 +16,50 @@
 			}
 		</style>
 	
-		<script>
-			function updateQueryBuilderResult() {
-				var jsonResult = JSON.stringify($('#builder').queryBuilder('getRules'), undefined, 2);
-				console.log(jsonResult);
-				$('#queryBuilderResult').val(jsonResult);
-			}
 	
+		<!-- FORM 1 -->
+		<guery:builderFormRemote id="form1" name="save" url="${[action:'save', params:[ajax:(params.ajax?true:false)]]}"
+			builderResultName="queryBuilderResult">
 		
-		</script>
-	
-	
-		<g:formRemote name="save" 
-			before="updateQueryBuilderResult()"
-			url="${[action:'save', params:[ajax:(params.ajax?true:false)]]}">
-	
-			<g:hiddenField name="queryBuilderResult" value="" />
-	
 			<div class="dialog editDialog">
-		
-				<%-- QUERY BUILDER --%>
 				<table>
 					<caption><g:message code="queryRules.table.caption" default="Query rule" /></caption>
 					<tr><td>
-						<div id="builder"></div>
+						<div id="${builderElementId}"></div>
 					</td></tr>
 				</table>
-				<script>
-					$('#builder').queryBuilder(${config});
-					<%
-						if (rules) {
-							out << '$(\'#builder\').queryBuilder(\'setRules\',' + rules + ');'
-						}
-					%>
-				</script>
-			
 			</div>
-		
 		
 			<fieldset class="buttons">
 				<g:submitButton name="save" class="save" value="${message(code: 'default.button.save.label', default: 'Save')}" />
 				<g:link action="init">Re-Init</g:link>
 			</fieldset>
 			
-		</g:formRemote>
+		</guery:builderFormRemote>
+		
+		
+		<br/>
+		<br/>
+		
+		<!-- FORM 2 -->
+		<guery:builderFormRemote id="form2" name="save" url="${[action:'save', params:[ajax:(params.ajax?true:false)]]}"
+			builderResultName="queryBuilderResult">
+		
+			<div class="dialog editDialog">
+				<table>
+					<caption><g:message code="queryRules.table.caption" default="Query rule" /></caption>
+					<tr><td>
+						<div id="${builderElementId}"></div>
+					</td></tr>
+				</table>
+			</div>
+		
+			<fieldset class="buttons">
+				<g:submitButton name="save" class="save" value="${message(code: 'default.button.save.label', default: 'Save')}" />
+				<g:link action="init">Re-Init</g:link>
+			</fieldset>
+			
+		</guery:builderFormRemote>
 	
 	</body>
 </html>

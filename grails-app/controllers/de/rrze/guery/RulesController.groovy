@@ -20,7 +20,7 @@ class RulesController {
 		def jsonConfig = queryBase.toJson().toString(true)
 		log.info("JSON config: ${jsonConfig}")
 		
-		[config:jsonConfig]
+		[builderConfig:jsonConfig]
 	}
 	
 	def save(String queryBuilderResult) {
