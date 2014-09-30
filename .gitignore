@@ -36,3 +36,6 @@
 .metadata
 .settings/
 .classpath
+/target-eclipse/
+/lib/
+/scripts/
