@@ -30,7 +30,7 @@ class Policy {
 		def res = rs.evaluate(req)
 		if (res.decision == true) {
 			
-			c(res.status)
+			c(res)
 			
 			// XACML-way
 
