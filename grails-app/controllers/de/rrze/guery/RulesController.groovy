@@ -48,7 +48,7 @@ class RulesController {
 			]
 			
 			policy.evaluate(req) { res ->
-				user.admin = true
+				println "RESULT:" + res
 			}
 			
 			
@@ -77,18 +77,18 @@ class RulesController {
 			}
 			
 			filter(id:"user") {
-				uidEqual { val, req -> val == req?.user?.uid }
+				uidEqual { val, req -> val == req.environment.user?.uid }
 			}
 			
 			filter(id:"entitlement") {
-				typeEqual { val, req -> req?.entitlements?.findAll { it.type == val } }
-				uidEqual { val, req -> req?.entitlements?.find { it.uid == val } }
-				uidEqualsUser(accept_values:false) { req -> req?.entitlements?.findAll { it.uid == req?.user?.uid } }
+				typeEqual { val, req -> req.environment.entitlements?.findAll { it.type == val } }
+				uidEqual { val, req -> req.environment.entitlements?.find { it.uid == val } }
+				uidEqualsUser(accept_values:false) { req -> req.environment.entitlements?.findAll { it.uid == req?.user?.uid } }
 			}
 			
 			filter(id:"groupMembership", input:'select', values:idmGroupMap) { 
-				equal { val, req ->	req?.user?.groupMembership.contains(val) }
-				exist(accept_values:false) { req -> req?.user?.groupMembership as Boolean }
+				equal { val, req ->	req.environment.user?.groupMembership.contains(val) }
+				exist(accept_values:false) { req -> req.environment.user?.groupMembership as Boolean }
 			}
 				
 						

@@ -74,7 +74,7 @@ class RuleSet {
 							 def acc = res.status.get(r.filterId) as Set
 							 if (!acc) res.status.put(r.filterId, evalResult) // init on first use
 							 else {
-								 def missing = acc.findAll { !(it in evalResult) }
+								 def missing = acc.findAll { !(it.is(evalResult)) }
 								 acc.removeAll(missing)
 								 res.status.put(r.filterId, acc)
 							 }
@@ -90,6 +90,8 @@ class RuleSet {
 					 // --> will presume all actions have been taken care of
 				 }
 				 
+				println "============== " + res.status
+				 
 				// AND condition
 				if (res.decision == false) return res
 			}
@@ -97,7 +99,7 @@ class RuleSet {
 			// TODO
 			//for (RuleSet rs : subsets) { if (!rs.evaluate(req, res)) return res } 
 			
-			return true
+			return res
 		}
 		else if (this.condition == 'OR') {
 		
@@ -135,7 +137,7 @@ class RuleSet {
 			// TODO
 			//for (RuleSet rs : subsets) { if (rs.evaluate(req, res)) return res }
 			
-			return false
+			return res
 		}
 		else {
 			throw new RuntimeException("Unknown condition: ${this.condition}")
