@@ -5,7 +5,7 @@ import de.rrze.guery.policy.Policy
 import de.rrze.guery.policy.PolicyRegistry;
 
 
-class RulesController {
+class PolicyController {
 
 	static queryBase
 	
@@ -25,6 +25,8 @@ class RulesController {
 	
 	def save(String queryBuilderResult) {
 		def policy = new Policy(queryBase, queryBuilderResult)
+		
+		
 		
 		
 		def user = [uid:'asd']
