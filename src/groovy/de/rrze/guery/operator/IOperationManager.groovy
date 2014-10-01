@@ -2,7 +2,9 @@ package de.rrze.guery.operator
 
 interface IOperationManager {
 
-	abstract Object apply(String id, Object val, Object obj)
+	abstract Object apply(String id, Object val, Map req, Map res)
+
+	abstract Object apply(String id, Map req, Map res)
 	
 	abstract Object get(String id)
 	

@@ -18,12 +18,22 @@ class Operator {
 	def Operator() {}
 	
 	
-	def apply(val, obj) {
-		qb.operationManager.apply(type,val,obj)
+	Object apply(Object val, Map req, Map res) {
+		def result
+		
+		if (accept_values) {
+			result = qb.operationManager.apply(type,val,req,res)
+		}
+		else {
+			result = qb.operationManager.apply(type,req,res)
+		}
+		
+		log.info("Operator ${type} ===> ${result}")
+		return result
 	}
 	
 	
-	def flatten() {
+	Map flatten() {
 		def ret = [:]
 		
 		putIfNonNull(ret,"type")
@@ -35,7 +45,7 @@ class Operator {
 	}
 	
 	
-	private putIfNonNull(Map map, String fieldName) {
+	private Map putIfNonNull(Map map, String fieldName) {
 		def value = this."${fieldName}"
 		if (value != null) {
 			map.put(fieldName, value)

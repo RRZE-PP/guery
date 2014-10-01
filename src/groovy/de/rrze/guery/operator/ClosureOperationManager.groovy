@@ -6,16 +6,26 @@ class ClosureOperationManager implements IOperationManager {
 	
 	
 	@Override
-	public Object apply(String id, Object val, Object obj) {
+	public Object apply(String id, Object val, Map req, Map res) {
 		Closure c = get(id) 
 		def argc = c.maximumNumberOfParameters
 		
 		if (argc == 1) c.call(val)
-		else if (argc == 2) c.call(val, obj)
-		else c.call(val, obj, id)
+		else if (argc == 2) c.call(val, req)
+		else if (argc == 3) c.call(val, req, res)
+		else c.call(val, req, res, id)
 		
 	}
 
+	public Object apply(String id, Map req, Map res) {
+		Closure c = get(id)
+		def argc = c.maximumNumberOfParameters
+		
+		if (argc == 1) c.call(req)
+		else if (argc == 2) c.call(req, res)
+		else c.call(req, res, id)
+	}
+	
 	@Override
 	public Closure get(String id) {
 		operations.get(id)

@@ -1,5 +1,7 @@
 package de.rrze.guery.policy
 
+import java.awt.event.ItemEvent;
+
 import grails.converters.JSON
 
 import org.codehaus.groovy.grails.web.json.JSONArray
@@ -43,40 +45,108 @@ class RuleSet {
 	}
 	
 	
-	Map explain(Object obj) {
-		
+	Map evaluate(Map req) {
+		def res = [
+			decision : (this.condition == 'AND')?true:false,
+			status : [:],
+			obligations : [:],
+		]
+		evaluate(req, res)
 	}
 	
-	
-	Boolean evaluate(Object obj) {
-		
+	Map evaluate(Map req, Map res) {
 		if (!condition && !rules && !subsets) {
 			log.warn("Emtpy ruleset evaluates to 'false' by default!")
-			return false
+			res.decision = false
+			return res
 		}
 
 		if (this.condition == 'AND') {
 			
-			for (Rule r : rules) { if (!r.evaluate(obj)) return false }
-			for (RuleSet rs : subsets) { if (!rs.evaluate(obj)) return false }
+			for (Rule r : rules) { 
+				 def evalResult = r.evaluate(req, res)
+				 if (!evalResult.is(res)) { // not same object
+					 if (evalResult) {
+						 if (evalResult.is(true)) {
+						 	// nothing to do here
+						 }
+						 else {
+							 if (!(evalResult in Collection)) {
+								 evalResult = [evalResult] as Set
+							 }
+							 
+							 def acc = res.status.get(r.filterId) as Set
+							 if (!acc) res.status.put(r.filterId, evalResult) // init on first use
+							 else {
+								 def missing = acc.findAll { accit -> !(evalResult.find { accit.is(it) }) }
+								 acc.removeAll(missing)
+								 res.status.put(r.filterId, acc)
+							 }
+						 }
+					 }
+					 else { 
+						 res.decision = false
+					 }
+				 }
+				 else {
+					 // The entire response object has been returned
+					 // --> will presume all actions have been taken care of
+				 }
+				 
+				println "============== " + res.status
+				 
+				// AND condition
+				if (res.decision == false) return res // no positive decision, && behaviour --> break here
+			}
 			
-			return true
+			// TODO
+			//for (RuleSet rs : subsets) { if (!rs.evaluate(req, res)) return res } 
+			
+			return res
 		}
 		else if (this.condition == 'OR') {
 		
-			for (Rule r : rules) { if (r.evaluate(obj)) return true }
-			for (RuleSet rs : subsets) { if (rs.evaluate(obj)) return true }
+			for (Rule r : rules) { 
+				def evalResult = r.evaluate(req, res)
+				if (!evalResult.is(res)) { // not same object
+					if (evalResult) {
+						if (evalResult.is(true)) {
+							// nothing to do here
+						}
+						else {
+							if (!(evalResult in Collection)) {
+								evalResult = [evalResult] as Set
+							}
+							
+							def acc = res.status.get(r.filterId) as Set
+							if (!acc) res.status.put(r.filterId, evalResult) // init on first use
+							else {
+								acc.addAll(evalResult)
+								res.status.put(r.filterId, acc)
+							}
+						}
+						
+						res.decision = true
+					}
+				}
+				else {
+					// The entire response object has been returned 
+					// --> will presume all actions have been taken care of
+				}
+				
+				// OR condition
+				//if (res.decision == true) return res // positive decision, || behaviour --> break here
+			}
 			
-			return false
+			// TODO
+			//for (RuleSet rs : subsets) { if (rs.evaluate(req, res)) return res }
+			
+			return res
 		}
 		else {
 			throw new RuntimeException("Unknown condition: ${this.condition}")
-		}	
-		
+		}
 	}
-	
-	
-	
 	
 	/* JSON PARSING HELPERS */
 	static jsonRecParse(content) {

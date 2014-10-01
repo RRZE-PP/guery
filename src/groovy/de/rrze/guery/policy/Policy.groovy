@@ -24,16 +24,19 @@ class Policy {
 	 * 
 	 * @param obj
 	 * @return
-	 * 		true if the ruleset is satisfied, false otherwise
+	 * 		the provided Closure's return value or false if the Closure is not applied
 	 */
-	Boolean evaluate(Object obj, Closure c = {}) {
-		if (rs.evaluate(obj)) {
-			c()
-			return true
+	Object evaluate(Map req, Closure c) {
+		def res = rs.evaluate(req)
+		if (res.decision == true) {
+			return c(res)
 		}
 		else {
 			return false
 		}
 	}
 	
+	Object evaluate(Map req) {
+		rs.evaluate(req)
+	}
 }
