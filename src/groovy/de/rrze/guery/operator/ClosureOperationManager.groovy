@@ -1,7 +1,5 @@
 package de.rrze.guery.operator
 
-import java.util.concurrent.Callable
-
 class ClosureOperationManager implements IOperationManager {
 
 	Map<String, Closure> operations = [:]
@@ -24,7 +22,7 @@ class ClosureOperationManager implements IOperationManager {
 	}
 
 	@Override
-	public Object put(String id, Callable op) {
+	public Object put(String id, Object op) {
 		if (!(op in Closure)) throw new RuntimeException("ClosureOperationManager can only handle Closure type operations: ${op.class}")
 		operations.put(id, op)
 	}
