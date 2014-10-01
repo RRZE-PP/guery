@@ -71,17 +71,20 @@ class RuleSet {
 						 	// nothing to do here
 						 }
 						 else {
+							 if (!(evalResult in Collection)) {
+								 evalResult = [evalResult] as Set
+							 }
+							 
 							 def acc = res.status.get(r.filterId) as Set
 							 if (!acc) res.status.put(r.filterId, evalResult) // init on first use
 							 else {
-								 def missing = acc.findAll { !(it.is(evalResult)) }
+								 def missing = acc.findAll { accit -> !(evalResult.find { accit.is(it) }) }
 								 acc.removeAll(missing)
 								 res.status.put(r.filterId, acc)
 							 }
 						 }
 					 }
-					 else { // no positive response --> break here
-						 //res.status.put(r.filterId, null)
+					 else { 
 						 res.decision = false
 					 }
 				 }
@@ -93,7 +96,7 @@ class RuleSet {
 				println "============== " + res.status
 				 
 				// AND condition
-				if (res.decision == false) return res
+				if (res.decision == false) return res // no positive decision, && behaviour --> break here
 			}
 			
 			// TODO
@@ -111,6 +114,10 @@ class RuleSet {
 							// nothing to do here
 						}
 						else {
+							if (!(evalResult in Collection)) {
+								evalResult = [evalResult] as Set
+							}
+							
 							def acc = res.status.get(r.filterId) as Set
 							if (!acc) res.status.put(r.filterId, evalResult) // init on first use
 							else {
@@ -118,11 +125,8 @@ class RuleSet {
 								res.status.put(r.filterId, acc)
 							}
 						}
-					}
-					else { // no positive response --> break here
-						//res.status.put(r.filterId, null)
-						res.decision = false
-						return res
+						
+						res.decision = true
 					}
 				}
 				else {
@@ -131,7 +135,7 @@ class RuleSet {
 				}
 				
 				// OR condition
-				if (res.decision == true) return res
+				//if (res.decision == true) return res // positive decision, || behaviour --> break here
 			}
 			
 			// TODO

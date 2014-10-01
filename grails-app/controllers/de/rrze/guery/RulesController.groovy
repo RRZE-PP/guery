@@ -38,10 +38,10 @@ class RulesController {
 		
 		def msg = [user:user, entitlements:entitlements]
 		
-		msg.entitlements.each {
+//		msg.entitlements.each {
 			
 			def req = [
-				resource	: it, 
+//				resource	: it, 
 				environment	: msg,
 //				subject		: null,
 //				action		: null,
@@ -52,7 +52,7 @@ class RulesController {
 			}
 			
 			
-		}
+//		}
 		
 		
 		
@@ -83,7 +83,7 @@ class RulesController {
 			filter(id:"entitlement") {
 				typeEqual { val, req -> req.environment.entitlements?.findAll { it.type == val } }
 				uidEqual { val, req -> req.environment.entitlements?.find { it.uid == val } }
-				uidEqualsUser(accept_values:false) { req -> req.environment.entitlements?.findAll { it.uid == req?.user?.uid } }
+				uidEqualsUser(accept_values:false) { req -> req.environment.entitlements?.findAll { it.uid == req.environment.user?.uid } }
 			}
 			
 			filter(id:"groupMembership", input:'select', values:idmGroupMap) { 
