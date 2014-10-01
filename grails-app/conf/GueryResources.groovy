@@ -8,7 +8,6 @@ modules = {
 		resource url:'js/jQuery-QueryBuilder-1.2.1/dist/query-builder.js', disposition:'head'
 		resource url:'js/jQuery-QueryBuilder-1.2.1/dist/query-builder.min.css', disposition:'head'
 		resource url:'js/jQuery-QueryBuilder-fixes.css', disposition:'head'
-		resource url: 'js/bootstrap-3.2.0/css/bootstrap.min.css', disposition: 'head'
 	}
 
     jq_selectize {
