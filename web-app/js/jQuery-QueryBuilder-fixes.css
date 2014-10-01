@@ -8,6 +8,7 @@
 
 .guery-container label {
 	margin: 0;
+    width: inherit !important;
 }
 
 .guery-container dl {
