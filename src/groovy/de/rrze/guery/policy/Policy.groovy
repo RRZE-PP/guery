@@ -24,23 +24,19 @@ class Policy {
 	 * 
 	 * @param obj
 	 * @return
-	 * 		true if the ruleset is satisfied, false otherwise
+	 * 		the provided Closure's return value or false if the Closure is not applied
 	 */
-	Boolean evaluate(Map req, Closure c = {}) {
+	Object evaluate(Map req, Closure c) {
 		def res = rs.evaluate(req)
 		if (res.decision == true) {
-			
-			c(res)
-			
-			// XACML-way
-
-//			c(res)
-			
-			return true
+			return c(res)
 		}
 		else {
 			return false
 		}
 	}
 	
+	Object evaluate(Map req) {
+		rs.evaluate(req)
+	}
 }
