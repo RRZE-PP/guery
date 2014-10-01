@@ -7,6 +7,10 @@ class QueryBaseBuilder {
 
 	QueryBase qb
 	
+	def QueryBaseBuilder() {}
+	
+	
+	
 	QueryBase make(Closure c) {
 		qb = new QueryBase()
 		runClosure(c)

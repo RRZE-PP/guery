@@ -2,29 +2,28 @@ package de.rrze.guery
 
 import de.rrze.guery.base.QueryBaseBuilder
 import de.rrze.guery.policy.Policy
-import de.rrze.guery.policy.PolicyRegistry;
 
 
 class PolicyController {
 
-	static queryBase
+	static gueryInstance
 	
 	
 	
     def index() {
-		if (!queryBase) {
+		if (!gueryInstance) {
 			redirect(action:'init')
 			return
 		}
 		
-		def jsonConfig = queryBase.toJson().toString(true)
+		def jsonConfig = gueryInstance.baseToJson().toString(true)
 		log.info("JSON config: ${jsonConfig}")
 		
 		[builderConfig:jsonConfig]
 	}
 	
 	def save(String queryBuilderResult) {
-		def policy = new Policy(queryBase, queryBuilderResult)
+		gueryInstance.makePolicyFromJson('test', queryBuilderResult)
 		
 		
 		
@@ -33,7 +32,7 @@ class PolicyController {
 		def req = [user:user]
 		println "Request: " + req
 		
-		def policyApplied =  policy.evaluate(req) {
+		def policyApplied = gueryInstance.getPolicy('test').evaluate(req) {
 			user.admin = true
 		}
 		println "Policy applied: " + policyApplied
@@ -42,7 +41,8 @@ class PolicyController {
 	}
 	
 	def init() {
-		log.info("Initializing query options ...")
+		log.info("Initializing gueryInstance ...")
+		gueryInstance = new GueryInstance()
 		
 		def idmGroupMap = [
 			"initial"	: "initial",
@@ -52,11 +52,11 @@ class PolicyController {
 			"archive"	: "archive",
 		]
 		
-		queryBase = new QueryBaseBuilder().make {
+		gueryInstance.makeBase {
 			sortable true
 			
 			filter(id:'policy') {
-				applicable { val, obj -> PolicyRegistry.get(val).evaluate(obj) }
+				evaluate { val, obj -> gueryInstance.getPolicy(val).evaluate(obj) }
 			}
 			
 			filter(id:"username") {

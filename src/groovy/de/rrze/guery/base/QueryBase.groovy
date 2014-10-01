@@ -7,6 +7,9 @@ import de.rrze.guery.operator.Operator
 
 class QueryBase {
 
+	String id
+	String description
+	
 	Boolean 				sortable
 	Map<String,String>		lang = [:]
 	
@@ -19,9 +22,7 @@ class QueryBase {
 	def QueryBase() {}
 	
 	
-	
-	def add(Operator o) {
-		
+	QueryBase addOperator(Operator o) {
 		// add language label for operator
 		if (o.label) {
 			this.lang.put("operator_${o.type}".toString(), o.label)
@@ -32,10 +33,15 @@ class QueryBase {
 			else throw new RuntimeException("An operator of type ${o.type} already exists and cannot be re-added!")
 		
 		this
+	}
+
+	@Deprecated	
+	QueryBase add(Operator o) {
+		addOperator(o)
 	} 
 	
 	
-	def add(Filter f) {
+	QueryBase addFilter(Filter f) {
 		
 		// find and automatically add missing operators
 		if (f.operators) {
@@ -51,8 +57,12 @@ class QueryBase {
 		this
 	}
 	
+	@Deprecated
+	QueryBase add(Filter f) {
+		addFilter(f)
+	}
 	
-	def flatten() {
+	Map flatten() {
 		def ret = [:]
 		
 		putIfNotEmpty(ret,"sortable")
@@ -76,14 +86,14 @@ class QueryBase {
 		ret
 	}
 		
-	public toJson() {
+	public JSON toJson() {
 		new JSON(this.flatten())
 	}
 	
 	
 	
 	
-	private putIfNotEmpty(Map map, String fieldName) {
+	private Map putIfNotEmpty(Map map, String fieldName) {
 		def value = this."${fieldName}"
 		if (value) {
 			map.put(fieldName, value)
