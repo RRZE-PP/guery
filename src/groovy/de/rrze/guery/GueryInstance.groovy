@@ -28,9 +28,14 @@ class GueryInstance {
 		qb
 	}
 	
-	JSON baseToJson() {
-		qb.toJson()
+	JSON baseToJs() {
+		qb.toJs()
 	}
+
+	String baseToJsString(Boolean prettyPrint) {
+		qb.toJsString(prettyPrint)
+	}
+
 	
 	QueryBase getQueryBase() {
 		qb

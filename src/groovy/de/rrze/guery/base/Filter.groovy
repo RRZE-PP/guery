@@ -1,7 +1,7 @@
 package de.rrze.guery.base
 
-import de.rrze.guery.operator.Operator;
-import grails.converters.JSON
+import de.rrze.guery.converters.JavascriptCode
+import de.rrze.guery.operator.Operator
 
 /**
  * Generic filter representation 
@@ -23,8 +23,8 @@ class Filter {
 	Map<String,String>		values = [:]
     String                  plugin
     Map<String,String>      plugin_config = [:]
-    String                  onAfterCreateRuleInput
-    String                  onAfterSetValue
+    JavascriptCode          onAfterCreateRuleInput
+    JavascriptCode          onAfterSetValue
 
 	def Filter() {}
 	
@@ -32,7 +32,15 @@ class Filter {
 		operators << o
 	}
 	
-	
+	def setOnAfterCreateRuleInput(String s) {
+		onAfterCreateRuleInput = new JavascriptCode(s)
+	}
+
+	def setOnAfterSetValue(String s) {
+		onAfterSetValue = new JavascriptCode(s)
+	}
+
+		
 	def flatten() {
 		def ret = [:]
 		
@@ -63,7 +71,6 @@ class Filter {
 			flatOperators << it.type
 		}
 		if(flatOperators) ret.put('operators', flatOperators)
-		
 		
 		ret
 	}

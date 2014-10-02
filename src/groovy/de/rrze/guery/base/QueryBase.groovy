@@ -1,6 +1,6 @@
 package de.rrze.guery.base
 
-import grails.converters.JSON
+import de.rrze.guery.converters.Javascript
 import de.rrze.guery.operator.ClosureOperationManager
 import de.rrze.guery.operator.IOperationManager
 import de.rrze.guery.operator.Operator
@@ -86,10 +86,16 @@ class QueryBase {
 		ret
 	}
 		
-	public JSON toJson() {
-		new JSON(this.flatten())
+	public Javascript toJs() {
+		def flatConfig = this.flatten()
+//		JSON.registerObjectMarshaller(new LinkedHashMapMarshaller(),0)
+		def js = new Javascript(flatConfig)
+		js
 	}
 	
+	public String toJsString(Boolean prettyPrint) {
+		toJs().toString(prettyPrint)
+	}
 	
 	
 	

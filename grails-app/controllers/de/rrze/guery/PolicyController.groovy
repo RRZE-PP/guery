@@ -1,7 +1,6 @@
 package de.rrze.guery
 
-import de.rrze.guery.base.QueryBaseBuilder
-import de.rrze.guery.policy.Policy
+import de.rrze.guery.converters.JavascriptCode
 
 
 class PolicyController {
@@ -16,10 +15,10 @@ class PolicyController {
 			return
 		}
 		
-		def jsonConfig = gueryInstance.baseToJson().toString(true)
-		log.info("JSON config: ${jsonConfig}")
+		def jsConfig = gueryInstance.baseToJsString(true)
+		log.info("JS config: ${jsConfig}")
 		
-		[builderConfig:jsonConfig]
+		[builderConfig:jsConfig]
 	}
 	
 	def save(String queryBuilderResult) {
@@ -87,12 +86,12 @@ class PolicyController {
 				uidEqualsUser(accept_values:false) { req -> req.environment.entitlements?.findAll { it.uid == req.environment.user?.uid } }
 			}
 			
-			filter(id:"groupMembership", input:'select', values:idmGroupMap) { 
+			filter(id:"groupMembership", input:'select', values:idmGroupMap, onAfterSetValue:"console.log('hoho')") { 
 				equal { val, req ->	req.environment.user?.groupMembership.contains(val) }
 				exist(accept_values:false) { req -> req.environment.user?.groupMembership as Boolean }
 			}
 				
-						
+					
 		}
 		
 		redirect(action:'index')
