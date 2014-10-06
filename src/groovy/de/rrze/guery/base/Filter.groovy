@@ -52,18 +52,30 @@ class Filter {
 		putIfNotEmpty(ret,"multiple")
 		putIfNotEmpty(ret,"placeholder")
 		putIfNotEmpty(ret,"vertical")
-		putIfNotEmpty(ret,"values")
         putIfNotEmpty(ret,"plugin")
         putIfNotEmpty(ret,"plugin_config")
         putIfNotEmpty(ret,"onAfterCreateRuleInput")
 
+		if (values) {
+			if (values instanceof LinkedHashMap || values instanceof SortedMap) {
+				// ordered
+				ret['values'] = values.collect { [ (it.key) : (it.value) ] }
+			}
+			else {
+				// unordered
+				//putIfNotEmpty(ret,"values")
+				ret['values'] = values
+			}
+		}
+		
+		// FIXME find better plugin mechanism
         if (this.plugin?.contains("selectize") && !this.onAfterSetValue) {
             this.onAfterSetValue = "function(\$rule, value) {" +
                     "var selectize = \$rule.find('.rule-value-container input')[0].selectize;" +
                     "selectize.setValue(value);" +
                     "}"
         }
-        putIfNotEmpty(ret,"onAfterSetValue")
+		putIfNotEmpty(ret,"onAfterSetValue")
 
 		// handle operators
 		def flatOperators = []

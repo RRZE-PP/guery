@@ -1186,24 +1186,83 @@
         switch (filter.input) {
             case 'radio':
                 c = filter.vertical ? ' class=block' : '';
-                $.each(filter.values, function(key, val) {
-                    h+= '<label'+ c +'><input type="radio" name="'+ rule_id +'_value" value="'+ key +'"> '+ val +'</label> ';
-                });
+                
+                // original code
+//                $.each(filter.values, function(key, val) {
+//                    h+= '<label'+ c +'><input type="radio" name="'+ rule_id +'_value" value="'+ key +'"> '+ val +'</label> ';
+//                });
+                // end original code
+                
+                // patch by tantrum_junkie
+                if ($.isArray(filter.values)) {
+                    $.each(filter.values, function(index, entry) {
+                    	$.each(entry, function(key, val) {
+                    		h+= '<label'+ c +'><input type="radio" name="'+ rule_id +'_value" value="'+ key +'"> '+ val +'</label> ';
+                    		return false; // break after first entry
+                    	});
+                    });
+            	}
+            	else {
+                	$.each(filter.values, function(key, val) {
+                		h+= '<label'+ c +'><input type="radio" name="'+ rule_id +'_value" value="'+ key +'"> '+ val +'</label> ';
+                	});
+            	}
+                // end patch
+                
                 break;
 
             case 'checkbox':
                 c = filter.vertical ? ' class=block' : '';
-                $.each(filter.values, function(key, val) {
-                    h+= '<label'+ c +'><input type="checkbox" name="'+ rule_id +'_value" value="'+ key +'"> '+ val +'</label> ';
-                });
+                
+                // original code
+//                $.each(filter.values, function(key, val) {
+//                    h+= '<label'+ c +'><input type="checkbox" name="'+ rule_id +'_value" value="'+ key +'"> '+ val +'</label> ';
+//                });
+                // end original code
+                
+                // patch by tantrum_junkie
+                if ($.isArray(filter.values)) {
+                    $.each(filter.values, function(index, entry) {
+                    	$.each(entry, function(key, val) {
+                    		h+= '<label'+ c +'><input type="checkbox" name="'+ rule_id +'_value" value="'+ key +'"> '+ val +'</label> ';
+                    		return false; // break after first entry
+                    	});
+                    });
+            	}
+            	else {
+                	$.each(filter.values, function(key, val) {
+                		h+= '<label'+ c +'><input type="checkbox" name="'+ rule_id +'_value" value="'+ key +'"> '+ val +'</label> ';
+                	});
+            	}
+                // end patch
+                
+                
                 break;
 
             case 'select':
                 h+= '<select name="'+ rule_id +'_value"'+ (filter.multiple ? ' multiple' : '') +'>';
                 if (filter.values) {
-                    $.each(filter.values, function(key, val) {
-                        h+= '<option value="'+ key +'"> '+ val +'</option> ';
-                    });
+                	// original code
+//                	$.each(filter.values, function(key, val) {
+//                		h+= '<option value="'+ key +'"> '+ val +'</option> ';
+//                	});
+                	// end original code
+                	
+                	// patch by tantrum_junkie
+                	if ($.isArray(filter.values)) {
+	                    $.each(filter.values, function(index, entry) {
+	                    	$.each(entry, function(key, val) {
+	                    		h+= '<option value="'+ key +'"> '+ val +'</option> ';
+	                    		return false; // break after first entry
+	                    	});
+	                    });
+                	}
+                	else {
+                    	$.each(filter.values, function(key, val) {
+                    		h+= '<option value="'+ key +'"> '+ val +'</option> ';
+                    	});
+                	}
+                	// end patch
                 }
                 h+= '</select>';
                 break;
