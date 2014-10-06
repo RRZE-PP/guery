@@ -28,4 +28,8 @@ class JavascriptCode implements JSONElement, CharSequence {
 	public CharSequence subSequence(int start, int end) {
 		return codeString.subSequence(start,end);
 	}
+	
+	Writer writeTo(Writer w) {
+		w.write(codeString)
+	}
 }
