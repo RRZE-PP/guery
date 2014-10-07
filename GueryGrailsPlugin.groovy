@@ -26,16 +26,20 @@ Grails plugin for building and evaluating queries/rules using the execellent jQu
 //    def license = "APACHE"
 
     // Details of company behind the plugin (if there is one)
-//    def organization = [ name: "My Company", url: "http://www.my-company.com/" ]
+    def organization = [ name: "Regional Computing Center Erlangen (RRZE)", url: "http://www.rrze.fau.de/" ]
 
     // Any additional developers beyond the author specified above.
-//    def developers = [ [ name: "Joe Bloggs", email: "joe@bloggs.net" ]]
+    def developers = [ 
+		[ name: "Florian Löffler", email: "florian.loeffler@fau.de" ],
+		[ name: "Frank Tröger", email: "frank.troeger@fau.de" ],
+		[ name: "Sven Marschke", email: "sven.marschke@fau.de" ]
+	]
 
     // Location of the plugin's issue tracker.
-//    def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPMYPLUGIN" ]
+    def issueManagement = [ system: "github", url: "https://github.com/RRZE-PP/guery/issues" ]
 
     // Online location of the plugin's browseable source code.
-//    def scm = [ url: "http://svn.codehaus.org/grails-plugins/" ]
+    def scm = [ url: "https://github.com/RRZE-PP/guery" ]
 
     def doWithWebDescriptor = { xml ->
         // TODO Implement additions to web.xml (optional), this event occurs before

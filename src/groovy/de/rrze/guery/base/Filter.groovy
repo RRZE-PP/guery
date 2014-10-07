@@ -60,6 +60,7 @@ class Filter {
 			if (values instanceof LinkedHashMap || values instanceof SortedMap) {
 				// ordered
 				ret['values'] = values.collect { [ (it.key) : (it.value) ] }
+//				ret['values'] = values.collect { it.value } // test for backwards compatibility
 			}
 			else {
 				// unordered
