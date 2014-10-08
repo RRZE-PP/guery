@@ -51,14 +51,10 @@ class DelegatingQueryBase extends QueryBase {
 			}
 			else { // if there is a parent and the stored value is NOT empty
 				if (tmpValue in Map) { // merge with parent map
-					println "HUUAAAA ${fieldName}"
 					retValue = [:]
 					def parentValue = parent."${fieldName}"
-					println "PARENT: ${parentValue}"
 					if (parentValue) retValue.putAll(parentValue)
 					retValue.putAll(tmpValue) // current overrides parent
-					println "TMP: ${tmpValue}"
-					println retValue
 				}
 				else if (tmpValue in Collection) { // merge with parent collection
 					retValue = []

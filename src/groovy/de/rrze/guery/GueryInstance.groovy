@@ -16,14 +16,17 @@ class GueryInstance {
 	
 	GueryInstance parent
 	
-	
 	def GueryInstance(String instanceId) {
 		id = instanceId
-		GueryInstanceHolder.putGueryInstance(this)
+		GueryInstanceHolder.putInstance(this)
 	}
 	
 	def GueryInstance(String instanceId, GueryInstance parentGi) {
 		this(instanceId)
+		addParent(parentGi)
+	}
+	
+	def addParent(GueryInstance parentGi) {
 		parent = parentGi
 	}
 	
@@ -57,6 +60,10 @@ class GueryInstance {
 	
 	QueryBase getQueryBase() {
 		qb
+	}
+	
+	Boolean hasQueryBase() {
+		(qb != null)
 	}
 	
 	/*

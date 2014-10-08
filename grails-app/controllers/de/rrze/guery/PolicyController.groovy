@@ -91,7 +91,7 @@ class PolicyController {
 			
 			filter(id:"entitlement") {
 				typeEqual { val, req -> req.environment.entitlements?.findAll { it.type == val } }
-				uidEqual { val, req -> req.environment.entitlements?.find { it.uid == val } }
+				uidEqual { val, req -> req.environment.entitlements?.findAll { it.uid == val } }
 				uidEqualsUser(accept_values:false) { req -> req.environment.entitlements?.findAll { it.uid == req.environment.user?.uid } }
 			}
 			

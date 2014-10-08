@@ -9,13 +9,12 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 
 import de.rrze.guery.base.QueryBase;
 
-class RuleSet {
+class RuleSet implements IEvaluateable {
 
 	QueryBase qb
 	
 	String condition
-	Collection <Rule> rules = []
-	Collection <RuleSet> subsets = []
+	Collection <IEvaluateable> evals = []
 	
 	def RuleSet(QueryBase qb, String queryBuilderResult) {
 		this.qb = qb
@@ -33,10 +32,10 @@ class RuleSet {
 		this.condition = queryMap.condition
 		queryMap.rules.each { Map entry ->
 			if (entry.containsKey("condition")) {
-				this.subsets << new RuleSet(qb, entry) 
+				this.evals << new RuleSet(qb, entry) 
 			}
 			else {
-				this.rules << new Rule(qb, entry)
+				this.evals << new Rule(qb, entry)
 			}
 			
 		} 
@@ -55,7 +54,7 @@ class RuleSet {
 	}
 	
 	Map evaluate(Map req, Map res) {
-		if (!condition && !rules && !subsets) {
+		if (!condition && !evals) {
 			log.warn("Emtpy ruleset evaluates to 'false' by default!")
 			res.decision = false
 			return res
@@ -63,83 +62,25 @@ class RuleSet {
 
 		if (this.condition == 'AND') {
 			
-			for (Rule r : rules) { 
-				 def evalResult = r.evaluate(req, res)
-				 if (!evalResult.is(res)) { // not same object
-					 if (evalResult) {
-						 if (evalResult.is(true)) {
-						 	// nothing to do here
-						 }
-						 else {
-							 if (!(evalResult in Collection)) {
-								 evalResult = [evalResult] as Set
-							 }
-							 
-							 def acc = res.status.get(r.filterId) as Set
-							 if (!acc) res.status.put(r.filterId, evalResult) // init on first use
-							 else {
-								 def missing = acc.findAll { accit -> !(evalResult.find { accit.is(it) }) }
-								 acc.removeAll(missing)
-								 res.status.put(r.filterId, acc)
-							 }
-						 }
-					 }
-					 else { 
-						 res.decision = false
-					 }
-				 }
-				 else {
-					 // The entire response object has been returned
-					 // --> will presume all actions have been taken care of
-				 }
-				 
-				println "============== " + res.status
+			for (IEvaluateable e : evals) { 
+				e.evaluateAnd(req, res)
 				 
 				// AND condition
 				if (res.decision == false) return res // no positive decision, && behaviour --> break here
 			}
 			
-			// TODO
-			//for (RuleSet rs : subsets) { if (!rs.evaluate(req, res)) return res } 
 			
 			return res
 		}
 		else if (this.condition == 'OR') {
 		
-			for (Rule r : rules) { 
-				def evalResult = r.evaluate(req, res)
-				if (!evalResult.is(res)) { // not same object
-					if (evalResult) {
-						if (evalResult.is(true)) {
-							// nothing to do here
-						}
-						else {
-							if (!(evalResult in Collection)) {
-								evalResult = [evalResult] as Set
-							}
-							
-							def acc = res.status.get(r.filterId) as Set
-							if (!acc) res.status.put(r.filterId, evalResult) // init on first use
-							else {
-								acc.addAll(evalResult)
-								res.status.put(r.filterId, acc)
-							}
-						}
-						
-						res.decision = true
-					}
-				}
-				else {
-					// The entire response object has been returned 
-					// --> will presume all actions have been taken care of
-				}
+			for (IEvaluateable e : evals) { 
+				e.evaluateOr(req, res)
 				
 				// OR condition
-				//if (res.decision == true) return res // positive decision, || behaviour --> break here
+				if (res.decision == true) return res // positive decision, || behaviour --> break here
 			}
 			
-			// TODO
-			//for (RuleSet rs : subsets) { if (rs.evaluate(req, res)) return res }
 			
 			return res
 		}
@@ -147,6 +88,68 @@ class RuleSet {
 			throw new RuntimeException("Unknown condition: ${this.condition}")
 		}
 	}
+	
+	def evaluateAnd(Map req, Map res) {
+		if (this.condition == 'AND') {
+			return evaluate(req, res)
+		}
+		else {
+			def tmpResponse = [
+				decision : false,
+				status : [:],
+				obligations : [:],
+				]
+			evaluate(req, tmpResponse)
+			
+			// merge status updates
+			tmpResponse.status.each { filterId, evalResult ->
+				if (!(evalResult in Collection)) {
+					evalResult = [evalResult] as Set
+				}
+				
+				def acc = res.status.get(filterId) as Set
+				if (!acc) res.status.put(filterId, evalResult) // init on first use
+				else {
+					def missing = acc.findAll { accit -> !(evalResult.find { accit.is(it) }) }
+					acc.removeAll(missing)
+					res.status.put(filterId, acc)
+				}
+			}
+			
+			return res
+		}
+	}
+	
+	def evaluateOr(Map req, Map res) {
+		if (this.condition == 'OR') {
+			return evaluate(req, res)
+		}
+		else {
+			def tmpResponse = [
+				decision : true,
+				status : [:],
+				obligations : [:],
+				]
+			evaluate(req, tmpResponse)
+			
+			// merge status updates
+			tmpResponse.status.each { filterId, evalResult ->
+				if (!(evalResult in Collection)) {
+					evalResult = [evalResult] as Set
+				}
+				
+				def acc = res.status.get(filterId) as Set
+				if (!acc) res.status.put(filterId, evalResult) // init on first use
+				else {
+					acc.addAll(evalResult)
+					res.status.put(filterId, acc)
+				}
+			}
+			
+			return res
+		}
+	}
+	
 	
 	/* JSON PARSING HELPERS */
 	static jsonRecParse(content) {
