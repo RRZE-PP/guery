@@ -15,7 +15,7 @@ class DelegatingClosureOperationManager extends ClosureOperationManager {
 	
 	@Override
 	public Closure get(String id) {
-		def op = operations.get(id)
+		def op = _operations.get(id)
 		if (parent && !op) {
 			op = parent.get(id)
 		}
@@ -28,7 +28,7 @@ class DelegatingClosureOperationManager extends ClosureOperationManager {
 		if (parent && parent.get(id)) {
 			log.warn("Parent already defines operation with id '${id}' -- will be overridden!")
 		}
-		operations.put(id, op) // will override possible parent definition
+		_operations.put(id, op) // will override possible parent definition
 	}
 
 }

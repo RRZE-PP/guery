@@ -16,10 +16,10 @@ class QueryBase {
 	
 	
 	
-	Boolean 				_sortable
-	Map<String,String>		_lang = [:]
-	Map<String,Filter> 		_filters = [:]
-	Map<String,Operator> 	_operators = [:]
+	protected Boolean 				_sortable
+	protected Map<String,String>	_lang = [:]
+	protected Map<String,Filter> 	_filters = [:]
+	protected Map<String,Operator> 	_operators = [:]
 	
 	
 	

@@ -2,7 +2,7 @@ package de.rrze.guery.operator
 
 class ClosureOperationManager implements IOperationManager {
 
-	Map<String, Closure> operations = [:]
+	protected Map<String, Closure> _operations = [:]
 	
 	def ClosureOperationManager() {}
 	
@@ -29,14 +29,14 @@ class ClosureOperationManager implements IOperationManager {
 	
 	@Override
 	public Closure get(String id) {
-		def op = operations.get(id)
+		def op = _operations.get(id)
 		op
 	}
 
 	@Override
 	public Object put(String id, Object op) {
 		if (!(op in Closure)) throw new RuntimeException("ClosureOperationManager can only handle Closure type operations: ${op.class}")
-		operations.put(id, op) // will override possible parent definition
+		_operations.put(id, op) // will override possible parent definition
 	}
 
 }
