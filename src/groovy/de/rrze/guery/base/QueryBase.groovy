@@ -1,5 +1,8 @@
 package de.rrze.guery.base
 
+import java.util.Map;
+
+import de.rrze.guery.GueryInstanceHolder
 import de.rrze.guery.converters.Javascript
 import de.rrze.guery.operator.ClosureOperationManager
 import de.rrze.guery.operator.IOperationManager
@@ -9,17 +12,34 @@ class QueryBase {
 
 	String id
 	String description
-	
-	Boolean 				sortable
-	Map<String,String>		lang = [:]
+	IOperationManager operationManager = new ClosureOperationManager()
 	
 	
-	Map<String,Filter> 		filters = [:]
 	
-	Map<String,Operator> 	operators = [:]
-	IOperationManager		operationManager = new ClosureOperationManager()
+	Boolean 				_sortable
+	Map<String,String>		_lang = [:]
+	Map<String,Filter> 		_filters = [:]
+	Map<String,Operator> 	_operators = [:]
+	
+	
 	
 	def QueryBase() {}
+	
+	Map<String,Operator> getOperators() {
+		_operators
+	}
+	
+	Map<String,Filter> getFilters() {
+		_filters
+	}
+	
+	Map<String,String> getLang() {
+		_lang
+	}
+	
+	Boolean getSortable() {
+		_sortable
+	}
 	
 	
 	QueryBase addOperator(Operator o) {
@@ -29,7 +49,7 @@ class QueryBase {
 		}
 		
 		// add operator
-		if(!this.operators.containsKey(o.type)) this.operators.put(o.type, o)
+		if(!this._operators.containsKey(o.type)) this._operators.put(o.type, o)
 			else throw new RuntimeException("An operator of type ${o.type} already exists and cannot be re-added!")
 		
 		this
@@ -47,11 +67,11 @@ class QueryBase {
 		if (f.operators) {
 			def addOpKeys = f.operators*.type - this.operators?.keySet()?:[]
 			def addOps = f.operators.findAll { it.type in addOpKeys }
-			addOps.each { this.add(it) }
+			addOps.each { this.addOperator(it) }
 		}
 		
 		// add filter
-		if(!this.filters.containsKey(f.id))  this.filters.put(f.id, f)
+		if(!this._filters.containsKey(f.id))  this._filters.put(f.id, f)
 			else throw new RuntimeException("A filter with id ${f.id} already exists and cannot be re-added!")
 		
 		this
@@ -97,8 +117,6 @@ class QueryBase {
 		toJs().toString(prettyPrint)
 	}
 	
-	
-	
 	private Map putIfNotEmpty(Map map, String fieldName) {
 		def value = this."${fieldName}"
 		if (value) {
@@ -106,5 +124,7 @@ class QueryBase {
 		}
 		map
 	}
+	
+	
 	
 }

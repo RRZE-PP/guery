@@ -4,6 +4,7 @@ class ClosureOperationManager implements IOperationManager {
 
 	Map<String, Closure> operations = [:]
 	
+	def ClosureOperationManager() {}
 	
 	@Override
 	public Object apply(String id, Object val, Map req, Map res) {
@@ -28,13 +29,14 @@ class ClosureOperationManager implements IOperationManager {
 	
 	@Override
 	public Closure get(String id) {
-		operations.get(id)
+		def op = operations.get(id)
+		op
 	}
 
 	@Override
 	public Object put(String id, Object op) {
 		if (!(op in Closure)) throw new RuntimeException("ClosureOperationManager can only handle Closure type operations: ${op.class}")
-		operations.put(id, op)
+		operations.put(id, op) // will override possible parent definition
 	}
 
 }

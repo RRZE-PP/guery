@@ -59,17 +59,9 @@ class PolicyController {
 	
 	def init() {
 		log.info("Initializing gueryInstance ...")
-		gueryInstance = new GueryInstance()
 		
-		def idmGroupMap = [
-			"initial"	: "initial",
-			"activated"	: "activated",
-			"active"	: "active",
-			"inactive"	: "inactive",
-			"archive"	: "archive",
-		]
-		
-		gueryInstance.makeBase {
+		def baseInstance = new GueryInstance('base')
+		baseInstance.buildBase {
 			sortable true
 			
 			filter(id:'policy') {
@@ -80,6 +72,23 @@ class PolicyController {
 				uidEqual { val, req -> val == req.environment.user?.uid }
 			}
 			
+			
+		}
+		
+		
+		gueryInstance = new GueryInstance('specific',baseInstance)
+		
+		def idmGroupMap = [
+			"initial"	: "initial",
+			"activated"	: "activated",
+			"active"	: "active",
+			"inactive"	: "inactive",
+			"archive"	: "archive",
+		]
+		
+		gueryInstance.buildBase {
+			sortable true
+			
 			filter(id:"entitlement") {
 				typeEqual { val, req -> req.environment.entitlements?.findAll { it.type == val } }
 				uidEqual { val, req -> req.environment.entitlements?.find { it.uid == val } }
@@ -87,12 +96,12 @@ class PolicyController {
 			}
 			
 //			filter(id:"groupMembership", input:'select', values:idmGroupMap, onAfterSetValue:"console.log('hoho')") { 
-			filter(id:"groupMembership", input:'select', values:idmGroupMap) { 
+			
+				
+			filter(id:"groupMembership", input:'select', values:idmGroupMap) {
 				equal { val, req ->	req.environment.user?.groupMembership.contains(val) }
 				exist(accept_values:false) { req -> req.environment.user?.groupMembership as Boolean }
 			}
-				
-					
 		}
 		
 		redirect(action:'index')

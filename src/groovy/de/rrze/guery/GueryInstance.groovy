@@ -10,21 +10,39 @@ class GueryInstance {
 
 	String id
 	String description
-	
+
 	QueryBase qb
 	Map<String,Policy> policies = [:] 
 	
+	GueryInstance parent
 	
-	def GueryInstance() {}
 	
+	def GueryInstance(String instanceId) {
+		id = instanceId
+		GueryInstanceHolder.putGueryInstance(this)
+	}
 	
+	def GueryInstance(String instanceId, GueryInstance parentGi) {
+		this(instanceId)
+		parent = parentGi
+	}
 	
 	
 	/*
 	 * QUERY BASE
 	 */
+	@Deprecated
 	QueryBase makeBase(Closure c) {
-		qb = new QueryBaseBuilder().make(c)
+		buildBase(c)
+	}
+	
+	QueryBase buildBase(Closure c) {
+		if (parent) {
+			qb = new QueryBaseBuilder().makeDelegate(parent.qb, c)
+		}
+		else {
+			qb = new QueryBaseBuilder().make(c)
+		}
 		qb
 	}
 	

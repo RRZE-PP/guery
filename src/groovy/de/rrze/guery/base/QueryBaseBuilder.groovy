@@ -9,7 +9,11 @@ class QueryBaseBuilder {
 	
 	def QueryBaseBuilder() {}
 	
-	
+	QueryBase makeDelegate(QueryBase parentQb, Closure c) {
+		qb = new DelegatingQueryBase(parentQb)
+		runClosure(c)
+		qb
+	}
 	
 	QueryBase make(Closure c) {
 		qb = new QueryBase()
@@ -48,11 +52,11 @@ class QueryBaseBuilder {
 		c()
 		
 		log.info("Adding filter ${f.id} ...")
-		qb.add(f)
+		qb.addFilter(f)
 	}
 	
 	def sortable(Boolean value) {
-		qb.sortable = value
+		qb._sortable = value
 	}
 		
 	def operationManager(IOperationManager opm) {
