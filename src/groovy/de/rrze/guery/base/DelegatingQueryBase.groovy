@@ -1,5 +1,7 @@
 package de.rrze.guery.base
 
+import java.util.List;
+
 import de.rrze.guery.converters.Javascript
 import de.rrze.guery.operator.ClosureOperationManager
 import de.rrze.guery.operator.DelegatingClosureOperationManager
@@ -39,6 +41,10 @@ class DelegatingQueryBase extends QueryBase {
 	
 	Boolean getSortable() {
 		getMergedFieldValue('_sortable')
+	}
+	
+	List<String> getConditions() {
+		getMergedFieldValue('_conditions')
 	}
 	
 	def getMergedFieldValue(String fieldName) {

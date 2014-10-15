@@ -1,5 +1,7 @@
 package de.rrze.guery.base
 
+import java.util.List;
+
 import de.rrze.guery.operator.IOperationManager;
 import de.rrze.guery.operator.Operator;
 
@@ -57,6 +59,10 @@ class QueryBaseBuilder {
 	
 	def sortable(Boolean value) {
 		qb._sortable = value
+	}
+	
+	def conditions(List<String> value) {
+		qb._conditions = value
 	}
 		
 	def operationManager(IOperationManager opm) {

@@ -20,7 +20,7 @@ class QueryBase {
 	protected Map<String,String>	_lang = [:]
 	protected Map<String,Filter> 	_filters = [:]
 	protected Map<String,Operator> 	_operators = [:]
-	
+	protected List<String>			_conditions = null
 	
 	
 	def QueryBase() {}
@@ -39,6 +39,10 @@ class QueryBase {
 	
 	Boolean getSortable() {
 		_sortable
+	}
+	
+	List<String> getConditions() {
+		_conditions
 	}
 	
 	

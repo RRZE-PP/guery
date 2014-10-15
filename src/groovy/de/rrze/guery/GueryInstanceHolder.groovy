@@ -19,4 +19,8 @@ class GueryInstanceHolder {
 		instance
 	}
 
+	
+	static void reset() {
+		registry.clear()
+	}
 }
