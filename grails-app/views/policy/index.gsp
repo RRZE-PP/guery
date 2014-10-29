@@ -4,6 +4,8 @@
 		<title>Rules</title>
 		<meta name="layout" content="main">
 		
+		<r:require modules="jq_queryBuilder" />
+		
 	</head>
 	<body>
 	
