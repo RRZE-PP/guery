@@ -63,8 +63,13 @@ class QueryBaseBuilder {
 	
 	def conditions(List<String> value) {
 		qb._conditions = value
+		if (!qb._defaultCondition) defaultCondition(value.get(0))
 	}
-		
+
+	def defaultCondition(String value) {
+		qb._defaultCondition = value
+	}
+			
 	def operationManager(IOperationManager opm) {
 		qb.operationManager = opm
 	}
@@ -85,11 +90,12 @@ class QueryBaseBuilder {
 ////		}
 //	}
 
-//	def propertyMissing(String name) {
-//		if (name == 'retourFlight') {
-//			reservation.retourFlight = true
-//		}
-//	}
+	def propertyMissing(String name, Object value) {
+		if (name == 'sortable') sortable(value)
+		else if (name == 'conditions') conditions(value)
+		else if (name == 'defaultCondition') defaultCondition(value)
+		else throw new MissingPropertyException(name, this.class)
+	}
 	
 	
 	

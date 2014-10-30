@@ -21,7 +21,7 @@ class QueryBase {
 	protected Map<String,Filter> 	_filters = [:]
 	protected Map<String,Operator> 	_operators = [:]
 	protected List<String>			_conditions = null
-	
+	protected String				_defaultCondition = null
 	
 	def QueryBase() {}
 	
@@ -43,6 +43,10 @@ class QueryBase {
 	
 	List<String> getConditions() {
 		_conditions
+	}
+	
+	String getDefaultCondition() {
+		_defaultCondition
 	}
 	
 	
@@ -90,6 +94,8 @@ class QueryBase {
 		def ret = [:]
 		
 		putIfNotEmpty(ret,"sortable")
+		putIfNotEmpty(ret,"conditions")
+		putIfNotEmpty(ret,"defaultCondition")
 		putIfNotEmpty(ret,"lang")
 			
 		// handle filters
@@ -124,7 +130,8 @@ class QueryBase {
 	private Map putIfNotEmpty(Map map, String fieldName) {
 		def value = this."${fieldName}"
 		if (value) {
-			map.put(fieldName, value)
+			if (fieldName == 'defaultCondition') map.put('default_condition', value)
+			else map.put(fieldName, value)
 		}
 		map
 	}

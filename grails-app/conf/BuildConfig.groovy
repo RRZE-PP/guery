@@ -11,6 +11,9 @@ grails.project.source.level = 1.6
 //   run: [maxMemory:1024, minMemory:64, debug:false, maxPerm:256]
 //]
 
+
+def live = System.getProperty("live")?System.getProperty("live").split(','):[]
+
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
     inherits("global") {
@@ -60,23 +63,29 @@ grails.project.dependency.resolution = {
 //
 //        compile ':cache:1.0.1'
 		
-		build(	":tomcat:$grailsVersion",
-				":release:2.2.1",
-				":rest-client-builder:1.0.2"
-		) {
-		  export = false
-	    }
 		
-		runtime (":jquery-ui:1.10.3") {
-			excludes "jquery"
-			export = false
+		if (live.find { it == 'guery' }) {
+			println "[GUERY] Running in live-mode!"
 		}
-		
-		runtime (
-			":resources:1.2",
-			":jquery:1.11.1"
-		) {
-			export = false
-		} 
+		else {
+			build(	":tomcat:$grailsVersion",
+					":release:2.2.1",
+					":rest-client-builder:1.0.2"
+			) {
+			  export = false
+		    }
+			
+			runtime (":jquery-ui:1.10.3") {
+				excludes "jquery"
+				export = false
+			}
+			
+			runtime (
+				":resources:1.2",
+				":jquery:1.11.1"
+			) {
+				export = false
+			} 
+		}
     }
 }

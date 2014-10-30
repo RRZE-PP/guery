@@ -47,6 +47,10 @@ class DelegatingQueryBase extends QueryBase {
 		getMergedFieldValue('_conditions')
 	}
 	
+	String getDefaultCondition() {
+		getMergedFieldValue('_defaultCondition')
+	}
+	
 	def getMergedFieldValue(String fieldName) {
 		def retValue
 		def tmpValue = this."${fieldName}"
