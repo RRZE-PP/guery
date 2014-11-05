@@ -73,7 +73,15 @@ class QueryBaseBuilder {
 	def operationManager(IOperationManager opm) {
 		qb.operationManager = opm
 	}
-	
+
+	def id(String value) {
+		qb.id = value
+	}
+
+	def description(String value) {
+		qb.description = value
+	}
+
 //	def methodMissing(String name, arguments) {
 //		
 ////		if (name in ['sortable']) {
@@ -94,6 +102,8 @@ class QueryBaseBuilder {
 		if (name == 'sortable') sortable(value)
 		else if (name == 'conditions') conditions(value)
 		else if (name == 'defaultCondition') defaultCondition(value)
+		else if (name == 'id') id(value)
+		else if (name == 'description') description(value)
 		else throw new MissingPropertyException(name, this.class)
 	}
 	

@@ -19,6 +19,19 @@ class Policy {
 		rs = new RuleSet(qb, queryBuilderResult)
 	}
 	
+	def Policy(QueryBase queryBase, Map ruleMap) {
+		qb = queryBase
+		rs = new RuleSet(qb, ruleMap)
+	}
+	
+	Map toRuleMap() {
+		rs.toRuleMap()
+	}
+	
+	String toJSON() {
+		rs.toJSON()
+	}
+	
 	/**
 	 * Checks, if the ruleset contained in this policy is satisfied
 	 * 

@@ -46,8 +46,8 @@ class GueryTagLib {
 	<script>
 		\$('#${gueryAttrs.builderElementId}').queryBuilder(${gueryAttrs.builderConfig});
 """
-		if (gueryAttrs.rules) {
-			out << "	\$('#${gueryAttrs.builderElementId}').queryBuilder('setRules','${gueryAttrs.builderRules}');"
+		if (gueryAttrs.builderRules) {
+			out << "	\$('#${gueryAttrs.builderElementId}').queryBuilder('setRules',jQuery.parseJSON('${gueryAttrs.builderRules}'));"
 		}
 		
 		out << """
@@ -90,8 +90,8 @@ class GueryTagLib {
 	\$('#${gueryAttrs.builderElementId}').queryBuilder(${gueryAttrs.builderConfig});
 """ 
 			
-			if (gueryAttrs.rules) {
-				ret += "\$('#${gueryAttrs.builderElementId}').queryBuilder('setRules','${gueryAttrs.builderRules}');"
+			if (gueryAttrs.builderRules) {
+				ret += "\$('#${gueryAttrs.builderElementId}').queryBuilder('setRules',jQuery.parseJSON('${gueryAttrs.builderRules}'));"
 		    }
 			
 			ret += """

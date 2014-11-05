@@ -17,17 +17,28 @@ class Rule implements IEvaluateable {
 	
 	def Rule(QueryBase qb, Map qm) {
 		this.qb = qb
-		parseQueryMap(qm)
+		parseRuleMap(qm)
 	}
 	
-	def parseQueryMap(Map qm) {
+	def parseRuleMap(Map qm) {
 		this.filter = qb.filters?.get(qm.id)
-		if (!this.filter) throw new RuntimeException("Could not resolve filter id in given query base: ${qm.id}")
+		if (!this.filter) throw new RuntimeException("Could not resolve filter id in given query base '${qb.id}': ${qm.id}")
 		
 		this.operator = qb.operators?.get(qm.operator)
-		if (!this.operator) throw new RuntimeException("Could not resolve operator in given query base: ${qm.operator}")
+		if (!this.operator) throw new RuntimeException("Could not resolve operator in given query base '${qb.id}': ${qm.operator}")
 		
 		this.val = qm.value
+	}
+	
+	Map toRuleMap() {
+		def map = [:]
+		if (filter.id) map.id = filter.id
+		if (filter.field) map.field = filter.field
+		if (filter.type) map.type = filter.type
+		if (filter.input) map.input = filter.input
+		if (operator.type) map.operator = operator.type
+		if (val) map.value = val
+		map
 	}
 	
 	Object evaluate(Map req, Map res) {

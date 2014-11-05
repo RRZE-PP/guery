@@ -18,17 +18,16 @@ class RuleSet implements IEvaluateable {
 	
 	def RuleSet(QueryBase qb, String queryBuilderResult) {
 		this.qb = qb
-		def queryMap = jsonRecParse(queryBuilderResult)
-//		log.info(queryMap.getClass().name + " -- " + queryMap)
-		parseQueryMap(queryMap)
+		def ruleMap = jsonRecParse(queryBuilderResult)
+		parseRuleMap(ruleMap)
 	}
 	
 	def RuleSet(QueryBase qb, Map queryMap) {
 		this.qb = qb
-		parseQueryMap(queryMap)
+		parseRuleMap(queryMap)
 	}
 	
-	def parseQueryMap(Map queryMap) {
+	def parseRuleMap(Map queryMap) {
 		this.condition = queryMap.condition
 		queryMap.rules.each { Map entry ->
 			if (entry.containsKey("condition")) {
@@ -43,6 +42,22 @@ class RuleSet implements IEvaluateable {
 		this
 	}
 	
+	Map toRuleMap() {
+		if (!this.condition) return [:]
+		
+		def ruleMap = [
+			condition : this.condition,
+			rules : [],
+		]
+		
+		this.evals.each { ruleMap.rules <<  it.toRuleMap() }
+		
+		ruleMap
+	}
+	
+	String toJSON() {
+		toRuleMap() as JSON
+	}
 	
 	Map evaluate(Map req) {
 		def res = [
@@ -162,9 +177,13 @@ class RuleSet implements IEvaluateable {
 		}
 	}
 	static jsonRecConvert(JSONArray obj) {
-		obj.collect { it }
+		println obj
+		obj.collect { jsonRecConvert(it) }
+	}
+	static jsonRecConvert(JSONObject.Null obj) {
+		null
 	}
 	static jsonRecConvert(Object obj) {
-		return obj
+		obj
 	}
 }

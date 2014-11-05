@@ -46,6 +46,10 @@ class GueryInstance {
 		else {
 			qb = new QueryBaseBuilder().make(c)
 		}
+		
+		if (!qb.id) qb.id = "${id}_queryBase"
+		if (!qb.description) qb.description = "QueryBase for ${id}"
+		
 		qb
 	}
 	
@@ -71,6 +75,12 @@ class GueryInstance {
 	 */
 	Policy parsePolicyFromJson(String queryBuilderResult, Closure mods = null) {
 		def p = new Policy(qb, queryBuilderResult)
+		if (mods) { mods(p) }
+		p
+	}
+	
+	Policy parsePolicyFromMap(Map ruleMap, Closure mods = null) {
+		def p = new Policy(qb, ruleMap)
 		if (mods) { mods(p) }
 		p
 	}
