@@ -9,16 +9,15 @@ class GueryGrailsPlugin {
         "grails-app/controllers/**",
     ]
 
-    // TODO Fill in these fields
     def title = "Guery Plugin" // Headline display name of the plugin
     def author = "Florian Löffler"
     def authorEmail = "florian.loeffler@fau.de"
     def description = '''\
-Grails plugin for building and evaluating queries/rules using the execellent jQuery Query Builder GUI.
+Grails plugin for building and evaluating queries/rules using the execellent jQuery Query Builder GUI as a frontend.
 '''
 
     // URL to the plugin's documentation
-    def documentation = "http://grails.org/plugin/rules-core"
+    def documentation = "http://grails.org/plugin/guery"
 
     // Extra (optional) plugin metadata
 
