@@ -109,6 +109,7 @@ class RuleSet implements IEvaluateable {
 			return evaluate(req, res)
 		}
 		else {
+			// Outer condition is 'AND' - inner condition is 'OR'
 			def tmpResponse = [
 				decision : false,
 				status : [:],
@@ -140,6 +141,7 @@ class RuleSet implements IEvaluateable {
 			return evaluate(req, res)
 		}
 		else {
+			// Outer condition is 'OR' - inner condition is 'AND'
 			def tmpResponse = [
 				decision : true,
 				status : [:],

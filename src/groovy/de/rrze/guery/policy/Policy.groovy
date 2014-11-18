@@ -40,8 +40,7 @@ class Policy {
 	 * 		the provided Closure's return value or false if the Closure is not applied
 	 */
 	Object evaluate(Map req, Closure c) {
-		def immutableRequest = req.asImmutable()
-		def res = rs.evaluate(immutableRequest)
+		def res = evaluate(req)
 		if (res.decision == true) {
 			return c(res)
 		}

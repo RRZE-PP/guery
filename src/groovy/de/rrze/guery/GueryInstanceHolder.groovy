@@ -9,7 +9,15 @@ class GueryInstanceHolder {
 		registry.put(gueryInstance.id, gueryInstance)
 	}
 	
+	static put(GueryInstance gueryInstance) {
+		registry.put(gueryInstance.id, gueryInstance)
+	}
+	
 	static GueryInstance getInstance(String instanceId) {
+		registry.get(instanceId)
+	}
+	
+	static get(String instanceId) {
 		registry.get(instanceId)
 	}
 
@@ -19,6 +27,10 @@ class GueryInstanceHolder {
 		instance
 	}
 
+	
+	static getInstances() {
+		registry.values()
+	}
 	
 	static void reset() {
 		registry.clear()

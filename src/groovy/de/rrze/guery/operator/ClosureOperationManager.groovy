@@ -8,10 +8,10 @@ class ClosureOperationManager implements IOperationManager {
 	
 	@Override
 	public Object apply(String id, Object val, Map req, Map res) {
-		Closure c = get(id) 
+		Closure c = get(id)
 		def argc = c.maximumNumberOfParameters
 		
-		if (argc == 1) c.call(val)
+		if (argc == 1) c.call([id:id, val:val, req:req, res:res])
 		else if (argc == 2) c.call(val, req)
 		else if (argc == 3) c.call(val, req, res)
 		else c.call(val, req, res, id)
@@ -22,7 +22,7 @@ class ClosureOperationManager implements IOperationManager {
 		Closure c = get(id)
 		def argc = c.maximumNumberOfParameters
 		
-		if (argc == 1) c.call(req)
+		if (argc == 1) c.call([id:id, val:null, req:req, res:res])
 		else if (argc == 2) c.call(req, res)
 		else c.call(req, res, id)
 	}

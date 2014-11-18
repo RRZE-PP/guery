@@ -1,5 +1,7 @@
 package de.rrze.guery
 
+import java.util.Map;
+
 import grails.converters.JSON
 import groovy.lang.Closure;
 import de.rrze.guery.base.QueryBase
@@ -70,6 +72,52 @@ class GueryInstance {
 		(qb != null)
 	}
 	
+	
+	def reset() {
+		resetQueryBase()
+		resetPolicies()
+	}
+	
+	def resetQueryBase() {
+		qb = null
+	}
+	
+	def resetPolicies() {
+		policies = [:]
+	}
+	
+	/*
+	 * PROCESSING
+	 */
+	Object evaluate(Map req, Closure c) {
+		def results = evaluate(req)
+		c(results)
+	}
+	
+	Object evaluateEach(Map req, Closure c) {
+		def results = evaluate(req)
+		results.each { result -> c(result)}
+	}
+
+	Object evaluateEachMatch(Map req, Closure c) {
+		def results = evaluate(req)
+		results.findAll { it.decision == true }.each { result -> c(result)}
+	}
+
+	
+	Object evaluate(Map req) {
+		def immutableRequest = req.asImmutable()
+		def results = []
+		policies.each { policy ->
+			def result =  policy.evaluate(immutableRequest) // result = [descision:xxx, status:xxx, obligations:xxx]
+			result.put('id', policy.id)
+			results << result
+		}
+		return results
+	}
+	
+	
+	
 	/*
 	 * POLICIES
 	 */
@@ -79,24 +127,53 @@ class GueryInstance {
 		p
 	}
 	
-	Policy parsePolicyFromMap(Map ruleMap, Closure mods = null) {
-		def p = new Policy(qb, ruleMap)
-		if (mods) { mods(p) }
-		p
-	}
-	
-	Policy makePolicyFromJson(String id, String queryBuilderResult, Closure mods = null) {
+	Policy addPolicyFromJson(String id, String queryBuilderResult, Closure mods = null) {
 		def p = parsePolicyFromJson(queryBuilderResult, mods)
 		p.id = id
 		addPolicy(p)
 		p
 	}
 	
+	Policy putPolicyFromJson(String id, String queryBuilderResult, Closure mods = null) {
+		def p = parsePolicyFromJson(queryBuilderResult, mods)
+		p.id = id
+		putPolicy(p)
+		p
+	}
+	
+	Policy parsePolicyFromMap(Map ruleMap, Closure mods = null) {
+		def p = new Policy(qb, ruleMap)
+		if (mods) { mods(p) }
+		p
+	}
+	
+	Policy addPolicyFromMap(String id, Map ruleMap, Closure mods = null) {
+		def p = parsePolicyFromMap(ruleMap, mods)
+		p.id = id
+		addPolicy(p)
+		p
+	}
+	
+	Policy putPolicyFromMap(String id, Map ruleMap, Closure mods = null) {
+		def p = parsePolicyFromMap(ruleMap, mods)
+		p.id = id
+		putPolicy(p)
+		p
+	}
+	
 	GueryInstance addPolicy(Policy p) {
+		if (!p.id) throw new RuntimeException("Cannot add policy without id!")
+		if (policies.containsKey(p.id)) throw new RuntimeException("Policy with id '${p.id}' already exists! Use putPolicy() method to add a new or update an existing policy id.")
+		policies.put(p.id, p)
+		this
+	}
+	
+	GueryInstance putPolicy(Policy p) {
 		if (!p.id) throw new RuntimeException("Cannot add policy without id!")
 		policies.put(p.id, p)
 		this
 	}
+
 	
 	Policy getPolicy(String id) {
 		policies.get(id)
