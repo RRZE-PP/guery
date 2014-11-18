@@ -58,18 +58,18 @@ class Rule implements IEvaluateable {
 						evalResult = [evalResult] as Set
 					}
 					
-					def acc = res.status.get(filter.id) as Set
-					if (!acc) res.status.put(filter.id, evalResult) // init on first use
+					def acc = res.status.get(filter.field) as Set
+					if (!acc) res.status.put(filter.field, evalResult) // init on first use
 					else {
 						def missing = acc.findAll { accit -> !(evalResult.find { accit.is(it) }) }
 						acc.removeAll(missing)
-						res.status.put(filter.id, acc)
+						res.status.put(filter.field, acc)
 					}
 				}
 			}
 			else {
 				res.decision = false
-				res.status.put(filter.id, [])
+				res.status.put(filter.field, [])
 			}
 		}
 		else {
@@ -82,6 +82,7 @@ class Rule implements IEvaluateable {
 	
 	Object evaluateOr(Map req, Map res) {
 		def evalResult = evaluate(req, res)
+//		log.debug("RULE [${operator.type}] ${evalResult}")
 		
 		if (!evalResult.is(res)) { // not same object
 			if (evalResult) {
@@ -93,11 +94,11 @@ class Rule implements IEvaluateable {
 						evalResult = [evalResult] as Set
 					}
 					
-					def acc = res.status.get(filter.id) as Set
-					if (!acc) res.status.put(filter.id, evalResult) // init on first use
+					def acc = res.status.get(filter.field) as Set
+					if (!acc) res.status.put(filter.field, evalResult) // init on first use
 					else {
 						acc.addAll(evalResult)
-						res.status.put(filter.id, acc)
+						res.status.put(filter.field, acc)
 					}
 				}
 				

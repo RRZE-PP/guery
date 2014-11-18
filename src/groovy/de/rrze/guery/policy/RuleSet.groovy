@@ -81,19 +81,19 @@ class RuleSet implements IEvaluateable {
 				e.evaluateAnd(req, res)
 				 
 				// AND condition
-				if (res.decision == false) return res // no positive decision, && behaviour --> break here
+				//if (res.decision == false) return res // no positive decision, && behaviour --> break here
 			}
 			
 			
 			return res
 		}
-		else if (this.condition == 'OR') {
+		else if (this.condition == 'OR' || this.condition == 'EXECUTE') { // FIXME EXECUTE
 		
 			for (IEvaluateable e : evals) { 
 				e.evaluateOr(req, res)
 				
 				// OR condition
-				if (res.decision == true) return res // positive decision, || behaviour --> break here
+				//if (res.decision == true) return res // positive decision, || behaviour --> break here
 			}
 			
 			
@@ -127,6 +127,7 @@ class RuleSet implements IEvaluateable {
 				if (!acc) res.status.put(filterId, evalResult) // init on first use
 				else {
 					def missing = acc.findAll { accit -> !(evalResult.find { accit.is(it) }) }
+//					acc = acc.findAll { accit -> (evalResult.find { accit.is(it) }) }
 					acc.removeAll(missing)
 					res.status.put(filterId, acc)
 				}

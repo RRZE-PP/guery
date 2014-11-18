@@ -20,7 +20,6 @@ class GueryInstance {
 	
 	def GueryInstance(String instanceId) {
 		id = instanceId
-		GueryInstanceHolder.putInstance(this)
 	}
 	
 	def GueryInstance(String instanceId, GueryInstance parentGi) {
@@ -108,7 +107,7 @@ class GueryInstance {
 	Object evaluate(Map req) {
 		def immutableRequest = req.asImmutable()
 		def results = []
-		policies.each { policy ->
+		policies.values().each { policy ->
 			def result =  policy.evaluate(immutableRequest) // result = [descision:xxx, status:xxx, obligations:xxx]
 			result.put('id', policy.id)
 			results << result

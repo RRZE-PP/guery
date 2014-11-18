@@ -1,5 +1,7 @@
 package de.rrze.guery.base
 
+import org.springframework.aop.aspectj.RuntimeTestWalker.ThisInstanceOfResidueTestVisitor;
+
 import de.rrze.guery.converters.JavascriptCode
 import de.rrze.guery.operator.Operator
 
@@ -40,7 +42,11 @@ class Filter {
 		onAfterSetValue = new JavascriptCode(s)
 	}
 
-		
+	def getField() {
+		if (!this.field) return this.id
+		else return this.field
+	}
+	
 	def flatten() {
 		def ret = [:]
 		

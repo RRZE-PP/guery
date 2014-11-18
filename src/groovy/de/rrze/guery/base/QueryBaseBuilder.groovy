@@ -57,6 +57,11 @@ class QueryBaseBuilder {
 		qb.addFilter(f)
 	}
 	
+	
+	def lang(Map value) {
+		qb._lang += value
+	}
+	
 	def sortable(Boolean value) {
 		qb._sortable = value
 	}
@@ -104,6 +109,7 @@ class QueryBaseBuilder {
 		else if (name == 'defaultCondition') defaultCondition(value)
 		else if (name == 'id') id(value)
 		else if (name == 'description') description(value)
+		else if (name == 'lang') lang(value)
 		else throw new MissingPropertyException(name, this.class)
 	}
 	
