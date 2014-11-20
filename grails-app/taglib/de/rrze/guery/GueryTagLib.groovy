@@ -12,24 +12,46 @@ class GueryTagLib {
 		gueryAttrs.putAll(attrs)
 		
 		
-		gueryAttrs.builderConfig = attrs.builderConfig?:pageScope.builderConfig
-		gueryAttrs.builderRules = attrs.builderRules?:pageScope.builderRules
-		gueryAttrs.builderElementId = attrs.id //attrs.builderElementId?:"${gueryAttrs.id?:gueryAttrs.name}_queryBuilder"
+		if (attrs.instance) {
+			def instance = attrs.instance
+			gueryAttrs.builderConfig = instance.baseToJsString()
+			gueryAttrs.builderElementId = "guery_builder_${instance.id}"
+		}
+		else {
+			gueryAttrs.builderConfig = attrs.builderConfig?:pageScope.builderConfig
+			gueryAttrs.builderElementId = attrs.id //attrs.builderElementId?:"${gueryAttrs.id?:gueryAttrs.name}_queryBuilder"
+		}
+
+		if (attrs.policy) {
+			gueryAttrs.builderRules = attrs.policy.toJSON()
+		}
+		else {
+			gueryAttrs.builderRules = attrs.builderRules?:pageScope.builderRules
+		}
+
 		gueryAttrs.builderResultName = attrs.builderResultName?:"${gueryAttrs.builderElementId}_result"
 		gueryAttrs.builderResultId = attrs.builderResultId?:"${gueryAttrs.builderElementId}_result"
-		
+						
 		out << '<div class="guery-container">'
 		
 		out << """
 	<script>
+		var ${gueryAttrs.builderElementId}_validation_success = true;
+		function onValidationError_${gueryAttrs.builderElementId}(\$rule, error, value, filter, operator) {
+			${gueryAttrs.builderElementId}_validation_success = false;
+			//alert(error);
+		}
+
 		function update_${gueryAttrs.builderElementId}() {
-			var jsonResult = JSON.stringify(\$('#${gueryAttrs.builderElementId}').queryBuilder('getRules'), undefined, 2);
+			${gueryAttrs.builderElementId}_validation_success = true;
+			var rules = \$('#${gueryAttrs.builderElementId}').queryBuilder('getRules');
+			var jsonResult = JSON.stringify(rules, undefined, 2);
 			\$('#${gueryAttrs.builderResultId}').val(jsonResult);
 		}
 
 		\$(function(){
 			var form = \$('#${gueryAttrs.builderElementId}').closest('form');
-			form.attr('onsubmit', 'update_${gueryAttrs.builderElementId}();' + form.attr('onsubmit'))
+			form.attr('onsubmit', 'update_${gueryAttrs.builderElementId}(); if (${gueryAttrs.builderElementId}_validation_success) {' + form.attr('onsubmit') + ';} return false;')
 		});
 	</script>
 """

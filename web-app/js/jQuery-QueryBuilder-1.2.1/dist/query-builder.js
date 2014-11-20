@@ -1028,7 +1028,20 @@
      * @return {string}
      */
     QueryBuilder.prototype.getRuleFilter = function($rule) {
-        return $rule.find('.rule-filter-container select[name$=_filter]').val();
+//        return $rule.find('.rule-filter-container select[name$=_filter]').val();
+    	// FFX
+        var $el = $rule.find('.rule-filter-container select[name$=_filter]');
+        var val;
+        if ($el.prop("disabled")) {
+        	$el.prop( "disabled", false );
+        	val = $el.val();
+        	$el.prop( "disabled", true );
+        }
+        else {
+        	val = $el.val();
+        }
+        return val;
+        // END: FFX
     };
 
     /**

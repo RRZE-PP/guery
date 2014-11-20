@@ -1,9 +1,7 @@
 package de.rrze.guery.base
 
-import java.util.Map;
-
-import de.rrze.guery.GueryInstanceHolder
 import de.rrze.guery.converters.Javascript
+import de.rrze.guery.converters.JavascriptCode
 import de.rrze.guery.operator.ClosureOperationManager
 import de.rrze.guery.operator.IOperationManager
 import de.rrze.guery.operator.Operator
@@ -15,6 +13,29 @@ class QueryBase {
 	IOperationManager operationManager = new ClosureOperationManager()
 	Map<String,Boolean>	readonlyBehaviour = [:]
 	
+	/**
+	 * Function called when a validation error occurs. It takes 5 parameters:
+	 * <ul>
+	 * <li>$rule the jQuery &lt;li&gt; element of the rule throwing the error</li>
+	 * <li>error a String containing an error code</li>
+	 * <li>value</li>
+	 * <li>filter</li>
+	 * <li>operator</li>
+	 * <ul>
+	 */
+	JavascriptCode onValidationError
+	
+	/**
+	 * Function called just after adding a group. It takes 1 parameter:
+	 * $group is the jQuery &lt;dl&gt; element of the group
+	 */
+	JavascriptCode onAfterAddGroup
+	
+	/**
+	 * Function called just after adding a rule. It takes 1 parameter:
+	 * $rule is the jQuery &lt;li&gt; element of the rule
+	 */
+	JavascriptCode onAfterAddRule
 	
 	
 	protected Boolean 				_sortable
@@ -101,6 +122,10 @@ class QueryBase {
 		putIfNotEmpty(ret,"defaultCondition")
 		putIfNotEmpty(ret,"lang")
 		putIfNotEmpty(ret,"readonlyBehaviour")
+		
+		putIfNotEmpty(ret,"onValidationError")
+		putIfNotEmpty(ret,"onAfterAddGroup")
+		putIfNotEmpty(ret,"onAfterAddRule")
 		
 		// handle filters
 		def flatFilters = []

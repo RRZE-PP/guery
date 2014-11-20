@@ -1,9 +1,8 @@
 package de.rrze.guery.base
 
-import java.util.List;
-
-import de.rrze.guery.operator.IOperationManager;
-import de.rrze.guery.operator.Operator;
+import de.rrze.guery.converters.JavascriptCode
+import de.rrze.guery.operator.IOperationManager
+import de.rrze.guery.operator.Operator
 
 class QueryBaseBuilder {
 
@@ -103,6 +102,28 @@ class QueryBaseBuilder {
 		qb.description = value
 	}
 	
+	
+	def onValidationError(JavascriptCode value) {
+		qb.onValidationError = value
+	}
+	def onValidationError(String value) {
+		qb.onValidationError = new JavascriptCode(value)
+	}
+
+	def onAfterAddGroup(JavascriptCode value) {
+		qb.onAfterAddGroup = value
+	}
+	def onAfterAddGroup(String value) {
+		qb.onAfterAddGroup = new JavascriptCode(value)
+	}
+
+	def onAfterAddRule(JavascriptCode value) {
+		qb.onAfterAddRule = value
+	}
+	def onAfterAddRule(String value) {
+		qb.onAfterAddRule = new JavascriptCode(value)
+	}
+
 
 //	def methodMissing(String name, arguments) {
 //		
@@ -128,6 +149,9 @@ class QueryBaseBuilder {
 		else if (name == 'description') description(value)
 		else if (name == 'lang') lang(value)
 		else if (name == 'readonlyBehaviour') readonlyBehaviour(value)
+		else if (name == 'onValidationError') onValidationError(value)
+		else if (name == 'onAfterAddGroup') onAfterAddGroup(value)
+		else if (name == 'onAfterAddRule') onAfterAddRule(value)
 		else throw new MissingPropertyException(name, this.class)
 	}
 	

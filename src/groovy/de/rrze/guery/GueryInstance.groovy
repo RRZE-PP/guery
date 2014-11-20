@@ -1,11 +1,9 @@
 package de.rrze.guery
 
-import java.util.Map;
-
 import grails.converters.JSON
-import groovy.lang.Closure;
 import de.rrze.guery.base.QueryBase
 import de.rrze.guery.base.QueryBaseBuilder
+import de.rrze.guery.converters.JavascriptCode
 import de.rrze.guery.policy.Policy
 
 class GueryInstance {
@@ -50,7 +48,7 @@ class GueryInstance {
 		
 		if (!qb.id) qb.id = "${id}_queryBase"
 		if (!qb.description) qb.description = "QueryBase for ${id}"
-		
+		if (!qb.onValidationError) qb.onValidationError = new JavascriptCode("onValidationError_guery_builder_${id}")
 		qb
 	}
 	
