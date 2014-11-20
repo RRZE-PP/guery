@@ -14,7 +14,10 @@ class RuleSet implements IEvaluateable {
 	QueryBase qb
 	
 	String condition
-	Collection <IEvaluateable> evals = []
+	List <IEvaluateable> evals = []
+	
+	Set<String> tags = []
+	Boolean		readonly = false
 	
 	def RuleSet(QueryBase qb, String queryBuilderResult) {
 		this.qb = qb
@@ -27,8 +30,15 @@ class RuleSet implements IEvaluateable {
 		parseRuleMap(queryMap)
 	}
 	
+	def RuleSet(String condition, Collection<IEvaluateable> evals) {
+		this.condition = condition
+		this.evals.addAll(evals)
+	}
+
 	def parseRuleMap(Map queryMap) {
 		this.condition = queryMap.condition
+		if (queryMap.tags) this.tags = queryMap.tags
+		if (queryMap.readonly) this.readonly = queryMap.readonly
 		queryMap.rules.each { Map entry ->
 			if (entry.containsKey("condition")) {
 				this.evals << new RuleSet(qb, entry) 
@@ -47,9 +57,12 @@ class RuleSet implements IEvaluateable {
 		
 		def ruleMap = [
 			condition : this.condition,
-			rules : [],
 		]
+		if (tags) ruleMap.tags = tags // FIXME not recognized by jquery query builder
+		if (readonly != null) ruleMap.readonly = readonly
+
 		
+		ruleMap.rules = []		
 		this.evals.each { ruleMap.rules <<  it.toRuleMap() }
 		
 		ruleMap
@@ -166,6 +179,33 @@ class RuleSet implements IEvaluateable {
 			
 			return res
 		}
+	}
+	
+	def tag(String tag) {
+		this.tags.add(tag)
+		this
+	}
+	
+	def addTag(String tag) {
+		this.tags.add(tag)
+		this
+	}
+	
+	def removeTag(String tag) {
+		this.tags.remove(tag)
+		this
+	}
+	
+	def readonly(Boolean sw = null) {
+		if (sw != null) this.readonly = sw
+		else this.readonly = true
+		this
+	}
+	
+	
+	/* LIST INTERFACE */
+	def getAt(arg) {
+		this.evals.getAt(arg)
 	}
 	
 	

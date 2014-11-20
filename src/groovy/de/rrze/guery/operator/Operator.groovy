@@ -1,18 +1,20 @@
 package de.rrze.guery.operator
 
-import java.util.Map;
-
-import de.rrze.guery.base.QueryBase;
+import de.rrze.guery.base.Filter
+import de.rrze.guery.base.QueryBase
 
 class Operator {
 
 	QueryBase 	qb
+	Filter		filter
 	
 	String				type
 	Boolean				accept_values
 	Collection<String>	apply_to
 	
 	String 				label
+	
+	
 	
 	
 	def Operator() {}

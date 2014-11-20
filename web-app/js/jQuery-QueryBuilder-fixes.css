@@ -16,7 +16,25 @@
 }
 
 
+.guery-container .rules-group-container.disabled {
+/* 	background: #DDDDDD; */
+/* 	border: 1px solid #BB2222;  */
+	border: 1px solid #C9302C;
+}
 
+/* .guery-container .rules-group-container.disabled::before, .guery-container .rules-group-container.disabled::after { */
+/* 	border-color: #222222; */
+/* } */
+
+.guery-container .rule-container.disabled {
+/* 	background: #DDDDDD; */
+/* 	border: 1px solid #BB2222; */
+	border: 1px solid #C9302C;
+}
+
+/* .guery-container .rule-container.disabled::before, .guery-container .rule-container.disabled::after { */
+/* 	border-color: #222222; */
+/* } */
 
 
 /*************/

@@ -23,13 +23,27 @@ class Policy {
 		qb = queryBase
 		rs = new RuleSet(qb, ruleMap)
 	}
-	
+
+	def Policy(QueryBase queryBase, RuleSet ruleSet) {
+		qb = queryBase
+		ruleSet.qb = this.qb
+		rs = ruleSet
+	}
+		
 	Map toRuleMap() {
 		rs.toRuleMap()
 	}
 	
 	String toJSON() {
 		rs.toJSON()
+	}
+	
+	def getRuleSet() {
+		this.rs
+	}
+	
+	def getQueryBase() {
+		this.qb
 	}
 	
 	/**

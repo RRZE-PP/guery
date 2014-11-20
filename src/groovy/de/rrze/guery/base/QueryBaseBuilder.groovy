@@ -9,16 +9,20 @@ class QueryBaseBuilder {
 
 	QueryBase qb
 	
+	def originalDelegate
+	
 	def QueryBaseBuilder() {}
 	
 	QueryBase makeDelegate(QueryBase parentQb, Closure c) {
 		qb = new DelegatingQueryBase(parentQb)
+		originalDelegate = c.delegate
 		runClosure(c)
 		qb
 	}
 	
 	QueryBase make(Closure c) {
 		qb = new QueryBase()
+		originalDelegate = c.delegate
 		runClosure(c)
 		qb
 	}
@@ -28,10 +32,13 @@ class QueryBaseBuilder {
 		def f = new Filter(m)
 		c.resolveStrategy = Closure.TO_SELF
 		c.metaClass.methodMissing = { name, arguments ->
-			def ucFirstName = name[0].toUpperCase() + name[1..-1]
+//			log.warn(name)
+//			log.warn(arguments)
+//			def ucFirstName = name[0].toUpperCase() + name[1..-1]
 			
 			def opSettings = [
-				type			: f.id + ucFirstName,
+				//type			: f.id + ucFirstName,
+				type			: f.id + '_' + name,
 				label			: name,
 					
 				accept_values	: true, // FIXME not always true
@@ -48,6 +55,11 @@ class QueryBaseBuilder {
 			f.add(op)
 			
 			def operationClosure = arguments[-1]
+			if (!(operationClosure in Closure)) {
+				throw new RuntimeException("Last filter operator argument must be of type Closure!")
+			}
+			operationClosure.delegate = originalDelegate
+			operationClosure.resolveStrategy = Closure.DELEGATE_ONLY
 			qb.operationManager.put(op.type, operationClosure)
 				
 		}
@@ -75,6 +87,10 @@ class QueryBaseBuilder {
 		qb._defaultCondition = value
 	}
 			
+	def readonlyBehaviour(Map<String,Boolean> value) {
+		qb.readonlyBehaviour = value
+	}
+	
 	def operationManager(IOperationManager opm) {
 		qb.operationManager = opm
 	}
@@ -86,6 +102,7 @@ class QueryBaseBuilder {
 	def description(String value) {
 		qb.description = value
 	}
+	
 
 //	def methodMissing(String name, arguments) {
 //		
@@ -110,6 +127,7 @@ class QueryBaseBuilder {
 		else if (name == 'id') id(value)
 		else if (name == 'description') description(value)
 		else if (name == 'lang') lang(value)
+		else if (name == 'readonlyBehaviour') readonlyBehaviour(value)
 		else throw new MissingPropertyException(name, this.class)
 	}
 	

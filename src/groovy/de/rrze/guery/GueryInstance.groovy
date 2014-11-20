@@ -54,6 +54,10 @@ class GueryInstance {
 		qb
 	}
 	
+	def getOperator(String type) {
+		qb.getOperator(type)
+	}
+	
 	JSON baseToJs() {
 		qb.toJs()
 	}

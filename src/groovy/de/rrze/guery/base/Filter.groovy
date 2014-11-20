@@ -31,6 +31,7 @@ class Filter {
 	def Filter() {}
 	
 	def add(Operator o) {
+		o.filter = this
 		operators << o
 	}
 	

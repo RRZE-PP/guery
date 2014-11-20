@@ -13,6 +13,7 @@ class QueryBase {
 	String id
 	String description
 	IOperationManager operationManager = new ClosureOperationManager()
+	Map<String,Boolean>	readonlyBehaviour = [:]
 	
 	
 	
@@ -49,7 +50,6 @@ class QueryBase {
 		_defaultCondition
 	}
 	
-	
 	QueryBase addOperator(Operator o) {
 		// add language label for operator
 		if (o.label) {
@@ -68,6 +68,9 @@ class QueryBase {
 		addOperator(o)
 	} 
 	
+	def getOperator(String type) {
+		this.getOperators().get(type)
+	}
 	
 	QueryBase addFilter(Filter f) {
 		
@@ -97,7 +100,8 @@ class QueryBase {
 		putIfNotEmpty(ret,"conditions")
 		putIfNotEmpty(ret,"defaultCondition")
 		putIfNotEmpty(ret,"lang")
-			
+		putIfNotEmpty(ret,"readonlyBehaviour")
+		
 		// handle filters
 		def flatFilters = []
 		this.filters.values().each {
@@ -131,6 +135,7 @@ class QueryBase {
 		def value = this."${fieldName}"
 		if (value) {
 			if (fieldName == 'defaultCondition') map.put('default_condition', value)
+			if (fieldName == 'readonlyBehaviour') map.put('readonly_behavior', value)
 			else map.put(fieldName, value)
 		}
 		map

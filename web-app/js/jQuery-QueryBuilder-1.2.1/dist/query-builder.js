@@ -419,6 +419,8 @@
                         }
 
                         if (rule.readonly) {
+                        	$rule.addClass('disabled'); // FFX
+                        	
                             $rule.find('input, select').prop('disabled', true);
                             $rule.addClass('disabled').find('[data-delete=rule]').remove();
 
@@ -432,6 +434,26 @@
                         filter.onAfterSetValue.call(that, $rule, rule.value, filter, operator);
                     }
                 }
+
+                // FFX
+                if (rule.readonly) {
+                	if (that.settings.sortable && !that.settings.readonly_behavior.sortable) {
+                		
+                		$group.addClass('disabled');
+                		
+                		// no dragging
+                		$group.removeAttr('draggable');
+                		$group.find('[draggable]').removeAttr('draggable');
+                		$group.find('.drag-handle').first().remove();
+                		
+                		// no operation buttons -- except the active one
+                		$group.find('.btn-group').find('label:not(.active)').remove();
+                		
+                		// no add/delete buttons
+                		$group.find('.btn-group').find('button').remove();
+                	}
+                }
+                // END: FFX
             });
 
         }(data, $container));
