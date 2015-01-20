@@ -282,6 +282,11 @@
             out.condition = $group.find('>.rules-group-header input[name$=_cond]:checked').val();
             out.rules = [];
 
+            
+            // FFX map data attributes
+            $.each($group.data(), function(key,value) { out[key] = value.split(';') });
+            // END FFX
+            
             for (var i=0, l=$elements.length; i<l; i++) {
                 var $rule = $elements.eq(i),
                     rule;
@@ -320,6 +325,10 @@
                         value: value
                     };
 
+                    // FFX map data attributes
+                    $.each($rule.data(), function(key,value) { rule[key] = value.split(';') });
+                    // END FFX
+                    
                     out.rules.push(rule);
                 }
                 else {
