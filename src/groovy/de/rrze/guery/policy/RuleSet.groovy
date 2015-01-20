@@ -226,7 +226,7 @@ class RuleSet implements IEvaluateable {
 		}
 	}
 	static jsonRecConvert(JSONArray obj) {
-		println obj
+		//println obj
 		obj.collect { jsonRecConvert(it) }
 	}
 	static jsonRecConvert(JSONObject.Null obj) {
