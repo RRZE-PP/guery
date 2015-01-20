@@ -1,10 +1,9 @@
 package de.rrze.guery.policy
 
-import java.util.Map;
-
-import de.rrze.guery.base.Filter;
-import de.rrze.guery.base.QueryBase;
-import de.rrze.guery.operator.Operator;
+import grails.converters.JSON
+import de.rrze.guery.base.Filter
+import de.rrze.guery.base.QueryBase
+import de.rrze.guery.operator.Operator
 
 class Rule implements IEvaluateable {
 
@@ -52,6 +51,21 @@ class Rule implements IEvaluateable {
 	}
 	
 	Map toRuleMap() {
+		def map = [:]
+		if (filter.id) map.id = filter.id
+		if (filter.field) map.field = filter.field
+		if (filter.type) map.type = filter.type
+		if (filter.input) map.input = filter.input
+		if (operator.type) map.operator = operator.type
+		if (val) map.value = val
+		if (readonly != null) map.readonly = readonly
+				
+		if (tags) map.tags = tags
+	
+		map
+	}
+	
+	def toJSON(Boolean convert=true) {
 		def map = [data:[:]]
 		if (filter.id) map.id = filter.id
 		if (filter.field) map.field = filter.field
@@ -63,7 +77,7 @@ class Rule implements IEvaluateable {
 				
 		if (tags) map.data.tags = tags?.join(';')
 	
-		map
+		return convert?(map as JSON):map
 	}
 	
 	Object evaluate(Map req, Map res) {

@@ -175,6 +175,20 @@ class GueryInstance {
 		this
 	}
 
+	GueryInstance removePolicy(String policyId) {
+		if (!policyId) throw new RuntimeException("Cannot remove policy without id!")
+		
+		// ignore gracefully
+		//if (!policies.containsKey(policyId)) throw new RuntimeException("No policy with id '${policyId}' exists!")
+		
+		policies.remove(policyId)
+		this
+	}
+	
+	GueryInstance removePolicy(Policy p) {
+		if (!p.id) throw new RuntimeException("Cannot remove policy without id!")
+		removePolicy(p.id)
+	}
 	
 	Policy getPolicy(String id) {
 		policies.get(id)

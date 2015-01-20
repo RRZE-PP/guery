@@ -57,9 +57,8 @@ class RuleSet implements IEvaluateable {
 		
 		def ruleMap = [
 			condition : this.condition,
-			data: [:],
 		]
-		if (tags) ruleMap.data.tags = tags?.join(';')
+		if (tags) ruleMap.tags = tags
 		if (readonly != null) ruleMap.readonly = readonly
 
 		
@@ -69,8 +68,21 @@ class RuleSet implements IEvaluateable {
 		ruleMap
 	}
 	
-	String toJSON() {
-		toRuleMap() as JSON
+	def toJSON(Boolean convert=true) {
+		if (!this.condition) return [:]
+		
+		def ruleMap = [
+			condition : this.condition,
+			data: [:],
+		]
+		if (tags) ruleMap.data.tags = tags?.join(';')
+		if (readonly != null) ruleMap.readonly = readonly
+
+		
+		ruleMap.rules = []
+		this.evals.each { ruleMap.rules <<  it.toJSON(false) }
+		
+		return convert?(ruleMap as JSON):ruleMap
 	}
 	
 	Map evaluate(Map req) {
