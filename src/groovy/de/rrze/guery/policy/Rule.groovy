@@ -52,7 +52,7 @@ class Rule implements IEvaluateable {
 	}
 	
 	Map toRuleMap() {
-		def map = [:]
+		def map = [data:[:]]
 		if (filter.id) map.id = filter.id
 		if (filter.field) map.field = filter.field
 		if (filter.type) map.type = filter.type
@@ -61,7 +61,7 @@ class Rule implements IEvaluateable {
 		if (val) map.value = val
 		if (readonly != null) map.readonly = readonly
 				
-		if (tags) map.tags = tags // FIXME not recognized by jquery query builder
+		if (tags) map.data.tags = tags?.join(';')
 	
 		map
 	}

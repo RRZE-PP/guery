@@ -268,7 +268,12 @@
         this.markRuleAsError(this.$el.find('.rule-container'), false);
 
         var $group = this.$el.find('>.rules-group-container'),
-            that = this;
+        	that = this;
+        
+        // FFX only process containers that are not disabled
+        //var $group = this.$el.find('.rules-group-container').not('.disabled').filter(':first'),
+        //	that = this;
+        // END FFX
 
         return (function parse($group) {
             var out = {},
@@ -341,6 +346,7 @@
      * @param data {object}
      */
     QueryBuilder.prototype.setRules = function(data) {
+    	//console.log(data);
         this.clear();
 
         if (!data || !data.rules || data.rules.length===0) {
@@ -365,7 +371,39 @@
             }
             $buttons.trigger('change');
 
+            // FFX
+            if (data.data) {
+            	//console.log('Adding generic group data ...');
+            	$.each(data.data, function(key,value) {
+            		//console.log('Adding: ' + key + ' = ' + value);
+            		$group.attr('data-'+key, value);
+            	});
+            }
+            // END: FFX
+            
+            
             $.each(data.rules, function(i, rule) {
+            	
+            	// FFX
+                if (rule.readonly) {
+                	if (that.settings.sortable && !that.settings.readonly_behavior.sortable) {
+                		
+                		$group.addClass('disabled');
+                		
+                		// no dragging
+                		$group.removeAttr('draggable');
+                		$group.find('[draggable]').removeAttr('draggable');
+                		$group.find('.drag-handle').first().remove();
+                		
+                		// no operation buttons -- except the active one
+                		$group.find('.btn-group').find('label:not(.active)').remove();
+                		
+                		// no add/delete buttons
+                		$group.find('.btn-group').find('button').remove();
+                	}
+                }
+                // END: FFX
+                
                 if (rule.rules && rule.rules.length>0) {
                     if (!that.settings.allow_groups) {
                         $.error('Groups are disabled');
@@ -390,6 +428,7 @@
                         operator = that.getOperatorByType(rule.operator),
                         $value = $rule.find('.rule-value-container');
 
+                    
                     $rule.find('.rule-filter-container select[name$=_filter]').val(rule.id).trigger('change');
                     $rule.find('.rule-operator-container select[name$=_operator]').val(rule.operator).trigger('change');
 
@@ -428,32 +467,26 @@
                                 $rule.find('.drag-handle').remove();
                             }
                         }
+                        
                     }
 
+                    // FFX
+                    if (rule.data) {
+                    	//console.log('Adding generic rule data ...');
+                    	$.each(rule.data, function(key,value) {
+                    		//console.log('Adding: ' + key + ' = ' + value);
+                    		$rule.attr('data-'+key, value);
+                    	});
+                    }
+                    // END: FFX
+                    
+                    
                     if (filter.onAfterSetValue) {
                         filter.onAfterSetValue.call(that, $rule, rule.value, filter, operator);
                     }
                 }
 
-                // FFX
-                if (rule.readonly) {
-                	if (that.settings.sortable && !that.settings.readonly_behavior.sortable) {
-                		
-                		$group.addClass('disabled');
-                		
-                		// no dragging
-                		$group.removeAttr('draggable');
-                		$group.find('[draggable]').removeAttr('draggable');
-                		$group.find('.drag-handle').first().remove();
-                		
-                		// no operation buttons -- except the active one
-                		$group.find('.btn-group').find('label:not(.active)').remove();
-                		
-                		// no add/delete buttons
-                		$group.find('.btn-group').find('button').remove();
-                	}
-                }
-                // END: FFX
+
             });
 
         }(data, $container));
@@ -1028,7 +1061,7 @@
      * @return {string}
      */
     QueryBuilder.prototype.getRuleFilter = function($rule) {
-//        return $rule.find('.rule-filter-container select[name$=_filter]').val();
+        //return $rule.find('.rule-filter-container select[name$=_filter]').val();
     	// FFX
         var $el = $rule.find('.rule-filter-container select[name$=_filter]');
         var val;

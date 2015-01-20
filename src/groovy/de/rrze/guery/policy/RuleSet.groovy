@@ -57,8 +57,9 @@ class RuleSet implements IEvaluateable {
 		
 		def ruleMap = [
 			condition : this.condition,
+			data: [:],
 		]
-		if (tags) ruleMap.tags = tags // FIXME not recognized by jquery query builder
+		if (tags) ruleMap.data.tags = tags?.join(';')
 		if (readonly != null) ruleMap.readonly = readonly
 
 		
@@ -200,6 +201,11 @@ class RuleSet implements IEvaluateable {
 		if (sw != null) this.readonly = sw
 		else this.readonly = true
 		this
+	}
+	
+	
+	Boolean isEmpty() {
+		toRuleMap().isEmpty()
 	}
 	
 	

@@ -46,6 +46,10 @@ class Policy {
 		this.qb
 	}
 	
+	Boolean isEmpty() {
+		this.rs.isEmpty()
+	}
+	
 	/**
 	 * Checks, if the ruleset contained in this policy is satisfied
 	 * 
