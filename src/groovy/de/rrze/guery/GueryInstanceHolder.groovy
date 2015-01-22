@@ -29,13 +29,13 @@ class GueryInstanceHolder {
 	static GueryInstance getOrCreateInstance(String instanceId) {
 		def instance = GueryInstanceHolder.getInstance(instanceId)
 		if (!instance) {
-			log.info("No instance with id '${instanceId}' -- creating new one.")
+			log.debug("No instance with id '${instanceId}' -- creating new one.")
 			instance = new GueryInstance(instanceId)
 			GueryInstanceHolder.putInstance(instance)
 		}
-		else {
-			log.debug("Found exisiting instance with id '${instanceId}'.")
-		}
+//		else {
+//			log.debug("Found exisiting instance with id '${instanceId}'.")
+//		}
 		
 		instance
 	}

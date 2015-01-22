@@ -64,7 +64,7 @@ class QueryBaseBuilder {
 		}
 		c()
 		
-		log.info("Adding filter ${f.id} ...")
+		log.trace("Adding filter ${f.id} ...")
 		qb.addFilter(f)
 	}
 	
