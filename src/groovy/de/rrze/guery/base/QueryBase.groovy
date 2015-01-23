@@ -1,5 +1,7 @@
 package de.rrze.guery.base
 
+import java.util.Map;
+
 import de.rrze.guery.converters.Javascript
 import de.rrze.guery.converters.JavascriptCode
 import de.rrze.guery.operator.ClosureOperationManager
@@ -11,7 +13,6 @@ class QueryBase {
 	String id
 	String description
 	IOperationManager operationManager = new ClosureOperationManager()
-	Map<String,Boolean>	readonlyBehaviour = [:]
 	
 	/**
 	 * Function called when a validation error occurs. It takes 5 parameters:
@@ -44,6 +45,8 @@ class QueryBase {
 	protected Map<String,Operator> 	_operators = [:]
 	protected List<String>			_conditions = null
 	protected String				_defaultCondition = null
+	protected Map<String,Boolean>	_readonlyBehaviour = [:]
+	
 	
 	def QueryBase() {}
 	
@@ -63,6 +66,10 @@ class QueryBase {
 		_sortable
 	}
 	
+	Map<String,Boolean> getReadonlyBehaviour() {
+		_readonlyBehaviour
+	}
+	
 	List<String> getConditions() {
 		_conditions
 	}
@@ -70,6 +77,8 @@ class QueryBase {
 	String getDefaultCondition() {
 		_defaultCondition
 	}
+	
+	
 	
 	QueryBase addOperator(Operator o) {
 		// add language label for operator

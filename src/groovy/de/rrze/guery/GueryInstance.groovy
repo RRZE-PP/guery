@@ -1,5 +1,7 @@
 package de.rrze.guery
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import grails.converters.JSON
 import de.rrze.guery.base.QueryBase
 import de.rrze.guery.base.QueryBaseBuilder
@@ -12,8 +14,10 @@ class GueryInstance {
 	String description
 
 	QueryBase qb
-	Map<String,Policy> policies = [:] 
 	
+	Map<String,Policy> policyMap = [:] 
+	ReentrantReadWriteLock rwl = new ReentrantReadWriteLock(true)
+		
 	GueryInstance parent
 	
 	def GueryInstance(String instanceId) {
@@ -22,14 +26,18 @@ class GueryInstance {
 	
 	def GueryInstance(String instanceId, GueryInstance parentGi) {
 		this(instanceId)
-		addParent(parentGi)
+		if (parentGi) setParent(parentGi)
 	}
 	
+	@Deprecated
 	def addParent(GueryInstance parentGi) {
+		setParent(parentGi)
+	}
+	
+	def setParent(GueryInstance parentGi) {
 		parent = parentGi
 	}
-	
-	
+
 	/*
 	 * QUERY BASE
 	 */
@@ -73,6 +81,13 @@ class GueryInstance {
 		(qb != null)
 	}
 	
+	Boolean hasFilters() {
+		getQueryBase()?.getFilters() as Boolean
+	}
+	
+	Boolean hasOperators() {
+		getQueryBase()?.getOperators() as Boolean
+	}
 	
 	def reset() {
 		resetQueryBase()
@@ -84,7 +99,13 @@ class GueryInstance {
 	}
 	
 	def resetPolicies() {
-		policies = [:]
+		rwl.writeLock().lock()
+		try {
+			policyMap = [:]
+		}
+		finally {
+			rwl.writeLock().unlock()
+		}
 	}
 	
 	/*
@@ -109,7 +130,7 @@ class GueryInstance {
 	Object evaluate(Map req) {
 		def immutableRequest = req.asImmutable()
 		def results = []
-		policies.values().each { policy ->
+		getPolicies().each { policy ->
 			def result =  policy.evaluate(immutableRequest) // result = [descision:xxx, status:xxx, obligations:xxx]
 			result.put('id', policy.id)
 			results << result
@@ -164,14 +185,21 @@ class GueryInstance {
 	
 	GueryInstance addPolicy(Policy p) {
 		if (!p.id) throw new RuntimeException("Cannot add policy without id!")
-		if (policies.containsKey(p.id)) throw new RuntimeException("Policy with id '${p.id}' already exists! Use putPolicy() method to add a new or update an existing policy id.")
-		policies.put(p.id, p)
+		if (getPolicy(p.id)) throw new RuntimeException("Policy with id '${p.id}' already exists! Use putPolicy() method to add a new or update an existing policy id.")
+		putPolicy(p)
 		this
 	}
 	
 	GueryInstance putPolicy(Policy p) {
 		if (!p.id) throw new RuntimeException("Cannot add policy without id!")
-		policies.put(p.id, p)
+		rwl.writeLock().lock()
+		try {
+			policyMap.put(p.id, p)
+		}
+		finally {
+			rwl.writeLock().unlock()
+		}
+
 		this
 	}
 
@@ -181,7 +209,14 @@ class GueryInstance {
 		// ignore gracefully
 		//if (!policies.containsKey(policyId)) throw new RuntimeException("No policy with id '${policyId}' exists!")
 		
-		policies.remove(policyId)
+		rwl.writeLock().lock()
+		try {
+			policyMap.remove(policyId)
+		}
+		finally {
+			rwl.writeLock().unlock()
+		}
+
 		this
 	}
 	
@@ -191,8 +226,26 @@ class GueryInstance {
 	}
 	
 	Policy getPolicy(String id) {
-		policies.get(id)
+		rwl.readLock().lock()
+		try {
+			return policyMap.get(id)
+		}
+		finally {
+			rwl.readLock().unlock()
+		}
 	}
 	
+	List<Policy> getPolicies() {
+		def p = []
+		rwl.readLock().lock()
+		try {
+			p.addAll(this.policyMap.values())
+		}
+		finally {
+			rwl.readLock().unlock()
+		}
+		
+		p
+	}
 	
 }

@@ -52,6 +52,14 @@ class RuleSet implements IEvaluateable {
 		this
 	}
 	
+	IEvaluateable find(Closure c) {
+		evals.find(c)
+	}
+	
+	List<IEvaluateable> findAll(Closure c) {
+		evals.findAll(c)
+	}
+
 	Map toRuleMap() {
 		if (!this.condition) return [:]
 		

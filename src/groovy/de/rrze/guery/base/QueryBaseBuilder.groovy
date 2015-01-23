@@ -87,7 +87,7 @@ class QueryBaseBuilder {
 	}
 			
 	def readonlyBehaviour(Map<String,Boolean> value) {
-		qb.readonlyBehaviour = value
+		qb._readonlyBehaviour = value
 	}
 	
 	def operationManager(IOperationManager opm) {

@@ -43,6 +43,10 @@ class DelegatingQueryBase extends QueryBase {
 		getMergedFieldValue('_sortable')
 	}
 	
+	Map<String,Boolean> getReadonlyBehaviour() {
+		getMergedFieldValue('_readonlyBehaviour')
+	}
+	
 	List<String> getConditions() {
 		getMergedFieldValue('_conditions')
 	}
@@ -50,6 +54,8 @@ class DelegatingQueryBase extends QueryBase {
 	String getDefaultCondition() {
 		getMergedFieldValue('_defaultCondition')
 	}
+	
+	
 	
 	def getMergedFieldValue(String fieldName) {
 		def retValue
