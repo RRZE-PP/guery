@@ -30,7 +30,7 @@ class Operator {
 			result = qb.operationManager.apply(type,req,res)
 		}
 		
-		log.info("Operator ${type} ===> ${result}")
+		log.trace("Operator ${type} ===> ${result}")
 		return result
 	}
 	
