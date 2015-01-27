@@ -83,7 +83,8 @@ class QueryBase {
 	QueryBase addOperator(Operator o) {
 		// add language label for operator
 		if (o.label) {
-			this.lang.put("operator_${o.type}".toString(), o.label)
+//			log.warn("operator_${o.type} --> ${o.label}")
+			this._lang.put("operator_${o.type}".toString(), o.label)
 		}
 		
 		// add operator
@@ -141,6 +142,20 @@ class QueryBase {
 		this.filters.values().each {
 			flatFilters << it.flatten()
 		}
+//		def flatFiltersByLabel = flatFilters.groupBy { it.label }
+//		def collapsedFlatFilters = flatFiltersByLabel.collect { k, v ->
+//			def cf = v.first()
+//			if (v.size() > 1) {
+//				v.each { ff ->
+//					cf.operators.addAll(ff.operators)	
+//				}
+//				cf.operators = cf.operators.unique()
+//				
+//			}
+//			return cf	
+//		}
+		
+		
 		ret.put('filters', flatFilters)
 		
 		
@@ -156,7 +171,6 @@ class QueryBase {
 		
 	public Javascript toJs() {
 		def flatConfig = this.flatten()
-//		JSON.registerObjectMarshaller(new LinkedHashMapMarshaller(),0)
 		def js = new Javascript(flatConfig)
 		js
 	}
