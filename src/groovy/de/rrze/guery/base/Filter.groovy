@@ -1,7 +1,5 @@
 package de.rrze.guery.base
 
-import org.springframework.aop.aspectj.RuntimeTestWalker.ThisInstanceOfResidueTestVisitor;
-
 import de.rrze.guery.converters.JavascriptCode
 import de.rrze.guery.operator.Operator
 
