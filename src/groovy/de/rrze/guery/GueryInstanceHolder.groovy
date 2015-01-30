@@ -100,7 +100,7 @@ class GueryInstanceHolder {
 	static void reset() {
 		rwl.writeLock().lock()
 		try {
-			log.debug("Clearing registry ...")
+			log.debug("Removing all guery instances from registry ...")
 			registry.clear()
 		}
 		finally {

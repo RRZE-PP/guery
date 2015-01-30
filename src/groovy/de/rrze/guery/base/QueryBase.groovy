@@ -181,6 +181,8 @@ class QueryBase {
 	
 	private Map putIfNotEmpty(Map map, String fieldName) {
 		def value = this."${fieldName}"
+//		if (fieldName in ['sortable']) log.warn("${this.id}(${this.class.name})/${fieldName} --> ${value}")
+		
 		if (value) {
 			if (fieldName == 'defaultCondition') map.put('default_condition', value)
 			if (fieldName == 'readonlyBehaviour') map.put('readonly_behavior', value)

@@ -28,50 +28,50 @@ class DelegatingQueryBase extends QueryBase {
 	
 	
 	Map<String,Operator> getOperators() {
-		getMergedFieldValue('_operators')
+		getMergedFieldValue('operators')
 	}
 	
 	Map<String,Filter> getFilters() {
-		getMergedFieldValue('_filters')
+		getMergedFieldValue('filters')
 	}
 	
 	Map<String,String> getLang() {
-		getMergedFieldValue('_lang')
+		getMergedFieldValue('lang')
 	}
 	
 	Boolean getSortable() {
-		getMergedFieldValue('_sortable')
+		getMergedFieldValue('sortable')
 	}
 	
 	Map<String,Boolean> getReadonlyBehaviour() {
-		getMergedFieldValue('_readonlyBehaviour')
+		getMergedFieldValue('readonlyBehaviour')
 	}
 	
 	List<String> getConditions() {
-		getMergedFieldValue('_conditions')
+		getMergedFieldValue('conditions')
 	}
 	
 	String getDefaultCondition() {
-		getMergedFieldValue('_defaultCondition')
+		getMergedFieldValue('defaultCondition')
 	}
 	
 	
 	
 	def getMergedFieldValue(String fieldName) {
 		def retValue
-		def tmpValue = this."${fieldName}"
-//		log.warn("${fieldName} --> ${tmpValue}")
+		def localValue = this."_${fieldName}"
+//		if (fieldName in ['_sortable']) log.warn("${fieldName} --> ${tmpValue}")
 		
 		if (parent) {
-			if (tmpValue == null) { // if there is a parent and the stored value is empty
-				retValue = parent."${fieldName}"
+			if (localValue == null) { // if there is a parent and the stored value is empty
+				retValue = parent."${fieldName}" // delegate to parent
 			}
 			else { // if there is a parent and the stored value is NOT empty
 				
 				// MAGIC MERGE FILTERS BY LABEL // TODO maybe needs some more checks
-				if (fieldName == '_filters') {
+				if (fieldName == 'filters') {
 					def parentValue = parent."${fieldName}"
-					def filterSet = parentValue.values() + tmpValue.values()
+					def filterSet = parentValue.values() + localValue.values()
 					def flatFiltersByLabel = filterSet.groupBy { it.label }
 					def collapsedFlatFilters = flatFiltersByLabel.collect { k, v ->
 						def cf = v.first()
@@ -89,20 +89,20 @@ class DelegatingQueryBase extends QueryBase {
 				
 				// GENERIC MERGE
 				if (!retValue) {
-					if (tmpValue in Map) { // merge with parent map
+					if (localValue in Map) { // merge with parent map
 						retValue = [:]
 						def parentValue = parent."${fieldName}"
 						if (parentValue) retValue.putAll(parentValue)
-						retValue.putAll(tmpValue) // current overrides parent
+						retValue.putAll(localValue) // current overrides parent
 					}
-					else if (tmpValue in Collection) { // merge with parent collection
+					else if (localValue in Collection) { // merge with parent collection
 						retValue = []
 						def parentValue = parent."${fieldName}"
 						if (parentValue) retValue.addAll(parentValue)
-						retValue.addAll(tmpValue) // current overrides parent
+						retValue.addAll(localValue) // current overrides parent
 					}
 					else { // current overrides parent
-						retValue = tmpValue
+						retValue = localValue
 					}
 				}
 				
@@ -110,7 +110,7 @@ class DelegatingQueryBase extends QueryBase {
 			}
 		}
 		else {
-			retValue = tmpValue // no parent
+			retValue = localValue // no parent
 		}
 		
 		retValue
