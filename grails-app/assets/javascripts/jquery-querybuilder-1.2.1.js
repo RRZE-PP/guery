@@ -1,0 +1,1 @@
+//= require jQuery-QueryBuilder/1.2.1/query-builder.min
