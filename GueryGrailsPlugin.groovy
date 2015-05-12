@@ -1,6 +1,6 @@
 class GueryGrailsPlugin {
     // the plugin version
-    def version = "0.0.13"
+    def version = "0.1.0"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.2 > *"
     // resources that are excluded from plugin packaging
@@ -31,7 +31,7 @@ Grails plugin for building and evaluating queries/rules using the execellent jQu
     def developers = [ 
 		[ name: "Florian Löffler", email: "florian.loeffler@fau.de" ],
 		[ name: "Frank Tröger", email: "frank.troeger@fau.de" ],
-		[ name: "Sven Marschke", email: "sven.marschke@fau.de" ]
+		[ name: "Sven Marschke", email: "sven.marschke@fau.de" ],
 	]
 
     // Location of the plugin's issue tracker.

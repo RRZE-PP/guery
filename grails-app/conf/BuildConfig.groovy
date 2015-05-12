@@ -1,9 +1,9 @@
-grails.servlet.version = "2.5" // Change depending on target container compliance (2.5 or 3.0)
+grails.servlet.version = "3.0" // Change depending on target container compliance (2.5 or 3.0)
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
-grails.project.target.level = 1.6
-grails.project.source.level = 1.6
+grails.project.target.level = 1.7
+grails.project.source.level = 1.7
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 
 // uncomment (and adjust settings) to fork the JVM to isolate classpaths
@@ -13,6 +13,8 @@ grails.project.source.level = 1.6
 
 
 def live = System.getProperty("live")?System.getProperty("live").split(','):[]
+
+grails.project.dependency.resolver = "maven"
 
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
@@ -31,46 +33,33 @@ grails.project.dependency.resolution = {
         grailsHome()
         grailsCentral()
 
-        mavenLocal()
+//        mavenLocal()
         mavenCentral()
 
-        // uncomment these (or add new ones) to enable remote dependency resolution from public Maven repositories
-        //mavenRepo "http://snapshots.repository.codehaus.org"
-        //mavenRepo "http://repository.codehaus.org"
-        //mavenRepo "http://download.java.net/maven/2/"
-        //mavenRepo "http://repository.jboss.com/maven2/"
+		
+		def ppRepo = grailsSettings.config.grails.project.repos.ppArtifactory
+		mavenRepo(id:ppRepo.id , url:ppRepo.url) {
+			//optional
+			updatePolicy 'always'
+
+			auth([
+				username: ppRepo.username,
+				password: ppRepo.password
+			])
+		}
+		
     }
 
     dependencies {
-        // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes e.g.
-
-        // runtime 'mysql:mysql-connector-java:5.1.22'
     }
 
     plugins {
-//        runtime ":hibernate:$grailsVersion"
-//        runtime ":jquery:1.8.3"
-//        runtime ":resources:1.2"
-//
-//        // Uncomment these (or add new ones) to enable additional resources capabilities
-//        //runtime ":zipped-resources:1.0"
-//        //runtime ":cached-resources:1.0"
-//        //runtime ":yui-minify-resources:0.1.5"
-//
-//        build ":tomcat:$grailsVersion"
-//
-//        //runtime ":database-migration:1.3.2"
-//
-//        compile ':cache:1.0.1'
-		
-		
 		if (live.find { it == 'guery' }) {
 			println "[GUERY] Running in live-mode!"
 		}
 		else {
-			build(	":tomcat:$grailsVersion",
-					":release:2.2.1",
-					":rest-client-builder:1.0.2"
+			build(	":tomcat:7.0.55.2",
+					":release:3.1.1",
 			) {
 			  export = false
 		    }
@@ -81,7 +70,7 @@ grails.project.dependency.resolution = {
 			}
 			
 			runtime (
-				":resources:1.2",
+				":resources:1.2.8",
 				":jquery:1.11.1"
 			) {
 				export = false
