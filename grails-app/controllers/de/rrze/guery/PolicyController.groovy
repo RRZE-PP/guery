@@ -83,6 +83,12 @@ class PolicyController {
 			}
 		}
 		
+		def jsConfig = gueryInstance.baseToJsString(true)
+		log.info("JS config: ${jsConfig}")
+		
+		
+		log.info("${gueryInstance.getFilters()}")
+		
 		redirect(action:'index')
 	}
 	

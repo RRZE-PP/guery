@@ -72,7 +72,7 @@ class DelegatingQueryBase extends QueryBase {
 				if (fieldName == 'filters') {
 					def parentValue = parent."${fieldName}"
 					def filterSet = parentValue.values() + localValue.values()
-					def flatFiltersByLabel = filterSet.groupBy { it.label }
+					def flatFiltersByLabel = filterSet.groupBy { it.label?:it.id } // use id, if no label is specified
 					def collapsedFlatFilters = flatFiltersByLabel.collect { k, v ->
 						def cf = v.first()
 						if (v.size() > 1) {

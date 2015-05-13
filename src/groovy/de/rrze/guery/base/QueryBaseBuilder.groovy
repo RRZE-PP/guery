@@ -29,6 +29,7 @@ class QueryBaseBuilder {
 	
 	def filter(Map m, Closure c) {
 		def f = new Filter(m)
+		log.trace(m)
 		c.resolveStrategy = Closure.TO_SELF
 		c.metaClass.methodMissing = { name, arguments ->
 //			log.warn(name)

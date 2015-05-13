@@ -1,12 +1,14 @@
 package de.rrze.guery
 
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import grails.converters.JSON
+
+import java.util.concurrent.locks.ReentrantReadWriteLock
+
 import de.rrze.guery.base.QueryBase
 import de.rrze.guery.base.QueryBaseBuilder
 import de.rrze.guery.converters.JavascriptCode
 import de.rrze.guery.policy.Policy
+import de.rrze.guery.base.Filter
 
 class GueryInstance {
 
@@ -83,6 +85,10 @@ class GueryInstance {
 	
 	Boolean hasFilters() {
 		getQueryBase()?.getFilters() as Boolean
+	}
+	
+	Map<String,Filter> getFilters() {
+		getQueryBase()?.getFilters()
 	}
 	
 	Boolean hasOperators() {

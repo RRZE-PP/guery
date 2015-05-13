@@ -5,17 +5,14 @@ import de.rrze.guery.base.QueryBase
 
 class Operator {
 
-	QueryBase 	qb
-	Filter		filter
+	QueryBase 			qb
+	Filter				filter
 	
 	String				type
 	Boolean				accept_values
 	Collection<String>	apply_to
 	
 	String 				label
-	
-	
-	
 	
 	def Operator() {}
 	
@@ -39,8 +36,15 @@ class Operator {
 		def ret = [:]
 		
 		putIfNonNull(ret,"type")
-		putIfNonNull(ret,"accept_values")
 		putIfNonNull(ret,"apply_to")
+		
+		// FIXME Hack to support v2.1.0
+//		putIfNonNull(ret,"accept_values")
+		if (accept_values) ret.nb_inputs = 1
+		else ret.nb_inputs = 0
+		
+		ret.multiple = false
+
 		
 		
 		ret

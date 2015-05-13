@@ -89,6 +89,7 @@ log4j = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 		   
+	trace  'de.rrze.guery'
 		   
 	root { info 'stdout'}
 	   

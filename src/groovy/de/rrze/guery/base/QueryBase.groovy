@@ -176,7 +176,12 @@ class QueryBase {
 	}
 	
 	public String toJsString(Boolean prettyPrint) {
-		toJs().toString(prettyPrint)
+		if (prettyPrint) {
+			toJs().toString(prettyPrint)
+		}
+		else  {
+			toJs().toString()
+		}
 	}
 	
 	private Map putIfNotEmpty(Map map, String fieldName) {
