@@ -79,14 +79,8 @@ class GueryTagLib {
 
 	}
 	
-	
+	@Deprecated
 	def builderFormRemote = { attrs, body ->
-		
-//		if(pluginManager.allPlugins.find { it.name == "resources" }) {
-//			r.require(modules:"jq_queryBuilder")
-//		}
-		
-		
 		def gueryAttrs = [:]
 		gueryAttrs.putAll(attrs)
 		

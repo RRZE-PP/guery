@@ -6,8 +6,8 @@
 		
 		<asset:javascript src="jquery.js"/>
 		
-		<asset:javascript src="guery.js"/>
-		<asset:stylesheet src="guery.css"/>
+		<asset:javascript src="jquery-querybuilder-1.2.1.js"/>
+		<asset:stylesheet src="jquery-querybuilder-1.2.1.css"/>
 		
 	</head>
 	<body>
@@ -20,7 +20,7 @@
 		</style>
 	
 	
-		<guery:builder id="test" instance="${gueryInstance}" />
+		<guery:builder instance="${gueryInstance}" />
 	
 	
 	</body>

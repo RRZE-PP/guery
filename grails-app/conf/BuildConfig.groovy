@@ -64,13 +64,14 @@ grails.project.dependency.resolution = {
 			  export = false
 		    }
 			
-			runtime (":jquery-ui:1.10.3") {
+			compile (":jquery-ui:1.10.4") {
 				excludes "jquery"
 				export = false
 			}
 			
-			runtime (
-				":resources:1.2.8",
+			compile (
+				":resources:1.2.14",
+				":asset-pipeline:2.1.5",
 				":jquery:1.11.1"
 			) {
 				export = false
