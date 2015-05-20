@@ -1148,7 +1148,7 @@ div#builder .pull-left {
   src: url('bootstrap-3.2.0/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('bootstrap-3.2.0/fonts/glyphicons-halflings-regular.woff') format('woff'), url('bootstrap-3.2.0/fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('bootstrap-3.2.0/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
 */
 
-  src: url('../../bootstrap/fonts/glyphicons-halflings-regular.eot') format('embedded-opentype'), url('../../bootstrap/fonts/glyphicons-halflings-regular.woff') format('woff'), url('../../bootstrap/fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../../bootstrap/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+  src: url('fonts/glyphicons-halflings-regular.eot') format('embedded-opentype'), url('fonts/glyphicons-halflings-regular.woff') format('woff'), url('fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
 
 }
 

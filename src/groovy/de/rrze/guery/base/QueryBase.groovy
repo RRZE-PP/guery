@@ -40,7 +40,7 @@ class QueryBase {
 	
 	
 	protected Boolean 				_sortable
-	protected Map<String,String>	_lang = [:]
+	protected Map<String,String>	_lang = [operators:[:], conditions:[:], errors:[:]]
 	protected Map<String,Filter> 	_filters = [:]
 	protected Map<String,Operator> 	_operators = [:]
 	protected List<String>			_conditions = null
@@ -81,15 +81,18 @@ class QueryBase {
 	
 	
 	QueryBase addOperator(Operator o) {
-		// add language label for operator
-		if (o.label) {
-//			log.warn("operator_${o.type} --> ${o.label}")
-			this._lang.put("operator_${o.type}".toString(), o.label)
+		if(!this._operators.containsKey(o.type)) {
+			
+			// add operator
+			this._operators.put(o.type, o)
+			
+			// add language label for operator
+			if (o.label) {
+				this._lang.operators.put("${o.type}".toString(), o.label)
+			}
+			
 		}
-		
-		// add operator
-		if(!this._operators.containsKey(o.type)) this._operators.put(o.type, o)
-			else throw new RuntimeException("An operator of type ${o.type} already exists and cannot be re-added!")
+		else throw new RuntimeException("An operator of type ${o.type} already exists and cannot be re-added!")
 		
 		this
 	}

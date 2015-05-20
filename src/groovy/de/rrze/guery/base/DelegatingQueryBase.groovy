@@ -86,7 +86,15 @@ class DelegatingQueryBase extends QueryBase {
 					}
 					retValue = collapsedFlatFilters.collectEntries { [it.id, it] }
 				}
-				
+
+				// MERGE LANG
+				if (fieldName == 'lang') {
+					retValue = parent.lang
+					retValue.operators.putAll(localValue.operators)
+					retValue.errors.putAll(localValue.errors)
+					retValue.conditions.putAll(localValue.conditions)
+				}
+								
 				// GENERIC MERGE
 				if (!retValue) {
 					if (localValue in Map) { // merge with parent map
