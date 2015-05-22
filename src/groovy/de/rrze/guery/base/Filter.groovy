@@ -14,6 +14,7 @@ class Filter {
 	String 					id //required
 	String 					field
 	String 					label
+	String					description
 	String 					type = 'string' // required
 	String 					input
 	Boolean 				multiple
@@ -26,6 +27,7 @@ class Filter {
     JavascriptCode          onAfterCreateRuleInput
     JavascriptCode          onAfterSetValue
 
+	
 	def Filter() {}
 	
 	def add(Operator o) {
@@ -52,6 +54,7 @@ class Filter {
 		putIfNotEmpty(ret,"id")
 		putIfNotEmpty(ret,"field")
 		putIfNotEmpty(ret,"label")
+		putIfNotEmpty(ret,"description")
 		putIfNotEmpty(ret,"type")
 		putIfNotEmpty(ret,"input")
 		putIfNotEmpty(ret,"multiple")
@@ -69,7 +72,6 @@ class Filter {
 			}
 			else {
 				// unordered
-				//putIfNotEmpty(ret,"values")
 				ret['values'] = values
 			}
 		}

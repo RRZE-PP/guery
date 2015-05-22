@@ -47,6 +47,10 @@ class DelegatingQueryBase extends QueryBase {
 		getMergedFieldValue('readonlyBehaviour')
 	}
 	
+	Set<String> getPlugins() {
+		getMergedFieldValue('plugins')
+	}
+	
 	List<String> getConditions() {
 		getMergedFieldValue('conditions')
 	}
@@ -107,7 +111,7 @@ class DelegatingQueryBase extends QueryBase {
 						retValue = []
 						def parentValue = parent."${fieldName}"
 						if (parentValue) retValue.addAll(parentValue)
-						retValue.addAll(localValue) // current overrides parent
+						retValue.addAll(localValue)
 					}
 					else { // current overrides parent
 						retValue = localValue

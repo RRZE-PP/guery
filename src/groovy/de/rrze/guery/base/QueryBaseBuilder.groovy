@@ -32,16 +32,11 @@ class QueryBaseBuilder {
 		log.trace(m)
 		c.resolveStrategy = Closure.TO_SELF
 		c.metaClass.methodMissing = { name, arguments ->
-//			log.warn(name)
-//			log.warn(arguments)
-//			def ucFirstName = name[0].toUpperCase() + name[1..-1]
-			
 			def opSettings = [
-				//type			: f.id + ucFirstName,
 				type			: f.id + '_' + name,
 				label			: name,
 					
-				accept_values	: true, // FIXME not always true
+				accept_values	: true,
 				apply_to		: [f.type],
 			] 
 			
@@ -75,7 +70,20 @@ class QueryBaseBuilder {
 	}
 	
 	def sortable(Boolean value) {
-		qb._sortable = value
+		if (value) plugin('sortable')
+	}
+	
+	def filterDescription(Boolean value) {
+		if (value)  plugin('filter-description')
+	}
+	
+	def plugins(List<String> value) {
+		qb._plugins = value as Set
+	}
+	
+	def plugin(String value) {
+		if (!qb._plugins) qb._plugins = [] as Set
+		qb._plugins.add(value)
 	}
 	
 	def conditions(List<String> value) {
@@ -125,25 +133,9 @@ class QueryBaseBuilder {
 		qb.onAfterAddRule = new JavascriptCode(value)
 	}
 
-
-//	def methodMissing(String name, arguments) {
-//		
-////		if (name in ['sortable']) {
-////			// QueryBase options
-////			qb."${name}" = arguments[0]
-////		}
-//		
-//		
-////		if (name in ['to', 'from']) {
-////			def airport = arguments[0].split(',')
-////			def airPortname = airport[0].trim()
-////			def city = airport[1].trim()
-////			reservation.flight."$name" = new Airport(name: airPortname, city: city)
-////		}
-//	}
-
 	def propertyMissing(String name, Object value) {
 		if (name == 'sortable') sortable(value)
+		else if (name == 'plugins') plugins(value)
 		else if (name == 'conditions') conditions(value)
 		else if (name == 'defaultCondition') defaultCondition(value)
 		else if (name == 'id') id(value)

@@ -42,8 +42,9 @@ class PolicyController {
 		def baseInstance = new GueryInstance('base')
 		baseInstance.buildBase {
 			sortable true
+			filterDescription true
 			
-			filter(id:"policy") {
+			filter(id:"policy", label:"Richtlinie", description:"Starke Richtlinie!") {
 				evaluate { val, obj -> gueryInstance.getPolicy(val).evaluate(obj) }
 			}
 			

@@ -202,6 +202,9 @@ class GueryInstance {
 		try {
 			policyMap.put(p.id, p)
 		}
+		catch(e) {
+			throw e
+		}
 		finally {
 			rwl.writeLock().unlock()
 		}
@@ -218,6 +221,9 @@ class GueryInstance {
 		rwl.writeLock().lock()
 		try {
 			policyMap.remove(policyId)
+		}
+		catch(e) {
+			throw e
 		}
 		finally {
 			rwl.writeLock().unlock()
@@ -236,6 +242,9 @@ class GueryInstance {
 		try {
 			return policyMap.get(id)
 		}
+		catch(e) {
+			throw e
+		}
 		finally {
 			rwl.readLock().unlock()
 		}
@@ -246,6 +255,9 @@ class GueryInstance {
 		rwl.readLock().lock()
 		try {
 			p.addAll(this.policyMap.values())
+		}
+		catch(e) {
+			throw e
 		}
 		finally {
 			rwl.readLock().unlock()

@@ -46,7 +46,7 @@ class QueryBase {
 	protected List<String>			_conditions = null
 	protected String				_defaultCondition = null
 	protected Map<String,Boolean>	_readonlyBehaviour = [:]
-	
+	protected Set<String>			_plugins
 	
 	def QueryBase() {}
 	
@@ -68,6 +68,10 @@ class QueryBase {
 	
 	Map<String,Boolean> getReadonlyBehaviour() {
 		_readonlyBehaviour
+	}
+	
+	Set<String> getPlugins() {
+		_plugins
 	}
 	
 	List<String> getConditions() {
@@ -135,6 +139,7 @@ class QueryBase {
 		putIfNotEmpty(ret,"defaultCondition")
 		putIfNotEmpty(ret,"lang")
 		putIfNotEmpty(ret,"readonlyBehaviour")
+		putIfNotEmpty(ret,"plugins")
 		
 		putIfNotEmpty(ret,"onValidationError")
 		putIfNotEmpty(ret,"onAfterAddGroup")
@@ -145,22 +150,8 @@ class QueryBase {
 		this.filters.values().each {
 			flatFilters << it.flatten()
 		}
-//		def flatFiltersByLabel = flatFilters.groupBy { it.label }
-//		def collapsedFlatFilters = flatFiltersByLabel.collect { k, v ->
-//			def cf = v.first()
-//			if (v.size() > 1) {
-//				v.each { ff ->
-//					cf.operators.addAll(ff.operators)	
-//				}
-//				cf.operators = cf.operators.unique()
-//				
-//			}
-//			return cf	
-//		}
-		
 		
 		ret.put('filters', flatFilters)
-		
 		
 		// handle operators
 		def flatOperators = []
@@ -189,7 +180,6 @@ class QueryBase {
 	
 	private Map putIfNotEmpty(Map map, String fieldName) {
 		def value = this."${fieldName}"
-//		if (fieldName in ['sortable']) log.warn("${this.id}(${this.class.name})/${fieldName} --> ${value}")
 		
 		if (value) {
 			if (fieldName == 'defaultCondition') map.put('default_condition', value)
