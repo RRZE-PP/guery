@@ -19,9 +19,10 @@
 			}
 		</style>
 	
-	
-		<guery:builder id="test" instance="${gueryInstance}" />
-	
+		<g:form action="save">
+			<guery:builder id="test" instance="${gueryInstance}" />
+			<g:submitButton name="Submit" />
+		</g:form>
 	
 	</body>
 </html>

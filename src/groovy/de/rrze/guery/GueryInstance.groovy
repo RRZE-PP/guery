@@ -58,7 +58,7 @@ class GueryInstance {
 		
 		if (!qb.id) qb.id = "${id}_queryBase"
 		if (!qb.description) qb.description = "QueryBase for ${id}"
-		if (!qb.onValidationError) qb.onValidationError = new JavascriptCode("onValidationError_guery_builder_${id}")
+//		if (!qb.onValidationError) qb.onValidationError = new JavascriptCode("onValidationError_guery_builder_${id}")
 		qb
 	}
 	

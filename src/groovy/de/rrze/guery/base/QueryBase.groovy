@@ -24,19 +24,19 @@ class QueryBase {
 	 * <li>operator</li>
 	 * <ul>
 	 */
-	JavascriptCode onValidationError
+//	JavascriptCode onValidationError
 	
 	/**
 	 * Function called just after adding a group. It takes 1 parameter:
 	 * $group is the jQuery &lt;dl&gt; element of the group
 	 */
-	JavascriptCode onAfterAddGroup
+//	JavascriptCode onAfterAddGroup
 	
 	/**
 	 * Function called just after adding a rule. It takes 1 parameter:
 	 * $rule is the jQuery &lt;li&gt; element of the rule
 	 */
-	JavascriptCode onAfterAddRule
+//	JavascriptCode onAfterAddRule
 	
 	
 	protected Boolean 				_sortable
@@ -141,9 +141,9 @@ class QueryBase {
 		putIfNotEmpty(ret,"readonlyBehaviour")
 		putIfNotEmpty(ret,"plugins")
 		
-		putIfNotEmpty(ret,"onValidationError")
-		putIfNotEmpty(ret,"onAfterAddGroup")
-		putIfNotEmpty(ret,"onAfterAddRule")
+//		putIfNotEmpty(ret,"onValidationError")
+//		putIfNotEmpty(ret,"onAfterAddGroup")
+//		putIfNotEmpty(ret,"onAfterAddRule")
 		
 		// handle filters
 		def flatFilters = []

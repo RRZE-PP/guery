@@ -37,10 +37,6 @@ class GueryTagLib {
 		out << """
 	<script>
 		var ${gueryAttrs.builderElementId}_validation_success = true;
-		function onValidationError_${gueryAttrs.builderElementId}(\$rule, error, value, filter, operator) {
-			${gueryAttrs.builderElementId}_validation_success = false;
-			//alert(error);
-		}
 
 		function update_${gueryAttrs.builderElementId}() {
 			${gueryAttrs.builderElementId}_validation_success = true;
@@ -50,8 +46,13 @@ class GueryTagLib {
 		}
 
 		\$(function(){
+			
+			\$('#${gueryAttrs.builderElementId}').on('validationError.queryBuilder', function(e, rule, error, value) {
+				${gueryAttrs.builderElementId}_validation_success = false;
+			});
+
 			var form = \$('#${gueryAttrs.builderElementId}').closest('form');
-			form.attr('onsubmit', 'update_${gueryAttrs.builderElementId}(); if (${gueryAttrs.builderElementId}_validation_success) {' + form.attr('onsubmit') + ';} return false;')
+			form.attr('onsubmit', 'update_${gueryAttrs.builderElementId}(); if (${gueryAttrs.builderElementId}_validation_success) {' + form.attr('onsubmit') + ';} else return false;')
 		});
 	</script>
 """

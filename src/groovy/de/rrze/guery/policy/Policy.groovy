@@ -50,6 +50,13 @@ class Policy {
 		this.rs.isEmpty()
 	}
 	
+	
+	
+//	Map toMongoFilter() {
+//			
+//	}
+	
+	
 	/**
 	 * Checks, if the ruleset contained in this policy is satisfied
 	 * 
