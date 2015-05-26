@@ -95,8 +95,8 @@ class PolicyController {
 	
 	
 	
-	def save(String queryBuilderResult) {
-		gueryInstance.makePolicyFromJson('test', queryBuilderResult)
+	def save(String guery_builder_extended_result) {
+		def policy = gueryInstance.parsePolicyFromJson(guery_builder_extended_result)
 		
 		
 		
@@ -112,22 +112,25 @@ class PolicyController {
 		
 		def msg = [user:user, entitlements:entitlements]
 		
-//		msg.entitlements.each {
 			
-			def req = [
-//				resource	: it, 
-				environment	: msg,
-//				subject		: null,
-//				action		: null,
-			]
-			
-			gueryInstance.getPolicy('test').evaluate(req) { res ->
-				println "RESULT:" + res
-			}
-			
-			
-//		}
+		def req = [
+			environment	: msg,
+		]
 		
+		// guery
+		policy.id = "test"
+		gueryInstance.putPolicy(policy)
+		gueryInstance.evaluate(req) { res ->
+			println "A RESULT:" + res
+		}
+		
+		// single policy
+		policy.evaluate(req) { res ->
+			println "B RESULT:" + res
+		}
+		
+		
+		redirect(action:"index")
 		
 	}
 	
