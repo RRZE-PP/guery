@@ -24,7 +24,7 @@
 			<g:submitButton name="Submit" />
 			
 			<a href="#" onClick="updateMongoQuery()">MongoDB</a>
-			
+			<g:link action="init">Init</g:link>
 		</g:form>
 	
 		<br/><br/><br/>
@@ -35,6 +35,13 @@
 				console.log(mongoQuery);
 				$('#mongoQuery').html(mongoQuery);
 			}
+			
+			$('#guery_builder_extended').on('getMongoDBFieldID', function(name, value) {
+				console.log(name);
+				console.log(value);
+			});
+			
+			
 		</script>
 		<div id="mongoQuery"></div>
 	

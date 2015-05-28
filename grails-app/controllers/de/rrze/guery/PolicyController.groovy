@@ -43,13 +43,14 @@ class PolicyController {
 		baseInstance.buildBase {
 			sortable true
 			filterDescription true
+//			conditions = ['elementMatch']
 			
 			filter(id:"policy", label:"Richtlinie", description:"Starke Richtlinie!") {
 				evaluate { val, req -> gueryInstance.getPolicy(val).evaluate(req) }
 			}
 			
-			filter(id:"user") {
-				uidEqual { val, req -> val == req.environment.user?.uid }
+			filter(id:"user.uid") {
+				equal { val, req -> val == req.environment.user?.uid }
 			}
 			
 			
@@ -79,7 +80,7 @@ class PolicyController {
 			
 				
 			filter(id:"groupMembership", input:'select', values:idmGroupMap) {
-				equal(mongo:"function(v){return v[0];}") { val, req ->	req.environment.user?.groupMembership.contains(val) }
+				equal(mongo:"v[0]") { val, req ->	req.environment.user?.groupMembership.contains(val) }
 				exist(accept_values:false) { req -> req.environment.user?.groupMembership as Boolean }
 			}
 		}

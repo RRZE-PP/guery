@@ -22,10 +22,12 @@ class Operator {
 	
 	
 	def setMongo(String code) {
-		this.mongo = new JavascriptCode(code)
+		if (code.startsWith("function")) this.mongo = new JavascriptCode(code)
+		else this.mongo = new JavascriptCode("function(v){ return ${code}; }")
 	}
 	def setMongo(JavascriptCode code) {
-		this.mongo = code
+		if (code.toString().startsWith("function")) this.mongo = code
+		else this.mongo = new JavascriptCode("function(v){ return ${code.toString()}; }")
 	}
 
 	Object apply(Object val, Map req, Map res) {
