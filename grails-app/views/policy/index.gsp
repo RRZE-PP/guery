@@ -22,7 +22,21 @@
 		<g:form action="save">
 			<guery:builder id="test" instance="${gueryInstance}" />
 			<g:submitButton name="Submit" />
+			
+			<a href="#" onClick="updateMongoQuery()">MongoDB</a>
+			
 		</g:form>
+	
+		<br/><br/><br/>
+		
+		<script>
+			function updateMongoQuery() {
+				var mongoQuery = JSON.stringify($('#guery_builder_extended').queryBuilder('getMongo'));
+				console.log(mongoQuery);
+				$('#mongoQuery').html(mongoQuery);
+			}
+		</script>
+		<div id="mongoQuery"></div>
 	
 	</body>
 </html>

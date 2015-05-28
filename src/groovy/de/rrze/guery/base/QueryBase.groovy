@@ -160,6 +160,13 @@ class QueryBase {
 		}
 		if (flatOperators) ret.put('operators', flatOperators)
 		
+		// handle mongoOperators
+		def flatMongoOperators = [:]
+		this.operators.each { k, v ->
+			flatMongoOperators.put(k, v.mongo)
+		}
+		if (flatMongoOperators) ret.put('mongoOperators', flatMongoOperators)
+		
 		ret
 	}
 		

@@ -112,26 +112,26 @@ class QueryBaseBuilder {
 	}
 	
 	
-	def onValidationError(JavascriptCode value) {
-		qb.onValidationError = value
-	}
-	def onValidationError(String value) {
-		qb.onValidationError = new JavascriptCode(value)
-	}
-
-	def onAfterAddGroup(JavascriptCode value) {
-		qb.onAfterAddGroup = value
-	}
-	def onAfterAddGroup(String value) {
-		qb.onAfterAddGroup = new JavascriptCode(value)
-	}
-
-	def onAfterAddRule(JavascriptCode value) {
-		qb.onAfterAddRule = value
-	}
-	def onAfterAddRule(String value) {
-		qb.onAfterAddRule = new JavascriptCode(value)
-	}
+//	def onValidationError(JavascriptCode value) {
+//		qb.onValidationError = value
+//	}
+//	def onValidationError(String value) {
+//		qb.onValidationError = new JavascriptCode(value)
+//	}
+//
+//	def onAfterAddGroup(JavascriptCode value) {
+//		qb.onAfterAddGroup = value
+//	}
+//	def onAfterAddGroup(String value) {
+//		qb.onAfterAddGroup = new JavascriptCode(value)
+//	}
+//
+//	def onAfterAddRule(JavascriptCode value) {
+//		qb.onAfterAddRule = value
+//	}
+//	def onAfterAddRule(String value) {
+//		qb.onAfterAddRule = new JavascriptCode(value)
+//	}
 
 	def propertyMissing(String name, Object value) {
 		if (name == 'sortable') sortable(value)
@@ -142,9 +142,9 @@ class QueryBaseBuilder {
 		else if (name == 'description') description(value)
 		else if (name == 'lang') lang(value)
 		else if (name == 'readonlyBehaviour') readonlyBehaviour(value)
-		else if (name == 'onValidationError') onValidationError(value)
-		else if (name == 'onAfterAddGroup') onAfterAddGroup(value)
-		else if (name == 'onAfterAddRule') onAfterAddRule(value)
+//		else if (name == 'onValidationError') onValidationError(value)
+//		else if (name == 'onAfterAddGroup') onAfterAddGroup(value)
+//		else if (name == 'onAfterAddRule') onAfterAddRule(value)
 		else throw new MissingPropertyException(name, this.class)
 	}
 	

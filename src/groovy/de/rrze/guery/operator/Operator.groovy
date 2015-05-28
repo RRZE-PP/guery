@@ -2,6 +2,7 @@ package de.rrze.guery.operator
 
 import de.rrze.guery.base.Filter
 import de.rrze.guery.base.QueryBase
+import de.rrze.guery.converters.JavascriptCode
 
 class Operator {
 
@@ -14,9 +15,19 @@ class Operator {
 	
 	String 				label
 	
+	// console.log(JSON.stringify($('#guery_builder_extended').queryBuilder('getMongo')));
+	JavascriptCode		mongo = new JavascriptCode('function(v){ return {"$exists":true}; }')
+	
 	def Operator() {}
 	
 	
+	def setMongo(String code) {
+		this.mongo = new JavascriptCode(code)
+	}
+	def setMongo(JavascriptCode code) {
+		this.mongo = code
+	}
+
 	Object apply(Object val, Map req, Map res) {
 		def result
 		
@@ -45,11 +56,9 @@ class Operator {
 		
 		ret.multiple = false
 
-		
-		
 		ret
 	}
-	
+
 	
 	private Map putIfNonNull(Map map, String fieldName) {
 		def value = this."${fieldName}"

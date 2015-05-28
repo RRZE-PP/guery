@@ -45,7 +45,7 @@ class PolicyController {
 			filterDescription true
 			
 			filter(id:"policy", label:"Richtlinie", description:"Starke Richtlinie!") {
-				evaluate { val, obj -> gueryInstance.getPolicy(val).evaluate(obj) }
+				evaluate { val, req -> gueryInstance.getPolicy(val).evaluate(req) }
 			}
 			
 			filter(id:"user") {
@@ -79,12 +79,13 @@ class PolicyController {
 			
 				
 			filter(id:"groupMembership", input:'select', values:idmGroupMap) {
-				equal { val, req ->	req.environment.user?.groupMembership.contains(val) }
+				equal(mongo:"function(v){return v[0];}") { val, req ->	req.environment.user?.groupMembership.contains(val) }
 				exist(accept_values:false) { req -> req.environment.user?.groupMembership as Boolean }
 			}
 		}
 		
-		def jsConfig = gueryInstance.baseToJsString(true)
+//		def jsConfig = gueryInstance.baseToJsString(true) // pretty print does not work with mongoOperators
+		def jsConfig = gueryInstance.baseToJsString(false)
 		log.info("JS config: ${jsConfig}")
 		
 		

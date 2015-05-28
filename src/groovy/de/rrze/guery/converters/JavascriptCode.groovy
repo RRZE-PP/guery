@@ -13,6 +13,10 @@ class JavascriptCode implements JSONElement, CharSequence {
 	String toString() {
 		codeString
 	}
+	
+//	String toString(int indentFactor) {
+//		codeString
+//	}
 
 	@Override
 	public int length() {
