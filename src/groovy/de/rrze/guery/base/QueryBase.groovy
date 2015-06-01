@@ -46,7 +46,7 @@ class QueryBase {
 	protected List<String>			_conditions = null
 	protected String				_defaultCondition = null
 	protected Set<String>			_plugins
-	protected Set<String>			_allowEmpty
+	protected Boolean				_allowEmpty
 	
 	def QueryBase() {}
 	
