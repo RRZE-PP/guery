@@ -36,10 +36,10 @@
 				$('#mongoQuery').html(mongoQuery);
 			}
 			
-			$('#guery_builder_extended').on('getMongoDBFieldID', function(name, value) {
-				console.log(name);
-				console.log(value);
-			});
+			//$('#guery_builder_extended').on('getMongoDBFieldID', function(name, value) {
+			//	console.log(name);
+			//	console.log(value);
+			//});
 			
 			
 		</script>

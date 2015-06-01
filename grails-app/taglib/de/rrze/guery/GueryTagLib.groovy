@@ -22,7 +22,7 @@ class GueryTagLib {
 			gueryAttrs.builderElementId = attrs.id //attrs.builderElementId?:"${gueryAttrs.id?:gueryAttrs.name}_queryBuilder"
 		}
 
-		if (attrs.policy) {
+		if (attrs.policy != null) {
 			gueryAttrs.builderRules = attrs.policy.toJSON()
 		}
 		else {
@@ -69,7 +69,7 @@ class GueryTagLib {
 	<script>
 		\$('#${gueryAttrs.builderElementId}').queryBuilder(${gueryAttrs.builderConfig});
 """
-		if (gueryAttrs.builderRules) {
+		if (gueryAttrs.builderRules != null) {
 			out << "	\$('#${gueryAttrs.builderElementId}').queryBuilder('setRules',jQuery.parseJSON('${gueryAttrs.builderRules}'));"
 		}
 		
