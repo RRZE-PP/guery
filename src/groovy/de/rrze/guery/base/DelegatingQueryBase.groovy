@@ -47,6 +47,10 @@ class DelegatingQueryBase extends QueryBase {
 		getMergedFieldValue('plugins')
 	}
 	
+	Boolean getAllowEmpty() {
+		getMergedFieldValue('allowEmpty')
+	}
+	
 	List<String> getConditions() {
 		getMergedFieldValue('conditions')
 	}

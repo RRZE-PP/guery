@@ -46,6 +46,7 @@ class QueryBase {
 	protected List<String>			_conditions = null
 	protected String				_defaultCondition = null
 	protected Set<String>			_plugins
+	protected Set<String>			_allowEmpty
 	
 	def QueryBase() {}
 	
@@ -67,6 +68,10 @@ class QueryBase {
 	
 	Set<String> getPlugins() {
 		_plugins
+	}
+	
+	Boolean getAllowEmpty() {
+		_allowEmpty
 	}
 	
 	List<String> getConditions() {
@@ -134,6 +139,7 @@ class QueryBase {
 		putIfNotEmpty(ret,"defaultCondition")
 		putIfNotEmpty(ret,"lang")
 		putIfNotEmpty(ret,"plugins")
+		putIfNotEmpty(ret,"allowEmpty")
 		
 		// handle filters
 		def flatFilters = []

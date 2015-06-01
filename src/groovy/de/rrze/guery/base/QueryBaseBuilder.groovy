@@ -86,6 +86,10 @@ class QueryBaseBuilder {
 		qb._plugins.add(value)
 	}
 	
+	def allowEmpty(Boolean value) {
+		qb._allowEmpty = value
+	}
+	
 	def conditions(List<String> value) {
 		qb._conditions = value
 		if (!qb._defaultCondition) defaultCondition(value.get(0))
@@ -115,6 +119,7 @@ class QueryBaseBuilder {
 		else if (name == 'id') id(value)
 		else if (name == 'description') description(value)
 		else if (name == 'lang') lang(value)
+		else if (name == 'allowEmpty') allowEmpty(value)
 		else throw new MissingPropertyException(name, this.class)
 	}
 	
