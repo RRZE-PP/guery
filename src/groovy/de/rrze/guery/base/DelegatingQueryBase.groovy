@@ -43,10 +43,6 @@ class DelegatingQueryBase extends QueryBase {
 		getMergedFieldValue('sortable')
 	}
 	
-	Map<String,Boolean> getReadonlyBehaviour() {
-		getMergedFieldValue('readonlyBehaviour')
-	}
-	
 	Set<String> getPlugins() {
 		getMergedFieldValue('plugins')
 	}

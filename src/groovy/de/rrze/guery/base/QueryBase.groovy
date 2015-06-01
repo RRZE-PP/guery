@@ -45,7 +45,6 @@ class QueryBase {
 	protected Map<String,Operator> 	_operators = [:]
 	protected List<String>			_conditions = null
 	protected String				_defaultCondition = null
-	protected Map<String,Boolean>	_readonlyBehaviour = [:]
 	protected Set<String>			_plugins
 	
 	def QueryBase() {}
@@ -64,10 +63,6 @@ class QueryBase {
 	
 	Boolean getSortable() {
 		_sortable
-	}
-	
-	Map<String,Boolean> getReadonlyBehaviour() {
-		_readonlyBehaviour
 	}
 	
 	Set<String> getPlugins() {
@@ -138,12 +133,7 @@ class QueryBase {
 		putIfNotEmpty(ret,"conditions")
 		putIfNotEmpty(ret,"defaultCondition")
 		putIfNotEmpty(ret,"lang")
-		putIfNotEmpty(ret,"readonlyBehaviour")
 		putIfNotEmpty(ret,"plugins")
-		
-//		putIfNotEmpty(ret,"onValidationError")
-//		putIfNotEmpty(ret,"onAfterAddGroup")
-//		putIfNotEmpty(ret,"onAfterAddRule")
 		
 		// handle filters
 		def flatFilters = []

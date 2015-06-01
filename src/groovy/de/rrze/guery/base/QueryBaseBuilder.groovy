@@ -95,10 +95,6 @@ class QueryBaseBuilder {
 		qb._defaultCondition = value
 	}
 			
-	def readonlyBehaviour(Map<String,Boolean> value) {
-		qb._readonlyBehaviour = value
-	}
-	
 	def operationManager(IOperationManager opm) {
 		qb.operationManager = opm
 	}
@@ -111,28 +107,6 @@ class QueryBaseBuilder {
 		qb.description = value
 	}
 	
-	
-//	def onValidationError(JavascriptCode value) {
-//		qb.onValidationError = value
-//	}
-//	def onValidationError(String value) {
-//		qb.onValidationError = new JavascriptCode(value)
-//	}
-//
-//	def onAfterAddGroup(JavascriptCode value) {
-//		qb.onAfterAddGroup = value
-//	}
-//	def onAfterAddGroup(String value) {
-//		qb.onAfterAddGroup = new JavascriptCode(value)
-//	}
-//
-//	def onAfterAddRule(JavascriptCode value) {
-//		qb.onAfterAddRule = value
-//	}
-//	def onAfterAddRule(String value) {
-//		qb.onAfterAddRule = new JavascriptCode(value)
-//	}
-
 	def propertyMissing(String name, Object value) {
 		if (name == 'sortable') sortable(value)
 		else if (name == 'plugins') plugins(value)
@@ -141,10 +115,6 @@ class QueryBaseBuilder {
 		else if (name == 'id') id(value)
 		else if (name == 'description') description(value)
 		else if (name == 'lang') lang(value)
-		else if (name == 'readonlyBehaviour') readonlyBehaviour(value)
-//		else if (name == 'onValidationError') onValidationError(value)
-//		else if (name == 'onAfterAddGroup') onAfterAddGroup(value)
-//		else if (name == 'onAfterAddRule') onAfterAddRule(value)
 		else throw new MissingPropertyException(name, this.class)
 	}
 	
@@ -153,16 +123,9 @@ class QueryBaseBuilder {
 	
 	
 	private runClosure(Closure runClosure) {
-		// Create clone of closure for threading access.
 		Closure runClone = runClosure.clone()
-
-		// Set delegate of closure to this builder.
 		runClone.delegate = this
-
-		// And only use this builder as the closure delegate.
 		runClone.resolveStrategy = Closure.DELEGATE_ONLY
-
-		// Run closure code.
 		runClone()
 	}
 }
