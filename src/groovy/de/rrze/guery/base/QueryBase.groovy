@@ -186,7 +186,8 @@ class QueryBase {
 		
 		if (value) {
 			if (fieldName == 'defaultCondition') map.put('default_condition', value)
-			if (fieldName == 'readonlyBehaviour') map.put('readonly_behavior', value)
+			else if (fieldName == 'readonlyBehaviour') map.put('readonly_behavior', value)
+			else if (fieldName == 'allowEmpty') map.put('allow_empty', value)
 			else map.put(fieldName, value)
 		}
 		map
