@@ -21,12 +21,11 @@ class GueryInstanceHolder {
 	static put(GueryInstance gueryInstance) {
 		rwl.writeLock().lock()
 		try {
-			log.debug("Adding GueryInstance with id '${gueryInstance.id}' ...")
+			log.debug("Putting GueryInstance with id '${gueryInstance.id}' ...")
 			return registry.put(gueryInstance.id, gueryInstance)
 		}
-		finally {
-			rwl.writeLock().unlock()
-		}
+		catch(e) { throw e }
+		finally { rwl.writeLock().unlock() }
 		
 	}
 
@@ -41,9 +40,8 @@ class GueryInstanceHolder {
 			log.debug("Removing GueryInstance with id '${gueryInstance.id}' ...")
 			return registry.remove(gueryInstance.id)
 		}
-		finally {
-			rwl.writeLock().unlock()
-		}
+		catch(e) { throw e }
+		finally { rwl.readLock().unlock() }
 	}
 
 		
@@ -56,9 +54,8 @@ class GueryInstanceHolder {
 		try {
 			return registry.get(instanceId)		
 		}
-		finally {
-			rwl.readLock().unlock()
-		}
+		catch(e) { throw e }
+		finally { rwl.readLock().unlock() }
 	}
 
 	static GueryInstance getOrCreateInstance(String instanceId) {
@@ -92,9 +89,8 @@ class GueryInstanceHolder {
 		try {
 			return registry.values()
 		}
-		finally {
-			rwl.readLock().unlock()
-		}
+		catch(e) { throw e }
+		finally { rwl.readLock().unlock() }
 	}
 	
 	static void reset() {
@@ -103,8 +99,7 @@ class GueryInstanceHolder {
 			log.debug("Removing all guery instances from registry ...")
 			registry.clear()
 		}
-		finally {
-			rwl.writeLock().unlock()
-		}
+		catch(e) { throw e }
+		finally { rwl.writeLock().unlock() }
 	}
 }
