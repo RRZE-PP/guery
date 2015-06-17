@@ -4,11 +4,11 @@ import grails.converters.JSON
 
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
+import de.rrze.guery.base.DelegatingQueryBase
+import de.rrze.guery.base.Filter
 import de.rrze.guery.base.QueryBase
 import de.rrze.guery.base.QueryBaseBuilder
-import de.rrze.guery.converters.JavascriptCode
 import de.rrze.guery.policy.Policy
-import de.rrze.guery.base.Filter
 
 class GueryInstance {
 
@@ -20,7 +20,7 @@ class GueryInstance {
 	final Map<String,Policy> policyMap = [:] 
 	final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock(true)
 		
-	volatile GueryInstance parent
+	final GueryInstance parent
 	
 	def GueryInstance(String instanceId) {
 		id = instanceId
@@ -31,15 +31,6 @@ class GueryInstance {
 		if (parentGi) setParent(parentGi)
 	}
 	
-	@Deprecated
-	def addParent(GueryInstance parentGi) {
-		setParent(parentGi)
-	}
-	
-	def setParent(GueryInstance parentGi) {
-		parent = parentGi
-	}
-
 	/*
 	 * QUERY BASE
 	 */
@@ -107,7 +98,7 @@ class GueryInstance {
 	def resetPolicies() {
 		rwl.writeLock().lock()
 		try {
-			policyMap = [:]
+			policyMap.clear()
 		}
 		finally {
 			rwl.writeLock().unlock()

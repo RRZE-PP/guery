@@ -10,9 +10,8 @@ import de.rrze.guery.operator.Operator
 
 class DelegatingQueryBase extends QueryBase {
 
-	QueryBase parent
-	
-	IOperationManager		operationManager = new DelegatingClosureOperationManager()
+	final QueryBase parent
+	final IOperationManager operationManager = new DelegatingClosureOperationManager()
 	
 	
 	
