@@ -12,15 +12,15 @@ import de.rrze.guery.base.Filter
 
 class GueryInstance {
 
-	String id
-	String description
+	volatile String id
+	volatile String description
 
-	QueryBase qb
+	volatile QueryBase qb
 	
-	Map<String,Policy> policyMap = [:] 
-	ReentrantReadWriteLock rwl = new ReentrantReadWriteLock(true)
+	final Map<String,Policy> policyMap = [:] 
+	final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock(true)
 		
-	GueryInstance parent
+	volatile GueryInstance parent
 	
 	def GueryInstance(String instanceId) {
 		id = instanceId

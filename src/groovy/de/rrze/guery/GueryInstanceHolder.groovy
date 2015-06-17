@@ -9,10 +9,8 @@ class GueryInstanceHolder {
 	
 	static log = Logger.getLogger(GueryInstanceHolder.class)
 	
-	static Map<String,GueryInstance> registry = [:]
-	
-	
-	static ReentrantReadWriteLock rwl = new ReentrantReadWriteLock(true)
+	static final Map<String,GueryInstance> registry = [:]
+	static final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock(true)
 	
 	static GueryInstance putInstance(GueryInstance gueryInstance) {
 		put(gueryInstance)
