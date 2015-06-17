@@ -25,6 +25,10 @@ class QueryBaseBuilder {
 		runClosure(c)
 		qb
 	}
+	
+	QueryBase make(QueryBase qb) {
+		qb
+	}
 
 	
 	def filter(Map m, Closure c) {
