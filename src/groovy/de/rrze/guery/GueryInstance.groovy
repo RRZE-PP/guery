@@ -191,8 +191,18 @@ class GueryInstance {
 	
 	GueryInstance addPolicy(Policy p) {
 		if (!p.id) throw new RuntimeException("Cannot add policy without id!")
-		if (getPolicy(p.id)) throw new RuntimeException("Policy with id '${p.id}' already exists! Use putPolicy() method to add a new or update an existing policy id.")
-		putPolicy(p)
+		rwl.writeLock().lock()
+		try {
+			if (policyMap.get(p.id)) throw new RuntimeException("Policy with id '${p.id}' already exists! Use putPolicy() method to add a new or update an existing policy id.")
+			policyMap.put(p.id, p)
+		}
+		catch(e) {
+			throw e
+		}
+		finally {
+			rwl.writeLock().unlock()
+		}
+		
 		this
 	}
 	
