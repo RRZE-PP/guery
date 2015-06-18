@@ -28,7 +28,7 @@ class GueryInstance {
 	
 	def GueryInstance(String instanceId, GueryInstance parentGi) {
 		this(instanceId)
-		if (parentGi) setParent(parentGi)
+		if (parentGi) parent = parentGi
 	}
 	
 	/*
