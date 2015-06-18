@@ -35,11 +35,11 @@ class GueryInstance {
 	 * QUERY BASE
 	 */
 	@Deprecated
-	QueryBase makeBase(Closure c) {
+	GueryInstance makeBase(Closure c) {
 		buildBase(c)
 	}
 	
-	QueryBase buildBase(Closure c) {
+	GueryInstance buildBase(Closure c) {
 		if (parent) {
 			qb = new QueryBaseBuilder().makeDelegate(parent.qb, c)
 		}
