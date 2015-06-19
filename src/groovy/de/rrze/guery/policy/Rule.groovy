@@ -114,6 +114,7 @@ class Rule implements IEvaluateable {
 		else {
 			// The entire response object has been returned
 			// --> will presume all actions have been taken care of
+			// TODO This feature needs some more work!!
 		}
 		
 		evalResult
@@ -147,6 +148,7 @@ class Rule implements IEvaluateable {
 		else {
 			// The entire response object has been returned
 			// --> will presume all actions have been taken care of
+			// TODO This feature needs some more work!!
 		}
 		
 		evalResult

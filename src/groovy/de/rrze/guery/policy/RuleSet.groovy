@@ -143,13 +143,19 @@ class RuleSet implements IEvaluateable {
 			return evaluate(req, res)
 		}
 		else {
-			// Outer condition is 'AND' - inner condition is 'OR'
+			// Outer condition is 'AND'(intersect) - inner condition is 'OR'(join)
 			def tmpResponse = [
 				decision : false,
 				status : [:],
 				obligations : [:],
 				]
 			evaluate(req, tmpResponse)
+			
+			// merge decision
+			if (res.decision == true && tmpResponse.decision == false) {
+				res.decision = false
+			}
+
 			
 			// merge status updates
 			tmpResponse.status.each { filterId, evalResult ->
@@ -160,10 +166,26 @@ class RuleSet implements IEvaluateable {
 				def acc = res.status.get(filterId) as Set
 				if (!acc) res.status.put(filterId, evalResult) // init on first use
 				else {
+					// intersect
 					def missing = acc.findAll { accit -> !(evalResult.find { accit.is(it) }) }
-//					acc = acc.findAll { accit -> (evalResult.find { accit.is(it) }) }
 					acc.removeAll(missing)
 					res.status.put(filterId, acc)
+				}
+			}
+			
+			// merge obligations on positive decision (e.g. the subordinate Rule or RuleSet were applicable)
+			if (tmpResponse.decision == true) {
+				tmpResponse.obligations.each { k, v ->
+					if (!(v in Collection)) {
+						v = [v] as Set
+					}
+					
+					def acc = res.obligations.get(k) as Set
+					if (!acc) res.obligations.put(k, v)
+					else {
+						acc.putAll(v)
+						res.obligations.put(k, acc)
+					}
 				}
 			}
 			
@@ -176,13 +198,18 @@ class RuleSet implements IEvaluateable {
 			return evaluate(req, res)
 		}
 		else {
-			// Outer condition is 'OR' - inner condition is 'AND'
+			// Outer condition is 'OR'(join) - inner condition is 'AND'(intersect)
 			def tmpResponse = [
 				decision : true,
 				status : [:],
 				obligations : [:],
 				]
 			evaluate(req, tmpResponse)
+			
+			// merge decision
+			if (tmpResponse.decision == true) {
+				res.decision = true
+			}
 			
 			// merge status updates
 			tmpResponse.status.each { filterId, evalResult ->
@@ -193,8 +220,25 @@ class RuleSet implements IEvaluateable {
 				def acc = res.status.get(filterId) as Set
 				if (!acc) res.status.put(filterId, evalResult) // init on first use
 				else {
+					// join
 					acc.addAll(evalResult)
 					res.status.put(filterId, acc)
+				}
+			}
+			
+			// merge obligations on positive decision (e.g. the subordinate Rule or RuleSet were applicable)
+			if (tmpResponse.decision == true) {
+				tmpResponse.obligations.each { k, v ->
+					if (!(v in Collection)) {
+						v = [v] as Set
+					}
+					
+					def acc = res.obligations.get(k) as Set
+					if (!acc) res.obligations.put(k, v)
+					else {
+						acc.putAll(v)
+						res.obligations.put(k, acc)
+					}
 				}
 			}
 			
