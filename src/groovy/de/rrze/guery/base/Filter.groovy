@@ -21,9 +21,9 @@ class Filter {
 	String 					placeholder
 	Boolean 				vertical
 	Collection<Operator>	operators = []
-	Map<String,String>		values = [:]
+	Map<String,String>		values
     String                  plugin
-    Map<String,String>      plugin_config = [:]
+    Map<String,String>      plugin_config
 
 	
 	def Filter() {}
