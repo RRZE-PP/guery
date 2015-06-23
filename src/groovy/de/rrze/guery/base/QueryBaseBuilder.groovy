@@ -33,7 +33,8 @@ class QueryBaseBuilder {
 	
 	def filter(Map m, Closure c) {
 		def f = new Filter(m)
-		log.trace(m)
+		log.trace("Building filter: ${m}")
+		
 		c.resolveStrategy = Closure.TO_SELF
 		c.metaClass.methodMissing = { name, arguments ->
 			def opSettings = [
@@ -68,6 +69,13 @@ class QueryBaseBuilder {
 		qb.addFilter(f)
 	}
 	
+	def expose(String id, value) {
+		qb.sharedData.put(id, value)
+	}
+	
+	def expose(Map value) {
+		value.each { k,v -> expose(k,v) }
+	}
 	
 	def lang(Map value) {
 		qb._lang += value
@@ -124,6 +132,7 @@ class QueryBaseBuilder {
 		else if (name == 'description') description(value)
 		else if (name == 'lang') lang(value)
 		else if (name == 'allowEmpty') allowEmpty(value)
+		else if (name == 'expose') expose(value)
 		else throw new MissingPropertyException(name, this.class)
 	}
 	

@@ -57,6 +57,10 @@ class GueryInstance {
 		qb.getOperator(type)
 	}
 	
+	def getExposedData(String id) {
+		qb.getExposedData(id)
+	}
+	
 	JSON baseToJs() {
 		qb.toJs()
 	}

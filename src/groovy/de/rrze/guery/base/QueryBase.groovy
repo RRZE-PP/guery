@@ -12,32 +12,9 @@ class QueryBase {
 
 	String id
 	String description
-	IOperationManager operationManager = new ClosureOperationManager()
 	
-	/**
-	 * Function called when a validation error occurs. It takes 5 parameters:
-	 * <ul>
-	 * <li>$rule the jQuery &lt;li&gt; element of the rule throwing the error</li>
-	 * <li>error a String containing an error code</li>
-	 * <li>value</li>
-	 * <li>filter</li>
-	 * <li>operator</li>
-	 * <ul>
-	 */
-//	JavascriptCode onValidationError
-	
-	/**
-	 * Function called just after adding a group. It takes 1 parameter:
-	 * $group is the jQuery &lt;dl&gt; element of the group
-	 */
-//	JavascriptCode onAfterAddGroup
-	
-	/**
-	 * Function called just after adding a rule. It takes 1 parameter:
-	 * $rule is the jQuery &lt;li&gt; element of the rule
-	 */
-//	JavascriptCode onAfterAddRule
-	
+	protected final IOperationManager operationManager = new ClosureOperationManager()
+	protected final Map sharedData = [:]
 	
 	protected Boolean 				_sortable
 	protected Map<String,String>	_lang = [operators:[:], conditions:[:], errors:[:]]
@@ -47,6 +24,8 @@ class QueryBase {
 	protected String				_defaultCondition = null
 	protected Set<String>			_plugins
 	protected Boolean				_allowEmpty
+	
+	
 	
 	def QueryBase() {}
 	
@@ -82,6 +61,10 @@ class QueryBase {
 		_defaultCondition
 	}
 	
+	
+	def getExposedData(String id) {
+		return sharedData.get(id)
+	} 
 	
 	
 	QueryBase addOperator(Operator o) {
