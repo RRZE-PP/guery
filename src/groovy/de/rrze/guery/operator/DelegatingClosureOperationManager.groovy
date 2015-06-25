@@ -26,7 +26,7 @@ class DelegatingClosureOperationManager extends ClosureOperationManager {
 	public Object put(String id, Object op) {
 		if (!(op in Closure)) throw new RuntimeException("ClosureOperationManager can only handle Closure type operations: ${op.class}")
 		if (parent && parent.get(id)) {
-			log.warn("Parent already defines operation with id '${id}' -- will be overridden!")
+			if (log.isWarnEnabled()) log.warn("Parent already defines operation with id '${id}' -- will be overridden!")
 		}
 		_operations.put(id, op) // will override possible parent definition
 	}

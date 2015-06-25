@@ -122,7 +122,7 @@ class Rule implements IEvaluateable {
 	
 	Object evaluateOr(Map req, Map res) {
 		def evalResult = evaluate(req, res)
-//		log.debug("RULE [${operator.type}] ${evalResult}")
+//		if (log.isDebugEnabled()) log.debug("RULE [${operator.type}] ${evalResult}")
 		
 		if (!evalResult.is(res)) { // not same object
 			if (evalResult) {

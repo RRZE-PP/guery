@@ -33,7 +33,7 @@ class QueryBaseBuilder {
 	
 	def filter(Map m, Closure c) {
 		def f = new Filter(m)
-		log.trace("Building filter: ${m}")
+		if (log.isTraceEnabled()) log.trace("Building filter: ${m}")
 		
 		c.resolveStrategy = Closure.TO_SELF
 		c.metaClass.methodMissing = { name, arguments ->
@@ -65,7 +65,7 @@ class QueryBaseBuilder {
 		}
 		c()
 		
-		log.trace("Adding filter ${f.id} ...")
+		if (log.isTraceEnabled()) log.trace("Adding filter ${f.id} ...")
 		qb.addFilter(f)
 	}
 	

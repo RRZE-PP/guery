@@ -104,7 +104,7 @@ class RuleSet implements IEvaluateable {
 	
 	Map evaluate(Map req, Map res) {
 		if (!condition && !evals) {
-			log.warn("Emtpy ruleset evaluates to 'false' by default!")
+			if (log.isWarnEnabled()) log.warn("Emtpy ruleset evaluates to 'false' by default!")
 			res.decision = false
 			return res
 		}

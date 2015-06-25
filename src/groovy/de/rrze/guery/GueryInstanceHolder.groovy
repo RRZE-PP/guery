@@ -19,7 +19,7 @@ class GueryInstanceHolder {
 	static put(GueryInstance gueryInstance) {
 		rwl.writeLock().lock()
 		try {
-			log.debug("Putting GueryInstance with id '${gueryInstance.id}' ...")
+			if (log.isDebugEnabled()) log.debug("Putting GueryInstance with id '${gueryInstance.id}' ...")
 			return registry.put(gueryInstance.id, gueryInstance)
 		}
 		catch(e) { throw e }
@@ -35,7 +35,7 @@ class GueryInstanceHolder {
 	static remove(GueryInstance gueryInstance) {
 		rwl.writeLock().lock()
 		try {
-			log.debug("Removing GueryInstance with id '${gueryInstance.id}' ...")
+			if (log.isDebugEnabled()) log.debug("Removing GueryInstance with id '${gueryInstance.id}' ...")
 			return registry.remove(gueryInstance.id)
 		}
 		catch(e) { throw e }
@@ -59,7 +59,7 @@ class GueryInstanceHolder {
 	static GueryInstance getOrCreateInstance(String instanceId) {
 		def instance = GueryInstanceHolder.getInstance(instanceId)
 		if (!instance) {
-			log.debug("No instance with id '${instanceId}' -- creating new one.")
+			if (log.isDebugEnabled()) log.debug("No instance with id '${instanceId}' -- creating new one.")
 			instance = new GueryInstance(instanceId)
 			putInstance(instance)
 		}
@@ -69,11 +69,11 @@ class GueryInstanceHolder {
 	static GueryInstance replaceOrCreateInstance(String instanceId, GueryInstance parentGi = null) {
 		def instance = GueryInstanceHolder.getInstance(instanceId)
 		if (!instance) {
-			log.debug("No instance with id '${instanceId}' -- creating new one.")
+			if (log.isDebugEnabled()) log.debug("No instance with id '${instanceId}' -- creating new one.")
 			
 		}
 		else {
-			log.debug("Found existing instance with id '${instanceId}' -- replacing existing instance.")
+			if (log.isDebugEnabled()) log.debug("Found existing instance with id '${instanceId}' -- replacing existing instance.")
 		}
 		instance = new GueryInstance(instanceId, parentGi)
 		putInstance(instance)
@@ -94,7 +94,7 @@ class GueryInstanceHolder {
 	static void reset() {
 		rwl.writeLock().lock()
 		try {
-			log.debug("Removing all guery instances from registry ...")
+			if (log.isDebugEnabled()) log.debug("Removing all guery instances from registry ...")
 			registry.clear()
 		}
 		catch(e) { throw e }
