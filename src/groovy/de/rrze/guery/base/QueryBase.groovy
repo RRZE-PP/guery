@@ -142,7 +142,7 @@ class QueryBase {
 		// handle mongoOperators
 		def flatMongoOperators = [:]
 		this.operators.each { k, v ->
-			flatMongoOperators.put(k, v.mongo)
+			if (v.mongo) flatMongoOperators.put(k, v.mongo)
 		}
 		if (flatMongoOperators) ret.put('mongoOperators', flatMongoOperators)
 		

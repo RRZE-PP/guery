@@ -16,11 +16,14 @@ class Operator {
 	String 				label
 	
 	// console.log(JSON.stringify($('#guery_builder_extended').queryBuilder('getMongo')));
-	JavascriptCode		mongo = new JavascriptCode('function(v){ return {"$exists":true}; }')
+	JavascriptCode		mongo
 	
-	def Operator() {}
+	def Operator() { }
 	
-	
+	def setMongo(Boolean flag) {
+		if (flag) mongo = new JavascriptCode('function(v){ return v[0]; }')
+		else mongo = null
+	}
 	def setMongo(String code) {
 		if (code.startsWith("function")) this.mongo = new JavascriptCode(code)
 		else this.mongo = new JavascriptCode("function(k,v){ return ${code}; }")
