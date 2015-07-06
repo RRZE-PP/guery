@@ -88,7 +88,8 @@ class Rule implements IEvaluateable {
 		def evalResult = evaluate(req, res)
 		
 		if (!evalResult.is(res)) { // not same object
-			if (evalResult) {
+			
+			if (evalResult) { // groovy truth
 				if (evalResult.is(true)) {
 					// nothing to do here
 				}
@@ -101,8 +102,11 @@ class Rule implements IEvaluateable {
 					if (!acc) res.status.put(filter.field, evalResult) // init on first use
 					else {
 						def missing = acc.findAll { accit -> !(evalResult.find { accit.is(it) }) }
-						acc.removeAll(missing)
+						acc.removeAll(missing) // intersect
 						res.status.put(filter.field, acc)
+
+						// rule had results but intersection had none --> decision is false from now on						
+						if (acc.size() == 0) res.decision = false
 					}
 				}
 			}
@@ -110,6 +114,7 @@ class Rule implements IEvaluateable {
 				res.decision = false
 				res.status.put(filter.field, [])
 			}
+			
 		}
 		else {
 			// The entire response object has been returned
@@ -125,7 +130,10 @@ class Rule implements IEvaluateable {
 //		if (log.isDebugEnabled()) log.debug("RULE [${operator.type}] ${evalResult}")
 		
 		if (!evalResult.is(res)) { // not same object
-			if (evalResult) {
+			
+			if (evalResult) { // groovy truth
+				
+				res.decision = true
 				if (evalResult.is(true)) {
 					// nothing to do here
 				}
@@ -137,13 +145,12 @@ class Rule implements IEvaluateable {
 					def acc = res.status.get(filter.field) as Set
 					if (!acc) res.status.put(filter.field, evalResult) // init on first use
 					else {
-						acc.addAll(evalResult)
+						acc.addAll(evalResult) // join
 						res.status.put(filter.field, acc)
 					}
 				}
-				
-				res.decision = true
 			}
+			
 		}
 		else {
 			// The entire response object has been returned

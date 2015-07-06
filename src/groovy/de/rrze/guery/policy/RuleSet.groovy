@@ -151,13 +151,13 @@ class RuleSet implements IEvaluateable {
 				]
 			evaluate(req, tmpResponse)
 			
-			// merge decision
-			if (res.decision == true && tmpResponse.decision == false) {
-				res.decision = false
+			// merge decision - AND
+			if (tmpResponse.decision == false) {
+				res.decision = false 
 			}
 
 			
-			// merge status updates
+			// always merge status updates
 			tmpResponse.status.each { filterId, evalResult ->
 				if (!(evalResult in Collection)) {
 					evalResult = [evalResult] as Set
@@ -206,12 +206,12 @@ class RuleSet implements IEvaluateable {
 				]
 			evaluate(req, tmpResponse)
 			
-			// merge decision
+			// merge decision - OR
 			if (tmpResponse.decision == true) {
 				res.decision = true
 			}
 			
-			// merge status updates
+			// always merge status updates
 			tmpResponse.status.each { filterId, evalResult ->
 				if (!(evalResult in Collection)) {
 					evalResult = [evalResult] as Set
