@@ -132,7 +132,6 @@ class GueryInstance {
 		def results = []
 		getPolicies().each { policy ->
 			def result =  policy.evaluate(immutableRequest) // result = [descision:xxx, status:xxx, obligations:xxx]
-			result.put('id', policy.id)
 			results << result
 		}
 		return results

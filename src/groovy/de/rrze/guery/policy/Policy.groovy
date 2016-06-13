@@ -69,6 +69,8 @@ class Policy {
 	
 	Object evaluate(Map req) {
 		def immutableRequest = req.asImmutable()
-		rs.evaluate(immutableRequest)
+		def result = rs.evaluate(immutableRequest)
+		result.put('id', this.id)
+		return result
 	}
 }
