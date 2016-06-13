@@ -104,7 +104,7 @@ class RuleSet implements IEvaluateable {
 	
 	Map evaluate(Map req, Map res) {
 		if (!condition && !evals) {
-			log.warn("Emtpy ruleset evaluates to 'false' by default!")
+			if (log.isWarnEnabled()) log.warn("Emtpy ruleset evaluates to 'false' by default!")
 			res.decision = false
 			return res
 		}
@@ -143,7 +143,7 @@ class RuleSet implements IEvaluateable {
 			return evaluate(req, res)
 		}
 		else {
-			// Outer condition is 'AND' - inner condition is 'OR'
+			// Outer condition is 'AND'(intersect) - inner condition is 'OR'(join)
 			def tmpResponse = [
 				decision : false,
 				status : [:],
@@ -151,7 +151,13 @@ class RuleSet implements IEvaluateable {
 				]
 			evaluate(req, tmpResponse)
 			
-			// merge status updates
+			// merge decision - AND
+			if (tmpResponse.decision == false) {
+				res.decision = false 
+			}
+
+			
+			// always merge status updates
 			tmpResponse.status.each { filterId, evalResult ->
 				if (!(evalResult in Collection)) {
 					evalResult = [evalResult] as Set
@@ -160,10 +166,26 @@ class RuleSet implements IEvaluateable {
 				def acc = res.status.get(filterId) as Set
 				if (!acc) res.status.put(filterId, evalResult) // init on first use
 				else {
+					// intersect
 					def missing = acc.findAll { accit -> !(evalResult.find { accit.is(it) }) }
-//					acc = acc.findAll { accit -> (evalResult.find { accit.is(it) }) }
 					acc.removeAll(missing)
 					res.status.put(filterId, acc)
+				}
+			}
+			
+			// merge obligations on positive decision (e.g. the subordinate Rule or RuleSet were applicable)
+			if (tmpResponse.decision == true) {
+				tmpResponse.obligations.each { k, v ->
+					if (!(v in Collection)) {
+						v = [v] as Set
+					}
+					
+					def acc = res.obligations.get(k) as Set
+					if (!acc) res.obligations.put(k, v)
+					else {
+						acc.putAll(v)
+						res.obligations.put(k, acc)
+					}
 				}
 			}
 			
@@ -176,7 +198,7 @@ class RuleSet implements IEvaluateable {
 			return evaluate(req, res)
 		}
 		else {
-			// Outer condition is 'OR' - inner condition is 'AND'
+			// Outer condition is 'OR'(join) - inner condition is 'AND'(intersect)
 			def tmpResponse = [
 				decision : true,
 				status : [:],
@@ -184,7 +206,12 @@ class RuleSet implements IEvaluateable {
 				]
 			evaluate(req, tmpResponse)
 			
-			// merge status updates
+			// merge decision - OR
+			if (tmpResponse.decision == true) {
+				res.decision = true
+			}
+			
+			// always merge status updates
 			tmpResponse.status.each { filterId, evalResult ->
 				if (!(evalResult in Collection)) {
 					evalResult = [evalResult] as Set
@@ -193,8 +220,25 @@ class RuleSet implements IEvaluateable {
 				def acc = res.status.get(filterId) as Set
 				if (!acc) res.status.put(filterId, evalResult) // init on first use
 				else {
+					// join
 					acc.addAll(evalResult)
 					res.status.put(filterId, acc)
+				}
+			}
+			
+			// merge obligations on positive decision (e.g. the subordinate Rule or RuleSet were applicable)
+			if (tmpResponse.decision == true) {
+				tmpResponse.obligations.each { k, v ->
+					if (!(v in Collection)) {
+						v = [v] as Set
+					}
+					
+					def acc = res.obligations.get(k) as Set
+					if (!acc) res.obligations.put(k, v)
+					else {
+						acc.putAll(v)
+						res.obligations.put(k, acc)
+					}
 				}
 			}
 			

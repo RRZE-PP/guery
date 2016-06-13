@@ -12,40 +12,19 @@ class QueryBase {
 
 	String id
 	String description
-	IOperationManager operationManager = new ClosureOperationManager()
 	
-	/**
-	 * Function called when a validation error occurs. It takes 5 parameters:
-	 * <ul>
-	 * <li>$rule the jQuery &lt;li&gt; element of the rule throwing the error</li>
-	 * <li>error a String containing an error code</li>
-	 * <li>value</li>
-	 * <li>filter</li>
-	 * <li>operator</li>
-	 * <ul>
-	 */
-	JavascriptCode onValidationError
-	
-	/**
-	 * Function called just after adding a group. It takes 1 parameter:
-	 * $group is the jQuery &lt;dl&gt; element of the group
-	 */
-	JavascriptCode onAfterAddGroup
-	
-	/**
-	 * Function called just after adding a rule. It takes 1 parameter:
-	 * $rule is the jQuery &lt;li&gt; element of the rule
-	 */
-	JavascriptCode onAfterAddRule
-	
+	protected final IOperationManager operationManager = new ClosureOperationManager()
+	protected final Map sharedData = [:]
 	
 	protected Boolean 				_sortable
-	protected Map<String,String>	_lang = [:]
+	protected Map<String,String>	_lang = [operators:[:], conditions:[:], errors:[:]]
 	protected Map<String,Filter> 	_filters = [:]
 	protected Map<String,Operator> 	_operators = [:]
 	protected List<String>			_conditions = null
 	protected String				_defaultCondition = null
-	protected Map<String,Boolean>	_readonlyBehaviour = [:]
+	protected Set<String>			_plugins
+	protected Boolean				_allowEmpty
+	
 	
 	
 	def QueryBase() {}
@@ -66,8 +45,12 @@ class QueryBase {
 		_sortable
 	}
 	
-	Map<String,Boolean> getReadonlyBehaviour() {
-		_readonlyBehaviour
+	Set<String> getPlugins() {
+		_plugins
+	}
+	
+	Boolean getAllowEmpty() {
+		_allowEmpty
 	}
 	
 	List<String> getConditions() {
@@ -79,17 +62,24 @@ class QueryBase {
 	}
 	
 	
+	def getExposedData(String id) {
+		return sharedData.get(id)
+	} 
+	
 	
 	QueryBase addOperator(Operator o) {
-		// add language label for operator
-		if (o.label) {
-//			log.warn("operator_${o.type} --> ${o.label}")
-			this._lang.put("operator_${o.type}".toString(), o.label)
+		if(!this._operators.containsKey(o.type)) {
+			
+			// add operator
+			this._operators.put(o.type, o)
+			
+			// add language label for operator
+			if (o.label) {
+				this._lang.operators.put("${o.type}".toString(), o.label)
+			}
+			
 		}
-		
-		// add operator
-		if(!this._operators.containsKey(o.type)) this._operators.put(o.type, o)
-			else throw new RuntimeException("An operator of type ${o.type} already exists and cannot be re-added!")
+		else throw new RuntimeException("An operator of type ${o.type} already exists and cannot be re-added!")
 		
 		this
 	}
@@ -131,33 +121,16 @@ class QueryBase {
 		putIfNotEmpty(ret,"conditions")
 		putIfNotEmpty(ret,"defaultCondition")
 		putIfNotEmpty(ret,"lang")
-		putIfNotEmpty(ret,"readonlyBehaviour")
-		
-		putIfNotEmpty(ret,"onValidationError")
-		putIfNotEmpty(ret,"onAfterAddGroup")
-		putIfNotEmpty(ret,"onAfterAddRule")
+		putIfNotEmpty(ret,"plugins")
+		putIfNotEmpty(ret,"allowEmpty")
 		
 		// handle filters
 		def flatFilters = []
 		this.filters.values().each {
 			flatFilters << it.flatten()
 		}
-//		def flatFiltersByLabel = flatFilters.groupBy { it.label }
-//		def collapsedFlatFilters = flatFiltersByLabel.collect { k, v ->
-//			def cf = v.first()
-//			if (v.size() > 1) {
-//				v.each { ff ->
-//					cf.operators.addAll(ff.operators)	
-//				}
-//				cf.operators = cf.operators.unique()
-//				
-//			}
-//			return cf	
-//		}
-		
 		
 		ret.put('filters', flatFilters)
-		
 		
 		// handle operators
 		def flatOperators = []
@@ -165,6 +138,13 @@ class QueryBase {
 			flatOperators << it.flatten()
 		}
 		if (flatOperators) ret.put('operators', flatOperators)
+		
+		// handle mongoOperators
+		def flatMongoOperators = [:]
+		this.operators.each { k, v ->
+			if (v.mongo) flatMongoOperators.put(k, v.mongo)
+		}
+		if (flatMongoOperators) ret.put('mongoOperators', flatMongoOperators)
 		
 		ret
 	}
@@ -176,16 +156,21 @@ class QueryBase {
 	}
 	
 	public String toJsString(Boolean prettyPrint) {
-		toJs().toString(prettyPrint)
+		if (prettyPrint) {
+			toJs().toString(prettyPrint)
+		}
+		else  {
+			toJs().toString()
+		}
 	}
 	
 	private Map putIfNotEmpty(Map map, String fieldName) {
 		def value = this."${fieldName}"
-//		if (fieldName in ['sortable']) log.warn("${this.id}(${this.class.name})/${fieldName} --> ${value}")
 		
 		if (value) {
 			if (fieldName == 'defaultCondition') map.put('default_condition', value)
-			if (fieldName == 'readonlyBehaviour') map.put('readonly_behavior', value)
+			else if (fieldName == 'readonlyBehaviour') map.put('readonly_behavior', value)
+			else if (fieldName == 'allowEmpty') map.put('allow_empty', value)
 			else map.put(fieldName, value)
 		}
 		map

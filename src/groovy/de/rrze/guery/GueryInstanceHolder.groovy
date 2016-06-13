@@ -9,10 +9,8 @@ class GueryInstanceHolder {
 	
 	static log = Logger.getLogger(GueryInstanceHolder.class)
 	
-	static Map<String,GueryInstance> registry = [:]
-	
-	
-	static ReentrantReadWriteLock rwl = new ReentrantReadWriteLock(true)
+	static final Map<String,GueryInstance> registry = [:]
+	static final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock()
 	
 	static GueryInstance putInstance(GueryInstance gueryInstance) {
 		put(gueryInstance)
@@ -21,12 +19,11 @@ class GueryInstanceHolder {
 	static put(GueryInstance gueryInstance) {
 		rwl.writeLock().lock()
 		try {
-			log.debug("Adding GueryInstance with id '${gueryInstance.id}' ...")
+			if (log.isDebugEnabled()) log.debug("Putting GueryInstance with id '${gueryInstance.id}' ...")
 			return registry.put(gueryInstance.id, gueryInstance)
 		}
-		finally {
-			rwl.writeLock().unlock()
-		}
+		catch(e) { throw e }
+		finally { rwl.writeLock().unlock() }
 		
 	}
 
@@ -38,12 +35,11 @@ class GueryInstanceHolder {
 	static remove(GueryInstance gueryInstance) {
 		rwl.writeLock().lock()
 		try {
-			log.debug("Removing GueryInstance with id '${gueryInstance.id}' ...")
+			if (log.isDebugEnabled()) log.debug("Removing GueryInstance with id '${gueryInstance.id}' ...")
 			return registry.remove(gueryInstance.id)
 		}
-		finally {
-			rwl.writeLock().unlock()
-		}
+		catch(e) { throw e }
+		finally { rwl.readLock().unlock() }
 	}
 
 		
@@ -56,15 +52,14 @@ class GueryInstanceHolder {
 		try {
 			return registry.get(instanceId)		
 		}
-		finally {
-			rwl.readLock().unlock()
-		}
+		catch(e) { throw e }
+		finally { rwl.readLock().unlock() }
 	}
 
 	static GueryInstance getOrCreateInstance(String instanceId) {
 		def instance = GueryInstanceHolder.getInstance(instanceId)
 		if (!instance) {
-			log.debug("No instance with id '${instanceId}' -- creating new one.")
+			if (log.isDebugEnabled()) log.debug("No instance with id '${instanceId}' -- creating new one.")
 			instance = new GueryInstance(instanceId)
 			putInstance(instance)
 		}
@@ -74,11 +69,11 @@ class GueryInstanceHolder {
 	static GueryInstance replaceOrCreateInstance(String instanceId, GueryInstance parentGi = null) {
 		def instance = GueryInstanceHolder.getInstance(instanceId)
 		if (!instance) {
-			log.debug("No instance with id '${instanceId}' -- creating new one.")
+			if (log.isDebugEnabled()) log.debug("No instance with id '${instanceId}' -- creating new one.")
 			
 		}
 		else {
-			log.debug("Found existing instance with id '${instanceId}' -- replacing existing instance.")
+			if (log.isDebugEnabled()) log.debug("Found existing instance with id '${instanceId}' -- replacing existing instance.")
 		}
 		instance = new GueryInstance(instanceId, parentGi)
 		putInstance(instance)
@@ -92,19 +87,17 @@ class GueryInstanceHolder {
 		try {
 			return registry.values()
 		}
-		finally {
-			rwl.readLock().unlock()
-		}
+		catch(e) { throw e }
+		finally { rwl.readLock().unlock() }
 	}
 	
 	static void reset() {
 		rwl.writeLock().lock()
 		try {
-			log.debug("Removing all guery instances from registry ...")
+			if (log.isDebugEnabled()) log.debug("Removing all guery instances from registry ...")
 			registry.clear()
 		}
-		finally {
-			rwl.writeLock().unlock()
-		}
+		catch(e) { throw e }
+		finally { rwl.writeLock().unlock() }
 	}
 }

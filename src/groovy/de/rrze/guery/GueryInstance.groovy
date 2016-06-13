@@ -1,24 +1,26 @@
 package de.rrze.guery
 
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import grails.converters.JSON
+
+import java.util.concurrent.locks.ReentrantReadWriteLock
+
+import de.rrze.guery.base.DelegatingQueryBase
+import de.rrze.guery.base.Filter
 import de.rrze.guery.base.QueryBase
 import de.rrze.guery.base.QueryBaseBuilder
-import de.rrze.guery.converters.JavascriptCode
 import de.rrze.guery.policy.Policy
 
 class GueryInstance {
 
-	String id
-	String description
+	volatile String id
+	volatile String description
 
-	QueryBase qb
+	volatile QueryBase qb
 	
-	Map<String,Policy> policyMap = [:] 
-	ReentrantReadWriteLock rwl = new ReentrantReadWriteLock(true)
+	final Map<String,Policy> policyMap = [:] 
+	final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock(true)
 		
-	GueryInstance parent
+	final GueryInstance parent
 	
 	def GueryInstance(String instanceId) {
 		id = instanceId
@@ -26,27 +28,18 @@ class GueryInstance {
 	
 	def GueryInstance(String instanceId, GueryInstance parentGi) {
 		this(instanceId)
-		if (parentGi) setParent(parentGi)
+		if (parentGi) parent = parentGi
 	}
 	
-	@Deprecated
-	def addParent(GueryInstance parentGi) {
-		setParent(parentGi)
-	}
-	
-	def setParent(GueryInstance parentGi) {
-		parent = parentGi
-	}
-
 	/*
 	 * QUERY BASE
 	 */
 	@Deprecated
-	QueryBase makeBase(Closure c) {
+	GueryInstance makeBase(Closure c) {
 		buildBase(c)
 	}
 	
-	QueryBase buildBase(Closure c) {
+	GueryInstance buildBase(Closure c) {
 		if (parent) {
 			qb = new QueryBaseBuilder().makeDelegate(parent.qb, c)
 		}
@@ -56,12 +49,16 @@ class GueryInstance {
 		
 		if (!qb.id) qb.id = "${id}_queryBase"
 		if (!qb.description) qb.description = "QueryBase for ${id}"
-		if (!qb.onValidationError) qb.onValidationError = new JavascriptCode("onValidationError_guery_builder_${id}")
-		qb
+//		if (!qb.onValidationError) qb.onValidationError = new JavascriptCode("onValidationError_guery_builder_${id}")
+		this
 	}
 	
 	def getOperator(String type) {
 		qb.getOperator(type)
+	}
+	
+	def getExposedData(String id) {
+		qb.getExposedData(id)
 	}
 	
 	JSON baseToJs() {
@@ -85,6 +82,10 @@ class GueryInstance {
 		getQueryBase()?.getFilters() as Boolean
 	}
 	
+	Map<String,Filter> getFilters() {
+		getQueryBase()?.getFilters()
+	}
+	
 	Boolean hasOperators() {
 		getQueryBase()?.getOperators() as Boolean
 	}
@@ -101,7 +102,7 @@ class GueryInstance {
 	def resetPolicies() {
 		rwl.writeLock().lock()
 		try {
-			policyMap = [:]
+			policyMap.clear()
 		}
 		finally {
 			rwl.writeLock().unlock()
@@ -184,8 +185,18 @@ class GueryInstance {
 	
 	GueryInstance addPolicy(Policy p) {
 		if (!p.id) throw new RuntimeException("Cannot add policy without id!")
-		if (getPolicy(p.id)) throw new RuntimeException("Policy with id '${p.id}' already exists! Use putPolicy() method to add a new or update an existing policy id.")
-		putPolicy(p)
+		rwl.writeLock().lock()
+		try {
+			if (policyMap.get(p.id)) throw new RuntimeException("Policy with id '${p.id}' already exists! Use putPolicy() method to add a new or update an existing policy id.")
+			policyMap.put(p.id, p)
+		}
+		catch(e) {
+			throw e
+		}
+		finally {
+			rwl.writeLock().unlock()
+		}
+		
 		this
 	}
 	
@@ -194,6 +205,9 @@ class GueryInstance {
 		rwl.writeLock().lock()
 		try {
 			policyMap.put(p.id, p)
+		}
+		catch(e) {
+			throw e
 		}
 		finally {
 			rwl.writeLock().unlock()
@@ -212,6 +226,9 @@ class GueryInstance {
 		try {
 			policyMap.remove(policyId)
 		}
+		catch(e) {
+			throw e
+		}
 		finally {
 			rwl.writeLock().unlock()
 		}
@@ -229,6 +246,9 @@ class GueryInstance {
 		try {
 			return policyMap.get(id)
 		}
+		catch(e) {
+			throw e
+		}
 		finally {
 			rwl.readLock().unlock()
 		}
@@ -239,6 +259,9 @@ class GueryInstance {
 		rwl.readLock().lock()
 		try {
 			p.addAll(this.policyMap.values())
+		}
+		catch(e) {
+			throw e
 		}
 		finally {
 			rwl.readLock().unlock()

@@ -39,13 +39,14 @@ grails.project.dependency.resolution = {
 		
 		def ppRepo = grailsSettings.config.grails.project.repos.ppArtifactory
 		mavenRepo(id:ppRepo.id , url:ppRepo.url) {
-			//optional
 			updatePolicy 'always'
-
-			auth([
-				username: ppRepo.username,
-				password: ppRepo.password
-			])
+			auth([username: ppRepo.username,password: ppRepo.password])
+		}
+		
+		def localRepo = grailsSettings.config.grails.project.repos.localArtifactory
+		mavenRepo(id:localRepo.id , url:localRepo.url) {
+			updatePolicy 'always'
+			auth([username: localRepo.username,password: localRepo.password])
 		}
 		
     }
@@ -64,13 +65,14 @@ grails.project.dependency.resolution = {
 			  export = false
 		    }
 			
-			runtime (":jquery-ui:1.10.3") {
+			compile (":jquery-ui:1.10.4") {
 				excludes "jquery"
 				export = false
 			}
 			
-			runtime (
-				":resources:1.2.8",
+			compile (
+				":resources:1.2.14",
+				":asset-pipeline:2.1.5",
 				":jquery:1.11.1"
 			) {
 				export = false

@@ -25,22 +25,23 @@ class QueryBaseBuilder {
 		runClosure(c)
 		qb
 	}
+	
+	QueryBase make(QueryBase qb) {
+		qb
+	}
 
 	
 	def filter(Map m, Closure c) {
 		def f = new Filter(m)
+		if (log.isTraceEnabled()) log.trace("Building filter: ${m}")
+		
 		c.resolveStrategy = Closure.TO_SELF
 		c.metaClass.methodMissing = { name, arguments ->
-//			log.warn(name)
-//			log.warn(arguments)
-//			def ucFirstName = name[0].toUpperCase() + name[1..-1]
-			
 			def opSettings = [
-				//type			: f.id + ucFirstName,
 				type			: f.id + '_' + name,
 				label			: name,
 					
-				accept_values	: true, // FIXME not always true
+				accept_values	: true,
 				apply_to		: [f.type],
 			] 
 			
@@ -64,17 +65,41 @@ class QueryBaseBuilder {
 		}
 		c()
 		
-		log.trace("Adding filter ${f.id} ...")
+		if (log.isTraceEnabled()) log.trace("Adding filter ${f.id} ...")
 		qb.addFilter(f)
 	}
 	
+	def expose(String id, value) {
+		qb.sharedData.put(id, value)
+	}
+	
+	def expose(Map value) {
+		value.each { k,v -> expose(k,v) }
+	}
 	
 	def lang(Map value) {
 		qb._lang += value
 	}
 	
 	def sortable(Boolean value) {
-		qb._sortable = value
+		if (value) plugin('sortable')
+	}
+	
+	def filterDescription(Boolean value) {
+		if (value)  plugin('filter-description')
+	}
+	
+	def plugins(List<String> value) {
+		qb._plugins = value as Set
+	}
+	
+	def plugin(String value) {
+		if (!qb._plugins) qb._plugins = [] as Set
+		qb._plugins.add(value)
+	}
+	
+	def allowEmpty(Boolean value) {
+		qb._allowEmpty = value
 	}
 	
 	def conditions(List<String> value) {
@@ -86,10 +111,6 @@ class QueryBaseBuilder {
 		qb._defaultCondition = value
 	}
 			
-	def readonlyBehaviour(Map<String,Boolean> value) {
-		qb._readonlyBehaviour = value
-	}
-	
 	def operationManager(IOperationManager opm) {
 		qb.operationManager = opm
 	}
@@ -102,56 +123,16 @@ class QueryBaseBuilder {
 		qb.description = value
 	}
 	
-	
-	def onValidationError(JavascriptCode value) {
-		qb.onValidationError = value
-	}
-	def onValidationError(String value) {
-		qb.onValidationError = new JavascriptCode(value)
-	}
-
-	def onAfterAddGroup(JavascriptCode value) {
-		qb.onAfterAddGroup = value
-	}
-	def onAfterAddGroup(String value) {
-		qb.onAfterAddGroup = new JavascriptCode(value)
-	}
-
-	def onAfterAddRule(JavascriptCode value) {
-		qb.onAfterAddRule = value
-	}
-	def onAfterAddRule(String value) {
-		qb.onAfterAddRule = new JavascriptCode(value)
-	}
-
-
-//	def methodMissing(String name, arguments) {
-//		
-////		if (name in ['sortable']) {
-////			// QueryBase options
-////			qb."${name}" = arguments[0]
-////		}
-//		
-//		
-////		if (name in ['to', 'from']) {
-////			def airport = arguments[0].split(',')
-////			def airPortname = airport[0].trim()
-////			def city = airport[1].trim()
-////			reservation.flight."$name" = new Airport(name: airPortname, city: city)
-////		}
-//	}
-
 	def propertyMissing(String name, Object value) {
 		if (name == 'sortable') sortable(value)
+		else if (name == 'plugins') plugins(value)
 		else if (name == 'conditions') conditions(value)
 		else if (name == 'defaultCondition') defaultCondition(value)
 		else if (name == 'id') id(value)
 		else if (name == 'description') description(value)
 		else if (name == 'lang') lang(value)
-		else if (name == 'readonlyBehaviour') readonlyBehaviour(value)
-		else if (name == 'onValidationError') onValidationError(value)
-		else if (name == 'onAfterAddGroup') onAfterAddGroup(value)
-		else if (name == 'onAfterAddRule') onAfterAddRule(value)
+		else if (name == 'allowEmpty') allowEmpty(value)
+		else if (name == 'expose') expose(value)
 		else throw new MissingPropertyException(name, this.class)
 	}
 	
@@ -160,16 +141,9 @@ class QueryBaseBuilder {
 	
 	
 	private runClosure(Closure runClosure) {
-		// Create clone of closure for threading access.
 		Closure runClone = runClosure.clone()
-
-		// Set delegate of closure to this builder.
 		runClone.delegate = this
-
-		// And only use this builder as the closure delegate.
 		runClone.resolveStrategy = Closure.DELEGATE_ONLY
-
-		// Run closure code.
 		runClone()
 	}
 }

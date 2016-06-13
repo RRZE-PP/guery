@@ -4,7 +4,10 @@
 		<title>Rules</title>
 		<meta name="layout" content="main">
 		
-		<r:require modules="jq_queryBuilder" />
+		<asset:javascript src="jquery.js"/>
+		
+		<asset:javascript src="guery.js"/>
+		<asset:stylesheet src="guery.css"/>
 		
 	</head>
 	<body>
@@ -16,50 +19,31 @@
 			}
 		</style>
 	
+		<g:form action="save">
+			<guery:builder id="test" instance="${gueryInstance}" />
+			<g:submitButton name="Submit" />
+			
+			<a href="#" onClick="updateMongoQuery()">MongoDB</a>
+			<g:link action="init">Init</g:link>
+		</g:form>
 	
-		<!-- FORM 1 -->
-		<guery:builderFormRemote id="form1" name="save" url="${[action:'save', params:[ajax:(params.ajax?true:false)]]}"
-			builderResultName="queryBuilderResult">
+		<br/><br/><br/>
 		
-			<div class="dialog editDialog">
-				<table>
-					<caption><g:message code="queryRules.table.caption" default="Query rule" /></caption>
-					<tr><td>
-						<div id="${builderElementId}"></div>
-					</td></tr>
-				</table>
-			</div>
-		
-			<fieldset class="buttons">
-				<g:submitButton name="save" class="save" value="${message(code: 'default.button.save.label', default: 'Save')}" />
-				<g:link action="init">Re-Init</g:link>
-			</fieldset>
+		<script>
+			function updateMongoQuery() {
+				var mongoQuery = JSON.stringify($('#guery_builder_extended').queryBuilder('getMongo'));
+				console.log(mongoQuery);
+				$('#mongoQuery').html(mongoQuery);
+			}
 			
-		</guery:builderFormRemote>
-		
-		
-		<br/>
-		<br/>
-		
-		<!-- FORM 2 -->
-		<guery:builderFormRemote id="form2" name="save" url="${[action:'save', params:[ajax:(params.ajax?true:false)]]}"
-			builderResultName="queryBuilderResult">
-		
-			<div class="dialog editDialog">
-				<table>
-					<caption><g:message code="queryRules.table.caption" default="Query rule" /></caption>
-					<tr><td>
-						<div id="${builderElementId}"></div>
-					</td></tr>
-				</table>
-			</div>
-		
-			<fieldset class="buttons">
-				<g:submitButton name="save" class="save" value="${message(code: 'default.button.save.label', default: 'Save')}" />
-				<g:link action="init">Re-Init</g:link>
-			</fieldset>
+			//$('#guery_builder_extended').on('getMongoDBFieldID', function(name, value) {
+			//	console.log(name);
+			//	console.log(value);
+			//});
 			
-		</guery:builderFormRemote>
+			
+		</script>
+		<div id="mongoQuery"></div>
 	
 	</body>
 </html>

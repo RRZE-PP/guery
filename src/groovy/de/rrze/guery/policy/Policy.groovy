@@ -4,11 +4,11 @@ import de.rrze.guery.base.QueryBase;
 
 class Policy {
 
-	String id
-	String description 
+	volatile String id
+	volatile String description 
 	
-	QueryBase qb
-	RuleSet rs
+	final QueryBase qb
+	final RuleSet rs
 	
 	def Policy(QueryBase queryBase) {
 		qb = queryBase
@@ -49,6 +49,13 @@ class Policy {
 	Boolean isEmpty() {
 		this.rs.isEmpty()
 	}
+	
+	
+	
+//	Map toMongoFilter() {
+//			
+//	}
+	
 	
 	/**
 	 * Checks, if the ruleset contained in this policy is satisfied

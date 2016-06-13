@@ -61,10 +61,11 @@ class Javascript extends JSON {
 	}
 	
 	
-	String toString(Boolean prettyPrint = false) {
-		//this.prettyPrint = prettyPrint  // TODO
-		super.toString()
-	}
+//	String toString(Boolean prettyPrint = false) {
+////		super.prettyPrint = prettyPrint  // TODO
+////		super.toString()
+//		super.toString(prettyPrint)
+//	}
 
 	@Override
 	public void setTarget(Object target) {

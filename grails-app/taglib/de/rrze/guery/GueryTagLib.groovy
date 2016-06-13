@@ -22,7 +22,7 @@ class GueryTagLib {
 			gueryAttrs.builderElementId = attrs.id //attrs.builderElementId?:"${gueryAttrs.id?:gueryAttrs.name}_queryBuilder"
 		}
 
-		if (attrs.policy) {
+		if (attrs.policy != null) {
 			gueryAttrs.builderRules = attrs.policy.toJSON()
 		}
 		else {
@@ -37,10 +37,6 @@ class GueryTagLib {
 		out << """
 	<script>
 		var ${gueryAttrs.builderElementId}_validation_success = true;
-		function onValidationError_${gueryAttrs.builderElementId}(\$rule, error, value, filter, operator) {
-			${gueryAttrs.builderElementId}_validation_success = false;
-			//alert(error);
-		}
 
 		function update_${gueryAttrs.builderElementId}() {
 			${gueryAttrs.builderElementId}_validation_success = true;
@@ -50,8 +46,13 @@ class GueryTagLib {
 		}
 
 		\$(function(){
+			
+			\$('#${gueryAttrs.builderElementId}').on('validationError.queryBuilder', function(e, rule, error, value) {
+				${gueryAttrs.builderElementId}_validation_success = false;
+			});
+
 			var form = \$('#${gueryAttrs.builderElementId}').closest('form');
-			form.attr('onsubmit', 'update_${gueryAttrs.builderElementId}(); if (${gueryAttrs.builderElementId}_validation_success) {' + form.attr('onsubmit') + ';} return false;')
+			form.attr('onsubmit', 'update_${gueryAttrs.builderElementId}(); if (${gueryAttrs.builderElementId}_validation_success) {' + form.attr('onsubmit') + ';} else return false;')
 		});
 	</script>
 """
@@ -68,7 +69,7 @@ class GueryTagLib {
 	<script>
 		\$('#${gueryAttrs.builderElementId}').queryBuilder(${gueryAttrs.builderConfig});
 """
-		if (gueryAttrs.builderRules) {
+		if (gueryAttrs.builderRules != null) {
 			out << "	\$('#${gueryAttrs.builderElementId}').queryBuilder('setRules',jQuery.parseJSON('${gueryAttrs.builderRules}'));"
 		}
 		
@@ -79,14 +80,8 @@ class GueryTagLib {
 
 	}
 	
-	
+	@Deprecated
 	def builderFormRemote = { attrs, body ->
-		
-//		if(pluginManager.allPlugins.find { it.name == "resources" }) {
-//			r.require(modules:"jq_queryBuilder")
-//		}
-		
-		
 		def gueryAttrs = [:]
 		gueryAttrs.putAll(attrs)
 		

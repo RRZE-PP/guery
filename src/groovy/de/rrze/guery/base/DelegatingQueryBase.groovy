@@ -10,9 +10,8 @@ import de.rrze.guery.operator.Operator
 
 class DelegatingQueryBase extends QueryBase {
 
-	QueryBase parent
-	
-	IOperationManager		operationManager = new DelegatingClosureOperationManager()
+	final QueryBase parent
+	final IOperationManager operationManager = new DelegatingClosureOperationManager()
 	
 	
 	
@@ -43,8 +42,12 @@ class DelegatingQueryBase extends QueryBase {
 		getMergedFieldValue('sortable')
 	}
 	
-	Map<String,Boolean> getReadonlyBehaviour() {
-		getMergedFieldValue('readonlyBehaviour')
+	Set<String> getPlugins() {
+		getMergedFieldValue('plugins')
+	}
+	
+	Boolean getAllowEmpty() {
+		getMergedFieldValue('allowEmpty')
 	}
 	
 	List<String> getConditions() {
@@ -72,7 +75,7 @@ class DelegatingQueryBase extends QueryBase {
 				if (fieldName == 'filters') {
 					def parentValue = parent."${fieldName}"
 					def filterSet = parentValue.values() + localValue.values()
-					def flatFiltersByLabel = filterSet.groupBy { it.label }
+					def flatFiltersByLabel = filterSet.groupBy { it.label?:it.id } // use id, if no label is specified
 					def collapsedFlatFilters = flatFiltersByLabel.collect { k, v ->
 						def cf = v.first()
 						if (v.size() > 1) {
@@ -86,7 +89,15 @@ class DelegatingQueryBase extends QueryBase {
 					}
 					retValue = collapsedFlatFilters.collectEntries { [it.id, it] }
 				}
-				
+
+				// MERGE LANG
+				if (fieldName == 'lang') {
+					retValue = parent.lang
+					retValue.operators.putAll(localValue.operators)
+					retValue.errors.putAll(localValue.errors)
+					retValue.conditions.putAll(localValue.conditions)
+				}
+								
 				// GENERIC MERGE
 				if (!retValue) {
 					if (localValue in Map) { // merge with parent map
@@ -99,7 +110,7 @@ class DelegatingQueryBase extends QueryBase {
 						retValue = []
 						def parentValue = parent."${fieldName}"
 						if (parentValue) retValue.addAll(parentValue)
-						retValue.addAll(localValue) // current overrides parent
+						retValue.addAll(localValue)
 					}
 					else { // current overrides parent
 						retValue = localValue
