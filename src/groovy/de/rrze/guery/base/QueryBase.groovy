@@ -15,6 +15,7 @@ class QueryBase {
 	
 	protected final IOperationManager operationManager = new ClosureOperationManager()
 	protected final Map sharedData = [:]
+	protected final Map instanceData = [:]
 	
 	protected Boolean 				_sortable
 	protected Map<String,String>	_lang = [operators:[:], conditions:[:], errors:[:]]
@@ -114,7 +115,7 @@ class QueryBase {
 		addFilter(f)
 	}
 	
-	Map flatten() {
+	Map flatten(Map params = [:]) {
 		def ret = [:]
 		
 		putIfNotEmpty(ret,"sortable")
@@ -127,7 +128,7 @@ class QueryBase {
 		// handle filters
 		def flatFilters = []
 		this.filters.values().each {
-			flatFilters << it.flatten()
+			flatFilters << it.flatten(params)
 		}
 		
 		ret.put('filters', flatFilters)
@@ -135,7 +136,7 @@ class QueryBase {
 		// handle operators
 		def flatOperators = []
 		this.operators.values().each {
-			flatOperators << it.flatten()
+			flatOperators << it.flatten(params)
 		}
 		if (flatOperators) ret.put('operators', flatOperators)
 		
@@ -149,18 +150,21 @@ class QueryBase {
 		ret
 	}
 		
-	public Javascript toJs() {
-		def flatConfig = this.flatten()
+	public Javascript toJs(Map params = [:]) {
+		def flatConfig = this.flatten(params)
 		def js = new Javascript(flatConfig)
 		js
 	}
 	
-	public String toJsString(Boolean prettyPrint) {
+	public String toJsString(Boolean prettyPrint = false) {
+		toJsString([:], prettyPrint)
+	}
+	public String toJsString(Map params, Boolean prettyPrint = false) {
 		if (prettyPrint) {
-			toJs().toString(prettyPrint)
+			toJs(params).toString(prettyPrint)
 		}
 		else  {
-			toJs().toString()
+			toJs(params).toString()
 		}
 	}
 	

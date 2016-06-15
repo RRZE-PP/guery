@@ -53,6 +53,7 @@ class GueryInstance {
 		this
 	}
 	
+	
 	def getOperator(String type) {
 		qb.getOperator(type)
 	}
@@ -65,8 +66,11 @@ class GueryInstance {
 		qb.toJs()
 	}
 
-	String baseToJsString(Boolean prettyPrint) {
-		qb.toJsString(prettyPrint)
+	String baseToJsString(Boolean prettyPrint = false) {
+		baseToJsString([:],prettyPrint)
+	}
+	String baseToJsString(Map params, Boolean prettyPrint = false) {
+		qb.toJsString(params, prettyPrint)
 	}
 
 	

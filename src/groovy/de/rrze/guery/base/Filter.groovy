@@ -21,10 +21,12 @@ class Filter {
 	String 					placeholder
 	Boolean 				vertical
 	Collection<Operator>	operators = []
-	Map<String,String>		values
+	Object					values // FIXME implement some type safety later
     String                  plugin
     Map<String,String>      plugin_config
 
+	// generic data fot access by operator implementations
+	Object					data
 	
 	def Filter() {}
 	
@@ -38,7 +40,7 @@ class Filter {
 		else return this.field
 	}
 	
-	def flatten() {
+	def flatten(Map params = [:]) {
 		def ret = [:]
 		
 		putIfNotEmpty(ret,"id")
@@ -54,13 +56,18 @@ class Filter {
         putIfNotEmpty(ret,"plugin_config")
 
 		if (values) {
-			if (values instanceof LinkedHashMap || values instanceof SortedMap) {
+			def _values = values
+			if (values in Closure) {
+				_values = values(params)
+			}
+			
+			if (_values instanceof LinkedHashMap || _values instanceof SortedMap) {
 				// ordered
-				ret['values'] = values.collect { [ (it.key) : (it.value) ] }
+				ret['values'] = _values.collect { [ (it.key) : (it.value) ] }
 			}
 			else {
 				// unordered
-				ret['values'] = values
+				ret['values'] = _values
 			}
 		}
 		

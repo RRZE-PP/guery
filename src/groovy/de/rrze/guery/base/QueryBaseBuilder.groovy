@@ -63,7 +63,7 @@ class QueryBaseBuilder {
 			qb.operationManager.put(op.type, operationClosure)
 				
 		}
-		c()
+		c(f)
 		
 		if (log.isTraceEnabled()) log.trace("Adding filter ${f.id} ...")
 		qb.addFilter(f)
@@ -73,8 +73,16 @@ class QueryBaseBuilder {
 		qb.sharedData.put(id, value)
 	}
 	
+	def params(String id, value) {
+		qb.instanceData.put(id, value)
+	}
+	
 	def expose(Map value) {
 		value.each { k,v -> expose(k,v) }
+	}
+	
+	def params(Map value) {
+		value.each { k,v -> params(k,v) }
 	}
 	
 	def lang(Map value) {
@@ -133,6 +141,7 @@ class QueryBaseBuilder {
 		else if (name == 'lang') lang(value)
 		else if (name == 'allowEmpty') allowEmpty(value)
 		else if (name == 'expose') expose(value)
+		else if (name == 'params') params(value)
 		else throw new MissingPropertyException(name, this.class)
 	}
 	

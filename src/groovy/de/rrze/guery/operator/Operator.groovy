@@ -1,5 +1,7 @@
 package de.rrze.guery.operator
 
+import java.util.Map;
+
 import de.rrze.guery.base.Filter
 import de.rrze.guery.base.QueryBase
 import de.rrze.guery.converters.JavascriptCode
@@ -48,7 +50,7 @@ class Operator {
 	}
 	
 	
-	Map flatten() {
+	Map flatten(Map params = [:]) {
 		def ret = [:]
 		
 		putIfNonNull(ret,"type")

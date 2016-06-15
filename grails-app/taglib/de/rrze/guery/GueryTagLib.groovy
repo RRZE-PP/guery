@@ -14,7 +14,7 @@ class GueryTagLib {
 		
 		if (attrs.instance) {
 			def instance = attrs.instance
-			gueryAttrs.builderConfig = instance.baseToJsString()
+			gueryAttrs.builderConfig = instance.baseToJsString(attrs.params?:[:])
 			gueryAttrs.builderElementId = "guery_builder_${instance.id}"
 		}
 		else {
