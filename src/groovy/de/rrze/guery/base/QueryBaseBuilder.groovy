@@ -8,20 +8,16 @@ class QueryBaseBuilder {
 
 	QueryBase qb
 	
-	def originalDelegate
-	
 	def QueryBaseBuilder() {}
 	
 	QueryBase makeDelegate(QueryBase parentQb, Closure c) {
 		qb = new DelegatingQueryBase(parentQb)
-		originalDelegate = c.delegate
 		runClosure(c)
 		qb
 	}
 	
 	QueryBase make(Closure c) {
 		qb = new QueryBase()
-		originalDelegate = c.delegate
 		runClosure(c)
 		qb
 	}
@@ -35,7 +31,7 @@ class QueryBaseBuilder {
 		def f = new Filter(m)
 		if (log.isTraceEnabled()) log.trace("Building filter: ${m}")
 		
-		c.resolveStrategy = Closure.TO_SELF
+		c.resolveStrategy = Closure.DELEGATE_FIRST
 		c.metaClass.methodMissing = { name, arguments ->
 			def opSettings = [
 				type			: f.id + '_' + name,
@@ -58,8 +54,7 @@ class QueryBaseBuilder {
 			if (!(operationClosure in Closure)) {
 				throw new RuntimeException("Last filter operator argument must be of type Closure!")
 			}
-			operationClosure.delegate = originalDelegate
-			operationClosure.resolveStrategy = Closure.DELEGATE_ONLY
+			operationClosure.resolveStrategy = Closure.DELEGATE_FIRST
 			qb.operationManager.put(op.type, operationClosure)
 				
 		}
@@ -152,7 +147,7 @@ class QueryBaseBuilder {
 	private runClosure(Closure runClosure) {
 		Closure runClone = runClosure.clone()
 		runClone.delegate = this
-		runClone.resolveStrategy = Closure.DELEGATE_ONLY
+		runClone.resolveStrategy = Closure.DELEGATE_FIRST
 		runClone()
 	}
 }
