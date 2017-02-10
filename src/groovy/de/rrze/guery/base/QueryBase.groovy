@@ -1,5 +1,6 @@
 package de.rrze.guery.base
 
+import java.nio.file.attribute.AclEntryType
 import java.util.Map;
 
 import de.rrze.guery.converters.Javascript
@@ -29,6 +30,10 @@ class QueryBase {
 	
 	
 	def QueryBase() {}
+	
+	def QueryBase(Map qbMap) {
+		parseFromMap(qbMap)
+	}
 	
 	Map<String,Operator> getOperators() {
 		_operators
@@ -61,6 +66,74 @@ class QueryBase {
 	String getDefaultCondition() {
 		_defaultCondition
 	}
+	
+	
+	QueryBase parseFromMap(Map qbMap) {
+		id			= qbMap.name
+		description = qbMap.description
+		
+		_sortable 			= qbMap.queryBase.sortable
+		_plugins			= qbMap.queryBase.plugins
+		_allowEmpty 		= qbMap.queryBase.allow_empty
+		_conditions 		= qbMap.queryBase.conditions
+		_defaultCondition 	= qbMap.queryBase.default_condition
+		
+		def parsedOperatorsMap = [:]
+		qbMap.queryBase.operators.each {
+			def newOperator = new Operator([
+				qb				: this,
+//				filter			: null,
+				type			: it.type,
+				accept_values	: (it.nb_inputs > 0),
+				apply_to		: it.apply_to,
+			])
+
+			if (qbMap.queryBase?.lang?.operators?."${it.type}")
+				newOperator.setLabel(qbMap.queryBase?.lang?.operators?."${it.type}")
+						
+			if (qbMap.queryBase?.mongoOperators?."${it.type}")
+				newOperator.setMongo(qbMap.queryBase?.mongoOperators?."${it.type}")
+				
+			parsedOperatorsMap.put(newOperator.type, newOperator)
+		}
+		log.info("Parsed ${parsedOperatorsMap.size()} operators.")
+		
+		def numFilters = 0
+		qbMap.queryBase.filters.each {
+			
+			def operators = []
+			it.operators.each {  opType ->
+				def op = parsedOperatorsMap[(opType)]
+				if (!op) throw new RuntimeException("Could not find referenced operator type '${opType}'!")
+				else operators << op
+			}
+			
+			this.addFilter(new Filter([
+				id			: it.id,
+				field		: it.field,
+				label		: it.label,
+				description : it.description,
+				type		: it.type,
+				input		: it.input,
+				multiple	: it.multiple,
+				placeholder : it.placeholder,
+				vertical	: it.vertical,
+				operators   : operators,
+				values		: it.values,
+				plugin		: it.plugin,
+				plugin_config : it.plugin_config,
+//				data
+				])
+			)
+			numFilters++
+			
+		}
+		log.info("Parsed ${numFilters} filters.")
+		
+		log.info("QueryBase now contains ${filters.size()} filters with ${operators.size()} operators.")
+		
+		this
+	} 
 	
 	
 	def getExposedData(String id) {

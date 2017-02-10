@@ -25,7 +25,7 @@ class Filter {
     String                  plugin
     Map<String,String>      plugin_config
 
-	// generic data fot access by operator implementations
+	// generic data for access by operator implementations
 	Object					data
 	
 	def Filter() {}

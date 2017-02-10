@@ -23,12 +23,22 @@ class GueryInstance {
 	final GueryInstance parent
 	
 	def GueryInstance(String instanceId) {
-		id = instanceId
+		this.id = instanceId
+	}
+	
+	def GueryInstance(String instanceId, QueryBase qb) {
+		this(instanceId)
+		if (qb) this.qb = qb
 	}
 	
 	def GueryInstance(String instanceId, GueryInstance parentGi) {
 		this(instanceId)
-		if (parentGi) parent = parentGi
+		if (parentGi) this.parent = parentGi
+	}
+	
+	def GueryInstance(String instanceId, QueryBase qb, GueryInstance parentGi) {
+		this(instanceId, parentGi)
+		if (qb) this.qb = qb
 	}
 	
 	/*
