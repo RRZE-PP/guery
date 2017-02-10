@@ -1,1 +1,1 @@
-//= require jquery-querybuilder-2.2.0
+//= require jquery-querybuilder-2.4.1
