@@ -24,7 +24,7 @@ class QueryBase {
 	protected Map<String,Operator> 	_operators = [:]
 	protected List<String>			_conditions = null
 	protected String				_defaultCondition = null
-	protected Set<String>			_plugins
+	protected Set<String>			_plugins // FIXME should be map with <String,String> <-- second string is JSON
 	protected Boolean				_allowEmpty
 	
 	
