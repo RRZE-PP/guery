@@ -76,29 +76,42 @@ class GueryTagLib {
 	</script>
 """
 		out << g.hiddenField(id:gueryAttrs.builderResultId, name:gueryAttrs.builderResultName, value:'')
-		
+
 		// This is the jQuery Query Builder main element
-		out << "	<div id=\"${gueryAttrs.builderElementId}\""
-		if (gueryAttrs."data-id") out << "data-id=\"$gueryAttrs.'data-id'}\""
-		out << "></div>"
+		def builderElement = [tag:'div', attrs:[id:gueryAttrs.builderElementId], content:'']
+
+		// process child elements in body
+		def bodyHtml
+		if (body) {
+			bodyHtml = body(builderElementId:gueryAttrs.builderElementId, builderElement: builderElement)
+		}
 		
+		// output main element and body result
+		def builderHtml = "<${builderElement.tag}"
+		builderElement.attrs.each {
+			builderHtml += " ${it.key}=\"${it.value}\""
+		}
+		builderHtml +=">${builderElement.content}</${builderElement.tag}>"
+		out << builderHtml
+		out << bodyHtml
 		
 		// init builder configuration from queryBase
 		// and load builderRules - if any are given
 		out << """
 	<script>
-		\$('#${gueryAttrs.builderElementId}').queryBuilder(${gueryAttrs.builderConfig});
+		\$(function(){
+			console.log('Initializing query builder ${gueryAttrs.builderElementId} ...');
+			\$('#${gueryAttrs.builderElementId}').queryBuilder(${gueryAttrs.builderConfig});
 """
 		if (gueryAttrs.builderRules != null) {
-			out << "	\$('#${gueryAttrs.builderElementId}').queryBuilder('setRules',jQuery.parseJSON('${gueryAttrs.builderRules}'));"
+			out << "		\$('#${gueryAttrs.builderElementId}').queryBuilder('setRules',jQuery.parseJSON('${gueryAttrs.builderRules}'));"
 		}
 		
-		out << "</script>"
+		out << """
+			\$('#${gueryAttrs.builderElementId}').trigger('afterInit.${gueryAttrs.builderElementId}');
+		}); 
+	</script>"""
 		
-		// process child elements in body
-		if (body) {
-			out << body(builderElementId:gueryAttrs.builderElementId)
-		}
 		
 		// the end
 		out << "</div>"
@@ -108,11 +121,22 @@ class GueryTagLib {
 	 *  This is meant to be used in the body of a builder element 
 	 */
 	def rules = { attrs, body ->
-		def data = attrs.jsonData
 		def builderElementId = pageScope.builderElementId
+		def builderElement = pageScope.builderElement
+		if (!builderElementId || !builderElement) {
+			throw new RuntimeException("Element <guery:rules /> must be located inside a <guery:builder /> element!")
+		}
+
+		def data = attrs.jsonData
+		def dataId = attrs.identifier
+		
+		builderElement.attrs += ['data-id':dataId]
+		
 		out << """
 	<script>
-			\$(function(){
+			console.log('Installing afterInit.${builderElementId} trigger...');
+			\$('#${builderElementId}').on('afterInit.${builderElementId}', function(e) {
+				console.log('Loading rules... ${builderElementId}');
 				\$('#${builderElementId}').queryBuilder('setRules',jQuery.parseJSON('${data}'));
 			});
 	</script>
