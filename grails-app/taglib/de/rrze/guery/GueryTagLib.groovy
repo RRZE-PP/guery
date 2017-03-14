@@ -12,14 +12,33 @@ class GueryTagLib {
 		gueryAttrs.putAll(attrs)
 		
 		
+		def gueryParams = attrs.params?:[:]
+		
+		if (attrs.plugins) {
+			if (!gueryParams.plugins) gueryParams.plugins = [:]
+			
+			if (attrs.plugins instanceof String) {
+				gueryParams.plugins.putAll(attrs.plugins.split(',').collectEntries { e-> [(e):null] })
+			}
+			else if (attrs.plugins instanceof Map) {
+				gueryParams.plugins.putAll(attrs.plugins)
+			}
+			else if (attrs.plugins instanceof Collection) {
+				gueryParams.plugins.putAll(attrs.plugins.collectEntries { e-> [(e):null] })
+			}
+			else {
+				log.warn("Unable to parse data from 'plugins' parameter: ${attrs.plugins}")
+			}
+		}
+		
 		if (attrs.instance) {
 			def instance = attrs.instance
-			gueryAttrs.builderConfig = instance.baseToJsString(attrs.params?:[:])
+			gueryAttrs.builderConfig = instance.baseToJsString(gueryParams)
 			gueryAttrs.builderElementId = "guery_builder_${instance.id}"
 		}
 		else {
 			gueryAttrs.builderConfig = attrs.builderConfig?:pageScope.builderConfig
-			gueryAttrs.builderElementId = attrs.id //attrs.builderElementId?:"${gueryAttrs.id?:gueryAttrs.name}_queryBuilder"
+			gueryAttrs.builderElementId = attrs.id
 		}
 
 		if (attrs.policy != null) {
@@ -58,13 +77,14 @@ class GueryTagLib {
 """
 		out << g.hiddenField(id:gueryAttrs.builderResultId, name:gueryAttrs.builderResultName, value:'')
 		
-		if (body) {
-			out << body(builderElementId:gueryAttrs.builderElementId)
-		}
-		else {
-			out << "	<div id=\"${gueryAttrs.builderElementId}\"></div>"
-		}
+		// This is the jQuery Query Builder main element
+		out << "	<div id=\"${gueryAttrs.builderElementId}\""
+		if (gueryAttrs."data-id") out << "data-id=\"$gueryAttrs.'data-id'}\""
+		out << "></div>"
 		
+		
+		// init builder configuration from queryBase
+		// and load builderRules - if any are given
 		out << """
 	<script>
 		\$('#${gueryAttrs.builderElementId}').queryBuilder(${gueryAttrs.builderConfig});
@@ -73,11 +93,30 @@ class GueryTagLib {
 			out << "	\$('#${gueryAttrs.builderElementId}').queryBuilder('setRules',jQuery.parseJSON('${gueryAttrs.builderRules}'));"
 		}
 		
+		out << "</script>"
+		
+		// process child elements in body
+		if (body) {
+			out << body(builderElementId:gueryAttrs.builderElementId)
+		}
+		
+		// the end
+		out << "</div>"
+	}
+	
+	/**
+	 *  This is meant to be used in the body of a builder element 
+	 */
+	def rules = { attrs, body ->
+		def data = attrs.jsonData
+		def builderElementId = pageScope.builderElementId
 		out << """
+	<script>
+			\$(function(){
+				\$('#${builderElementId}').queryBuilder('setRules',jQuery.parseJSON('${data}'));
+			});
 	</script>
-</div>
 """
-
 	}
 	
 	@Deprecated
