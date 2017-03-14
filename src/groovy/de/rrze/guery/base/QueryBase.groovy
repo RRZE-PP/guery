@@ -198,6 +198,23 @@ class QueryBase {
 		putIfNotEmpty(ret,"plugins")
 		putIfNotEmpty(ret,"allowEmpty")
 		
+		// handle plugins
+		if (params.plugins) {
+			if (!ret.plugins) ret.plugins = [:]
+			if (params.plugins instanceof String) {
+				ret.plugins.putAll(params.plugins.split(',').collectEntries { e-> [(e):null] })
+			}
+			else if (params.plugins instanceof Map) {
+				ret.plugins.putAll(params.plugins)
+			}
+			else if (params.plugins instanceof Collection) {
+				ret.plugins.putAll(params.plugins.collectEntries { e-> [(e):null] })
+			}
+			else {
+				log.warn("Unable to parse data from 'plugins' parameter: ${params.plugins}")
+			}
+		}
+		
 		// handle filters
 		def flatFilters = []
 		this.filters.values().each {
