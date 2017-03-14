@@ -15,6 +15,7 @@ class Operator {
 	Boolean				accept_values
 	Collection<String>	apply_to
 	
+	Boolean				multiple
 	String 				label
 	
 	// console.log(JSON.stringify($('#guery_builder_extended').queryBuilder('getMongo')));
@@ -58,11 +59,20 @@ class Operator {
 		
 		// FIXME Hack to support v2.1.0
 //		putIfNonNull(ret,"accept_values")
-		if (accept_values) ret.nb_inputs = 1
-		else ret.nb_inputs = 0
+		if (accept_values) {
+			ret.nb_inputs = 1
+			if (this.multiple) {
+				ret.multiple = true
+			}
+			else {
+				ret.multiple = false
+			}
+		}
+		else {
+			ret.nb_inputs = 0
+			ret.multiple = false
+		}
 		
-		ret.multiple = false
-
 		ret
 	}
 
