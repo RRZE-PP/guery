@@ -23,17 +23,9 @@ grails.project.dependency.resolution = {
         // excludes 'ehcache'
     }
     log "error" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
-    checksums true // Whether to verify checksums on resolve
-    legacyResolve false // whether to do a secondary resolve on plugin installation, not advised and here for backwards compatibility
 
     repositories {
-        inherits true // Whether to inherit repository definitions from plugins
-
-        grailsPlugins()
-        grailsHome()
         grailsCentral()
-
-//        mavenLocal()
         mavenCentral()
 
 		
@@ -43,40 +35,29 @@ grails.project.dependency.resolution = {
 			auth([username: ppRepo.username,password: ppRepo.password])
 		}
 		
-		def localRepo = grailsSettings.config.grails.project.repos.localArtifactory
-		mavenRepo(id:localRepo.id , url:localRepo.url) {
-			updatePolicy 'always'
-			auth([username: localRepo.username,password: localRepo.password])
-		}
-		
     }
 
     dependencies {
     }
 
     plugins {
-		if (live.find { it == 'guery' }) {
-			println "[GUERY] Running in live-mode!"
+		build(	":tomcat:7.0.55.2",
+				":release:3.1.1",
+		) {
+		  export = false
+	    }
+		
+		compile (":jquery-ui:1.10.4") {
+			excludes "jquery"
+			export = false
 		}
-		else {
-			build(	":tomcat:7.0.55.2",
-					":release:3.1.1",
-			) {
-			  export = false
-		    }
-			
-			compile (":jquery-ui:1.10.4") {
-				excludes "jquery"
-				export = false
-			}
-			
-			compile (
-				":resources:1.2.14",
-				":asset-pipeline:2.1.5",
-				":jquery:1.11.1"
-			) {
-				export = false
-			} 
-		}
+		
+		compile (
+			":resources:1.2.14",
+			":asset-pipeline:2.1.5",
+			":jquery:1.11.1"
+		) {
+			export = false
+		} 
     }
 }
