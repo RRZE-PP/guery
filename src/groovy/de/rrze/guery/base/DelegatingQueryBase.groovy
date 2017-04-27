@@ -72,18 +72,35 @@ class DelegatingQueryBase extends QueryBase {
 			else { // if there is a parent and the stored value is NOT empty
 				
 				// MAGIC MERGE FILTERS BY LABEL // TODO maybe needs some more checks
+//				if (fieldName == 'filters') {
+//					def parentValue = parent."${fieldName}"
+//					def filterSet = parentValue.values() + localValue.values()
+//					def flatFiltersByLabel = filterSet.groupBy { it.label?:it.id } // use id, if no label is specified
+//					def collapsedFlatFilters = flatFiltersByLabel.collect { k, v ->
+//						def cf = v.first()
+//						if (v.size() > 1) {
+//							v.each { ff ->
+//								cf.operators.addAll(ff.operators)
+//							}
+//							cf.operators = cf.operators.unique()
+//						}
+//						return cf
+//					}
+//					retValue = collapsedFlatFilters.collectEntries { [it.id, it] }
+//				}
+				
+				// MAGIC MERGE FILTERS BY ID // TODO maybe needs some more checks
 				if (fieldName == 'filters') {
 					def parentValue = parent."${fieldName}"
 					def filterSet = parentValue.values() + localValue.values()
-					def flatFiltersByLabel = filterSet.groupBy { it.label?:it.id } // use id, if no label is specified
-					def collapsedFlatFilters = flatFiltersByLabel.collect { k, v ->
+					def flatFiltersById = filterSet.groupBy { it.id } // use id, if no label is specified
+					def collapsedFlatFilters = flatFiltersById.collect { k, v ->
 						def cf = v.first()
 						if (v.size() > 1) {
 							v.each { ff ->
 								cf.operators.addAll(ff.operators)
 							}
 							cf.operators = cf.operators.unique()
-			
 						}
 						return cf
 					}
