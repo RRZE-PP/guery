@@ -138,6 +138,7 @@ class GueryTagLib {
 			\$('#${builderElementId}').on('afterInit.${builderElementId}', function(e) {
 				console.log('Loading rules... ${builderElementId}');
 				\$('#${builderElementId}').queryBuilder('setRules',jQuery.parseJSON('${data}'));
+				console.log('Loading complete: ${builderElementId}');
 			});
 	</script>
 """
