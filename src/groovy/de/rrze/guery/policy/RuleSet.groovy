@@ -157,19 +157,21 @@ class RuleSet implements IEvaluateable {
 			}
 
 			
-			// always merge status updates
-			tmpResponse.status.each { filterId, evalResult ->
-				if (!(evalResult in Collection)) {
-					evalResult = [evalResult] as Set
-				}
-				
-				def acc = res.status.get(filterId) as Set
-				if (!acc) res.status.put(filterId, evalResult) // init on first use
-				else {
-					// intersect
-					def missing = acc.findAll { accit -> !(evalResult.find { accit.is(it) }) }
-					acc.removeAll(missing)
-					res.status.put(filterId, acc)
+			// merge status updates on positive decision (e.g. the subordinate Rule or RuleSet were applicable)
+			if (tmpResponse.decision == true) {
+				tmpResponse.status.each { filterId, evalResult ->
+					if (!(evalResult in Collection)) {
+						evalResult = [evalResult] as Set
+					}
+					
+					def acc = res.status.get(filterId) as Set
+					if (!acc) res.status.put(filterId, evalResult) // init on first use
+					else {
+						// intersect
+						def missing = acc.findAll { accit -> !(evalResult.find { accit.is(it) }) }
+						acc.removeAll(missing)
+						res.status.put(filterId, acc)
+					}
 				}
 			}
 			
@@ -211,18 +213,20 @@ class RuleSet implements IEvaluateable {
 				res.decision = true
 			}
 			
-			// always merge status updates
-			tmpResponse.status.each { filterId, evalResult ->
-				if (!(evalResult in Collection)) {
-					evalResult = [evalResult] as Set
-				}
-				
-				def acc = res.status.get(filterId) as Set
-				if (!acc) res.status.put(filterId, evalResult) // init on first use
-				else {
-					// join
-					acc.addAll(evalResult)
-					res.status.put(filterId, acc)
+			// merge status updates on positive decision (e.g. the subordinate Rule or RuleSet were applicable)
+			if (tmpResponse.decision == true) {
+				tmpResponse.status.each { filterId, evalResult ->
+					if (!(evalResult in Collection)) {
+						evalResult = [evalResult] as Set
+					}
+					
+					def acc = res.status.get(filterId) as Set
+					if (!acc) res.status.put(filterId, evalResult) // init on first use
+					else {
+						// join
+						acc.addAll(evalResult)
+						res.status.put(filterId, acc)
+					}
 				}
 			}
 			
