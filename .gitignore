@@ -42,6 +42,9 @@
 /scripts/
 
 
+# IntelliJ
+.idea
+*.iml
 
 # personal
 /grails-app/domain
