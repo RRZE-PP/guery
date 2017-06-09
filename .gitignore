@@ -23,13 +23,8 @@
 /*.zip.sha1
 /plugin.xml
 
-# older plugin install locations
-/plugins
-/web-app/plugins
-
 # "temporary" build files
 /target
-
 
 
 # Eclipse
@@ -45,9 +40,8 @@
 # IntelliJ
 .idea
 *.iml
+/out
 
-# personal
-/grails-app/domain
-/grails-app/i18n
-/grails-app/utils
-/grails-app/conf/hibernate 
+# gradle
+/build
+/.gradle
