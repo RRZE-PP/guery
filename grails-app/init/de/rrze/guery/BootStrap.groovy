@@ -1,4 +1,4 @@
-package test
+package de.rrze.guery
 
 class BootStrap {
 

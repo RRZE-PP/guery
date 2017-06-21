@@ -1,4 +1,4 @@
-package test
+package de.rrze.guery
 
 import grails.boot.*
 import grails.boot.config.GrailsAutoConfiguration
