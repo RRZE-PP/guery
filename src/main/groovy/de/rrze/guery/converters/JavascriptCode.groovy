@@ -1,8 +1,11 @@
 package de.rrze.guery.converters
 
 import org.grails.web.json.JSONElement
+import org.slf4j.LoggerFactory
 
 class JavascriptCode implements JSONElement, CharSequence {
+
+    static log = LoggerFactory.getLogger(JavascriptCode.class)
 
 	String codeString
 	

@@ -4,8 +4,11 @@ import de.rrze.guery.base.Filter
 import de.rrze.guery.operator.Operator
 import de.rrze.guery.base.QueryBase
 import grails.converters.JSON
+import org.slf4j.LoggerFactory
 
 class Rule implements IEvaluateable {
+
+    static log = LoggerFactory.getLogger(Rule.class)
 
 	QueryBase qb
 	

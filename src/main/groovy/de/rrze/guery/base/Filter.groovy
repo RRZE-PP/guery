@@ -2,6 +2,7 @@ package de.rrze.guery.base
 
 import de.rrze.guery.converters.JavascriptCode
 import de.rrze.guery.operator.Operator
+import org.slf4j.LoggerFactory
 
 /**
  * Generic filter representation 
@@ -10,6 +11,8 @@ import de.rrze.guery.operator.Operator
  *
  */
 class Filter {
+
+    static log = LoggerFactory.getLogger(Filter.class)
 
 	String 					id //required
 	String 					field

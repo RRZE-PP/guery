@@ -3,8 +3,11 @@ package de.rrze.guery.operator
 import de.rrze.guery.base.Filter
 import de.rrze.guery.converters.JavascriptCode
 import de.rrze.guery.base.QueryBase
+import org.slf4j.LoggerFactory
 
 class Operator {
+
+    static log = LoggerFactory.getLogger(Operator.class)
 
 	QueryBase qb
 	Filter filter

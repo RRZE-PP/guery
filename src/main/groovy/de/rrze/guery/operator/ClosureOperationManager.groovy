@@ -1,6 +1,10 @@
 package de.rrze.guery.operator
 
+import org.slf4j.LoggerFactory
+
 class ClosureOperationManager implements IOperationManager {
+
+    static log = LoggerFactory.getLogger(ClosureOperationManager.class)
 
 	protected Map<String, Closure> _operations = [:]
 	

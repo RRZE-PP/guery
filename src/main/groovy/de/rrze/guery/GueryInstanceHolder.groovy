@@ -6,7 +6,6 @@ import org.apache.log4j.Logger
 
 class GueryInstanceHolder {
 
-	
 	static log = Logger.getLogger(GueryInstanceHolder.class)
 	
 	static final Map<String,GueryInstance> registry = [:]

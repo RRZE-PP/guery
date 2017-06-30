@@ -3,8 +3,11 @@ package de.rrze.guery.base
 import de.rrze.guery.operator.DelegatingClosureOperationManager
 import de.rrze.guery.operator.IOperationManager
 import de.rrze.guery.operator.Operator
+import org.slf4j.LoggerFactory
 
 class DelegatingQueryBase extends QueryBase {
+
+    static log = LoggerFactory.getLogger(DelegatingQueryBase.class)
 
 	final QueryBase parent
 	final IOperationManager operationManager = new DelegatingClosureOperationManager()

@@ -3,9 +3,11 @@ package de.rrze.guery.converters
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONWriter
 import org.grails.web.json.JSONWriter
+import org.slf4j.LoggerFactory
 
 class JavascriptWriter extends JSONWriter {
-	
+
+    static log = LoggerFactory.getLogger(JavascriptWriter.class)
 	
 	def JavascriptWriter(Writer out) {
 		super(out)

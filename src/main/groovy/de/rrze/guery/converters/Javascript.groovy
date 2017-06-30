@@ -1,5 +1,7 @@
 package de.rrze.guery.converters
 
+import org.slf4j.LoggerFactory
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Stack;
@@ -27,6 +29,7 @@ import groovy.lang.Closure;
 
 class Javascript extends JSON {
 
+    static log = LoggerFactory.getLogger(Javascript.class)
 	
 	protected Object target;
 	

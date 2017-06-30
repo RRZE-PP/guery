@@ -1,8 +1,11 @@
 package de.rrze.guery.policy
 
-import de.rrze.guery.base.QueryBase;
+import de.rrze.guery.base.QueryBase
+import org.slf4j.LoggerFactory;
 
 class Policy {
+
+    static log = LoggerFactory.getLogger(Policy.class)
 
 	volatile String id
 	volatile String description 

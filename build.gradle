@@ -6,11 +6,11 @@ buildscript {
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-//        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.8.2"
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.13.2"
     }
 }
 
-version "1.0.0"
+version "1.0.2"
 group "org.grails.plugins"
 
 apply plugin:"eclipse"
@@ -19,6 +19,8 @@ apply plugin:"org.grails.grails-plugin"
 apply plugin:"org.grails.grails-plugin-publish"
 apply plugin:"org.grails.grails-gsp"
 //apply plugin:"asset-pipeline"
+apply plugin: "com.bertramlabs.asset-pipeline"
+
 apply from:repo_publish_config
 
 ext {
@@ -53,7 +55,7 @@ dependencies {
     profile "org.grails.profiles:web-plugin"
     provided "org.grails:grails-plugin-services"
     provided "org.grails:grails-plugin-domain-class"
-//    runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.8.2"
+    compile "com.bertramlabs.plugins:asset-pipeline-grails:2.13.2"
     testCompile "org.grails:grails-plugin-testing"
     testCompile "org.grails.plugins:geb"
     testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
@@ -86,6 +88,6 @@ grailsPublish {
 }
 
 
-//assets {
-//    packagePlugin = true
-//}
+assets {
+    packagePlugin = true
+}

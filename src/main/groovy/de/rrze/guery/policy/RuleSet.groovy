@@ -1,5 +1,7 @@
 package de.rrze.guery.policy
 
+import org.slf4j.LoggerFactory
+
 import java.awt.event.ItemEvent;
 
 import grails.converters.JSON
@@ -12,6 +14,8 @@ import de.rrze.guery.base.QueryBase
 import static org.grails.web.json.JSONObject.*;
 
 class RuleSet implements IEvaluateable {
+
+    static log = LoggerFactory.getLogger(RuleSet.class)
 
 	QueryBase qb
 	

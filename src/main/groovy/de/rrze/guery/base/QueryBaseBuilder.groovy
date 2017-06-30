@@ -2,8 +2,11 @@ package de.rrze.guery.base
 
 import de.rrze.guery.operator.IOperationManager
 import de.rrze.guery.operator.Operator
+import org.slf4j.LoggerFactory
 
 class QueryBaseBuilder {
+
+    static log = LoggerFactory.getLogger(QueryBaseBuilder.class)
 
 	QueryBase qb
 	

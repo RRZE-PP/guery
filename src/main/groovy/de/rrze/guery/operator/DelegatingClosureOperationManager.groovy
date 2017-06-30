@@ -1,6 +1,10 @@
 package de.rrze.guery.operator
 
+import org.slf4j.LoggerFactory
+
 class DelegatingClosureOperationManager extends ClosureOperationManager {
+
+    static log = LoggerFactory.getLogger(DelegatingClosureOperationManager.class)
 
 	ClosureOperationManager parent
 	
