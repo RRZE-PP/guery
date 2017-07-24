@@ -6,11 +6,11 @@ buildscript {
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.13.2"
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.9.5"
     }
 }
 
-version "1.0.2"
+version "1.0.3"
 group "org.grails.plugins"
 
 apply plugin:"eclipse"
@@ -55,7 +55,8 @@ dependencies {
     profile "org.grails.profiles:web-plugin"
     provided "org.grails:grails-plugin-services"
     provided "org.grails:grails-plugin-domain-class"
-    compile "com.bertramlabs.plugins:asset-pipeline-grails:2.13.2"
+//    compile "com.bertramlabs.plugins:asset-pipeline-grails:2.13.2"
+    runtime "org.grails.plugins:asset-pipeline"
     testCompile "org.grails:grails-plugin-testing"
     testCompile "org.grails.plugins:geb"
     testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
