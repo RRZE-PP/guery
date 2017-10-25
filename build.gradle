@@ -6,7 +6,8 @@ buildscript {
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.9.5"
+//        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.9.5"
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.14.2"
     }
 }
 
@@ -18,8 +19,8 @@ apply plugin:"idea"
 apply plugin:"org.grails.grails-plugin"
 apply plugin:"org.grails.grails-plugin-publish"
 apply plugin:"org.grails.grails-gsp"
-//apply plugin:"asset-pipeline"
-apply plugin: "com.bertramlabs.asset-pipeline"
+apply plugin:"asset-pipeline"
+//apply plugin: "com.bertramlabs.asset-pipeline"
 
 apply from:repo_publish_config
 
@@ -56,7 +57,8 @@ dependencies {
     provided "org.grails:grails-plugin-services"
     provided "org.grails:grails-plugin-domain-class"
 //    compile "com.bertramlabs.plugins:asset-pipeline-grails:2.13.2"
-    runtime "org.grails.plugins:asset-pipeline"
+//    runtime "org.grails.plugins:asset-pipeline"
+    runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.14.2"
     testCompile "org.grails:grails-plugin-testing"
     testCompile "org.grails.plugins:geb"
     testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
