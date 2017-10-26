@@ -1,12 +1,11 @@
 package de.rrze.guery
 
+import de.rrze.guery.base.Filter
 import de.rrze.guery.base.QueryBase
 import de.rrze.guery.base.QueryBaseBuilder
-import de.rrze.guery.base.Filter
 import de.rrze.guery.policy.Policy
 import grails.converters.JSON
 import groovy.util.logging.Log4j
-import org.slf4j.LoggerFactory
 
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
@@ -60,6 +59,7 @@ class GueryInstance {
 		
 		if (!qb.id) qb.id = "${id}_queryBase"
 		if (!qb.description) qb.description = "QueryBase for ${id}"
+        // TODO implement interface for catching validation errors
 //		if (!qb.onValidationError) qb.onValidationError = new JavascriptCode("onValidationError_guery_builder_${id}")
 		this
 	}

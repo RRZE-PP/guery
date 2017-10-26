@@ -4,7 +4,6 @@ import de.rrze.guery.operator.DelegatingClosureOperationManager
 import de.rrze.guery.operator.IOperationManager
 import de.rrze.guery.operator.Operator
 import groovy.util.logging.Log4j
-import org.slf4j.LoggerFactory
 
 @Log4j
 class DelegatingQueryBase extends QueryBase {
@@ -62,31 +61,12 @@ class DelegatingQueryBase extends QueryBase {
 	def getMergedFieldValue(String fieldName) {
 		def retValue
 		def localValue = this."_${fieldName}"
-//		if (fieldName in ['_sortable']) log.warn("${fieldName} --> ${tmpValue}")
-		
+
 		if (parent) {
 			if (localValue == null) { // if there is a parent and the stored value is empty
 				retValue = parent."${fieldName}" // delegate to parent
 			}
 			else { // if there is a parent and the stored value is NOT empty
-				
-				// MAGIC MERGE FILTERS BY LABEL // TODO maybe needs some more checks
-//				if (fieldName == 'filters') {
-//					def parentValue = parent."${fieldName}"
-//					def filterSet = parentValue.values() + localValue.values()
-//					def flatFiltersByLabel = filterSet.groupBy { it.label?:it.id } // use id, if no label is specified
-//					def collapsedFlatFilters = flatFiltersByLabel.collect { k, v ->
-//						def cf = v.first()
-//						if (v.size() > 1) {
-//							v.each { ff ->
-//								cf.operators.addAll(ff.operators)
-//							}
-//							cf.operators = cf.operators.unique()
-//						}
-//						return cf
-//					}
-//					retValue = collapsedFlatFilters.collectEntries { [it.id, it] }
-//				}
 				
 				// MAGIC MERGE FILTERS BY ID // TODO maybe needs some more checks
 				if (fieldName == 'filters') {

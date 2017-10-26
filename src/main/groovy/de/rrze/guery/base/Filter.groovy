@@ -1,9 +1,7 @@
 package de.rrze.guery.base
 
-import de.rrze.guery.converters.JavascriptCode
 import de.rrze.guery.operator.Operator
 import groovy.util.logging.Log4j
-import org.slf4j.LoggerFactory
 
 /**
  * Generic filter representation 

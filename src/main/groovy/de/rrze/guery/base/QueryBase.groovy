@@ -1,11 +1,10 @@
 package de.rrze.guery.base
 
+import de.rrze.guery.converters.Javascript
 import de.rrze.guery.operator.ClosureOperationManager
 import de.rrze.guery.operator.IOperationManager
-import de.rrze.guery.converters.Javascript
 import de.rrze.guery.operator.Operator
 import groovy.util.logging.Log4j
-import org.slf4j.LoggerFactory
 
 @Log4j
 class QueryBase {
@@ -81,7 +80,6 @@ class QueryBase {
 		qbMap.queryBase.operators.each {
 			def newOperator = new Operator([
 				qb				: this,
-//				filter			: null,
 				type			: it.type,
 				accept_values	: (it.nb_inputs > 0),
 				apply_to		: it.apply_to,
@@ -121,7 +119,6 @@ class QueryBase {
 				values		: it.values,
 				plugin		: it.plugin,
 				plugin_config : it.plugin_config,
-//				data
 				])
 			)
 			numFilters++

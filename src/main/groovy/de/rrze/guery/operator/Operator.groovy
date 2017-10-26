@@ -1,10 +1,9 @@
 package de.rrze.guery.operator
 
 import de.rrze.guery.base.Filter
-import de.rrze.guery.converters.JavascriptCode
 import de.rrze.guery.base.QueryBase
+import de.rrze.guery.converters.JavascriptCode
 import groovy.util.logging.Log4j
-import org.slf4j.LoggerFactory
 
 @Log4j
 class Operator {
@@ -19,7 +18,6 @@ class Operator {
 	Boolean				multiple
 	String 				label
 	
-	// console.log(JSON.stringify($('#guery_builder_extended').queryBuilder('getMongo')));
 	JavascriptCode mongo
 	
 	def Operator() { }

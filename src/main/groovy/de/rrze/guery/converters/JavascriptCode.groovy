@@ -2,7 +2,6 @@ package de.rrze.guery.converters
 
 import groovy.util.logging.Log4j
 import org.grails.web.json.JSONElement
-import org.slf4j.LoggerFactory
 
 @Log4j
 class JavascriptCode implements JSONElement, CharSequence {
@@ -17,10 +16,6 @@ class JavascriptCode implements JSONElement, CharSequence {
 		codeString
 	}
 	
-//	String toString(int indentFactor) {
-//		codeString
-//	}
-
 	@Override
 	public int length() {
 		return codeString.length()

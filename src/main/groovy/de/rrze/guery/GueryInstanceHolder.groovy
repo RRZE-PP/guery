@@ -2,9 +2,7 @@ package de.rrze.guery
 
 import groovy.util.logging.Log4j
 
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import org.apache.log4j.Logger
+import java.util.concurrent.locks.ReentrantReadWriteLock
 
 @Log4j
 class GueryInstanceHolder {

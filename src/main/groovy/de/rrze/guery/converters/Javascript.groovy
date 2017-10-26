@@ -1,32 +1,11 @@
 package de.rrze.guery.converters
 
-import groovy.util.logging.Log4j
-import org.slf4j.LoggerFactory
-
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Stack;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.grails.web.converters.AbstractConverter;
-import org.grails.web.converters.Converter;
-import org.grails.web.converters.Converter.CircularReferenceBehaviour;
-import org.grails.web.converters.configuration.ConverterConfiguration;
-import org.grails.web.converters.configuration.ConvertersConfigurationHolder;
-import org.grails.web.converters.exceptions.ConverterException;
-import org.grails.web.converters.marshaller.ObjectMarshaller;
-import org.grails.web.json.JSONArray;
-import org.grails.web.json.JSONException;
-import org.grails.web.json.JSONObject;
-import org.grails.web.json.JSONTokener;
-import org.grails.web.json.JSONWriter;
-import org.grails.web.json.PathCapturingJSONWriterWrapper;
-import org.grails.web.json.PrettyPrintJSONWriter;
-
 import grails.converters.JSON
-import grails.util.GrailsWebUtil;
-import groovy.lang.Closure;
+import grails.util.GrailsWebUtil
+import groovy.util.logging.Log4j
+import org.grails.web.converters.exceptions.ConverterException
+
+import javax.servlet.http.HttpServletResponse
 
 @Log4j
 class Javascript extends JSON {
@@ -59,17 +38,9 @@ class Javascript extends JSON {
 	}
 	
 	public void convertAnother(Object o) throws ConverterException {
-//		println "convertAnother: ${o}"
 		value(o);
 	}
 	
-	
-//	String toString(Boolean prettyPrint = false) {
-////		super.prettyPrint = prettyPrint  // TODO
-////		super.toString()
-//		super.toString(prettyPrint)
-//	}
-
 	@Override
 	public void setTarget(Object target) {
 		this.target = target;
