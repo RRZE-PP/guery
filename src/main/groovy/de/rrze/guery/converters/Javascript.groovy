@@ -1,5 +1,6 @@
 package de.rrze.guery.converters
 
+import groovy.util.logging.Log4j
 import org.slf4j.LoggerFactory
 
 import java.io.IOException;
@@ -27,10 +28,9 @@ import grails.converters.JSON
 import grails.util.GrailsWebUtil;
 import groovy.lang.Closure;
 
+@Log4j
 class Javascript extends JSON {
 
-    static log = LoggerFactory.getLogger(Javascript.class)
-	
 	protected Object target;
 	
 	def Javascript() {

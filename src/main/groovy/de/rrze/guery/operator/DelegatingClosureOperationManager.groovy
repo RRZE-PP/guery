@@ -1,10 +1,10 @@
 package de.rrze.guery.operator
 
+import groovy.util.logging.Log4j
 import org.slf4j.LoggerFactory
 
+@Log4j
 class DelegatingClosureOperationManager extends ClosureOperationManager {
-
-    static log = LoggerFactory.getLogger(DelegatingClosureOperationManager.class)
 
 	ClosureOperationManager parent
 	

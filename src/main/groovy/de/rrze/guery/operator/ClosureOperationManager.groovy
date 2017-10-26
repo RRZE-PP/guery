@@ -1,7 +1,9 @@
 package de.rrze.guery.operator
 
+import groovy.util.logging.Log4j
 import org.slf4j.LoggerFactory
 
+@Log4j
 class ClosureOperationManager implements IOperationManager {
 
     static log = LoggerFactory.getLogger(ClosureOperationManager.class)

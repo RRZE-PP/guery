@@ -2,6 +2,7 @@ package de.rrze.guery.base
 
 import de.rrze.guery.converters.JavascriptCode
 import de.rrze.guery.operator.Operator
+import groovy.util.logging.Log4j
 import org.slf4j.LoggerFactory
 
 /**
@@ -10,9 +11,8 @@ import org.slf4j.LoggerFactory
  * @author unrza249
  *
  */
+@Log4j
 class Filter {
-
-    static log = LoggerFactory.getLogger(Filter.class)
 
 	String 					id //required
 	String 					field

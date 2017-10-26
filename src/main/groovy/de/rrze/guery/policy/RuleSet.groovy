@@ -1,5 +1,6 @@
 package de.rrze.guery.policy
 
+import groovy.util.logging.Log4j
 import org.slf4j.LoggerFactory
 
 import java.awt.event.ItemEvent;
@@ -13,6 +14,7 @@ import de.rrze.guery.base.QueryBase
 
 import static org.grails.web.json.JSONObject.*;
 
+@Log4j
 class RuleSet implements IEvaluateable {
 
     static log = LoggerFactory.getLogger(RuleSet.class)

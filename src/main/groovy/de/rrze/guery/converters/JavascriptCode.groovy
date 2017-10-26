@@ -1,11 +1,11 @@
 package de.rrze.guery.converters
 
+import groovy.util.logging.Log4j
 import org.grails.web.json.JSONElement
 import org.slf4j.LoggerFactory
 
+@Log4j
 class JavascriptCode implements JSONElement, CharSequence {
-
-    static log = LoggerFactory.getLogger(JavascriptCode.class)
 
 	String codeString
 	

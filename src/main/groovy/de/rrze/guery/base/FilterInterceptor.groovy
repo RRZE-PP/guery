@@ -1,7 +1,9 @@
 package de.rrze.guery.base
 
 import de.rrze.guery.operator.Operator
+import groovy.util.logging.Log4j
 
+@Log4j
 class FilterInterceptor implements GroovyInterceptable {
 
     Filter f

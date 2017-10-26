@@ -14,7 +14,7 @@ class GueryGrailsPlugin {
     def author = "Florian Löffler"
     def authorEmail = "florian.loeffler@fau.de"
     def description = '''\
-Grails plugin for building and evaluating queries/rules using the execellent jQuery Query Builder GUI as a frontend.
+Grails plugin for building and evaluating queries/rules using the excellent jQuery Query Builder GUI as a frontend.
 '''
 
     // URL to the plugin's documentation

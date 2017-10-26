@@ -1,13 +1,14 @@
 package de.rrze.guery
 
+import groovy.util.logging.Log4j
+
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.log4j.Logger
 
+@Log4j
 class GueryInstanceHolder {
 
-	static log = Logger.getLogger(GueryInstanceHolder.class)
-	
 	static final Map<String,GueryInstance> registry = [:]
 	static final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock()
 	

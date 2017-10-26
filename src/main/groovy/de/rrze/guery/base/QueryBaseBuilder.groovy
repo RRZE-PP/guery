@@ -1,11 +1,12 @@
 package de.rrze.guery.base
 
 import de.rrze.guery.operator.IOperationManager
+import groovy.util.logging.Log4j
 import org.slf4j.LoggerFactory
 
+@Log4j
 class QueryBaseBuilder {
 
-    static log = LoggerFactory.getLogger(QueryBaseBuilder.class)
 
     QueryBase qb
 

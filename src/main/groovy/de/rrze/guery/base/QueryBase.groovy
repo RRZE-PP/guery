@@ -4,11 +4,11 @@ import de.rrze.guery.operator.ClosureOperationManager
 import de.rrze.guery.operator.IOperationManager
 import de.rrze.guery.converters.Javascript
 import de.rrze.guery.operator.Operator
+import groovy.util.logging.Log4j
 import org.slf4j.LoggerFactory
 
+@Log4j
 class QueryBase {
-
-    static log = LoggerFactory.getLogger(QueryBase.class)
 
 	String id
 	String description

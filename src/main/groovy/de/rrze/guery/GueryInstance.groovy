@@ -5,13 +5,13 @@ import de.rrze.guery.base.QueryBaseBuilder
 import de.rrze.guery.base.Filter
 import de.rrze.guery.policy.Policy
 import grails.converters.JSON
+import groovy.util.logging.Log4j
 import org.slf4j.LoggerFactory
 
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
+@Log4j
 class GueryInstance {
-
-    static log = LoggerFactory.getLogger(GueryInstance.class)
 
 	volatile String id
 	volatile String description

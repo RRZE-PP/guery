@@ -3,11 +3,11 @@ package de.rrze.guery.operator
 import de.rrze.guery.base.Filter
 import de.rrze.guery.converters.JavascriptCode
 import de.rrze.guery.base.QueryBase
+import groovy.util.logging.Log4j
 import org.slf4j.LoggerFactory
 
+@Log4j
 class Operator {
-
-    static log = LoggerFactory.getLogger(Operator.class)
 
 	QueryBase qb
 	Filter filter
