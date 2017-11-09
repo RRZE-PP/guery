@@ -60,7 +60,8 @@ class GueryTagLib {
 		function update_${gueryAttrs.builderElementId}() {
 			${gueryAttrs.builderElementId}_validation_success = true;
 			var rules = \$('#${gueryAttrs.builderElementId}').queryBuilder('getRules');
-			var jsonResult = JSON.stringify(rules, undefined, 2);
+            var jsonResult = rules;
+//			var jsonResult = JSON.stringify(rules, undefined, 2);
 			\$('#${gueryAttrs.builderResultId}').val(jsonResult);
 		}
 
