@@ -1,11 +1,10 @@
-package de.rrze.guery.policy
+package org.grails.plugin.guery.policy
 
-import de.rrze.guery.base.Filter
-import de.rrze.guery.operator.Operator
-import de.rrze.guery.base.QueryBase
+import org.grails.plugin.guery.base.Filter
+import org.grails.plugin.guery.operator.Operator
+import org.grails.plugin.guery.base.QueryBase
 import grails.converters.JSON
 import groovy.util.logging.Log4j
-import org.slf4j.LoggerFactory
 
 @Log4j
 class Rule implements IEvaluateable {
@@ -28,14 +27,14 @@ class Rule implements IEvaluateable {
 		this.qb = qb
 		this.operator = this.qb.getOperator(operatorType)
 		this.filter = this.operator.filter
-		this.val = val
+		this.val = this.operator.mapper(val)
 	}
 
 	def Rule(Operator operator, Object val) {
 		this.qb = operator.qb
 		this.operator = operator
 		this.filter = this.operator.filter
-		this.val = val
+		this.val = this.operator.mapper(val)
 	}
 	
 		
@@ -50,7 +49,7 @@ class Rule implements IEvaluateable {
 		if (qm.tags) this.tags = qm.tags
 		if (qm.readonly) this.readonly = Boolean.parseBoolean(qm.readonly.toString())
 		
-		this.val = qm.value
+		this.val = this.operator.mapper(qm.value)
 	}
 	
 	Map toRuleMap() {

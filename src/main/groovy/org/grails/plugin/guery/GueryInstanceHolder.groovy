@@ -1,4 +1,4 @@
-package de.rrze.guery
+package org.grails.plugin.guery
 
 import groovy.util.logging.Log4j
 

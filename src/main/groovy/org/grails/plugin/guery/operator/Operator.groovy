@@ -1,8 +1,8 @@
-package de.rrze.guery.operator
+package org.grails.plugin.guery.operator
 
-import de.rrze.guery.base.Filter
-import de.rrze.guery.base.QueryBase
-import de.rrze.guery.converters.JavascriptCode
+import org.grails.plugin.guery.base.Filter
+import org.grails.plugin.guery.base.QueryBase
+import org.grails.plugin.guery.converters.JavascriptCode
 import groovy.util.logging.Log4j
 
 @Log4j
@@ -19,8 +19,23 @@ class Operator {
 	String 				label
 	
 	JavascriptCode mongo
-	
-	def Operator() { }
+
+    static Closure defaultMapper = { val ->
+        if (multiple && val in String) {
+            // auto-convert CSV values
+            log.debug("Auto-converting values from CSV-String to Collection for Operator '${type}'.")
+            def newVal = []
+            newVal.addAll(val.split(','))
+            return newVal
+        }
+        else {
+            return val
+        }
+    }
+
+    Closure mapper
+
+	Operator() { setMapper(Operator.defaultMapper) }
 	
 	def setMongo(Boolean flag) {
 		if (flag) mongo = new JavascriptCode('function(v){ return v[0]; }')
@@ -34,6 +49,13 @@ class Operator {
 		if (code.toString().startsWith("function")) this.mongo = code
 		else this.mongo = new JavascriptCode("function(k,v){ return ${code.toString()}; }")
 	}
+
+    def setMapper(Closure m) {
+        Closure mClone = m.clone()
+        mClone.resolveStrategy = Closure.DELEGATE_FIRST
+        mClone.delegate = this
+        mapper = mClone
+    }
 
 	Object apply(Object val, Map req, Map res) {
 		def result

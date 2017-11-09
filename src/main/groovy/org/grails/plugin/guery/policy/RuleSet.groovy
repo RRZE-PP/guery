@@ -1,23 +1,15 @@
-package de.rrze.guery.policy
+package org.grails.plugin.guery.policy
 
 import groovy.util.logging.Log4j
-import org.slf4j.LoggerFactory
-
-import java.awt.event.ItemEvent;
-
 import grails.converters.JSON
 
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONObject
 
-import de.rrze.guery.base.QueryBase
-
-import static org.grails.web.json.JSONObject.*;
+import org.grails.plugin.guery.base.QueryBase
 
 @Log4j
 class RuleSet implements IEvaluateable {
-
-    static log = LoggerFactory.getLogger(RuleSet.class)
 
 	QueryBase qb
 	

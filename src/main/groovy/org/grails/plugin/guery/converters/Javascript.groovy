@@ -1,4 +1,4 @@
-package de.rrze.guery.converters
+package org.grails.plugin.guery.converters
 
 import grails.converters.JSON
 import grails.util.GrailsWebUtil

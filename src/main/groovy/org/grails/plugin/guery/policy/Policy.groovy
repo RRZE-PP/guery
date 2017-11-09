@@ -1,8 +1,7 @@
-package de.rrze.guery.policy
+package org.grails.plugin.guery.policy
 
-import de.rrze.guery.base.QueryBase
+import org.grails.plugin.guery.base.QueryBase
 import groovy.util.logging.Log4j
-import org.slf4j.LoggerFactory;
 
 @Log4j
 class Policy {

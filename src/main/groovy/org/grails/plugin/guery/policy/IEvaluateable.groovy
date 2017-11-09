@@ -1,4 +1,4 @@
-package de.rrze.guery.policy;
+package org.grails.plugin.guery.policy;
 
 import java.util.Map;
 

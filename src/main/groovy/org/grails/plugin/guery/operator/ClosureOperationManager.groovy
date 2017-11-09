@@ -1,12 +1,9 @@
-package de.rrze.guery.operator
+package org.grails.plugin.guery.operator
 
 import groovy.util.logging.Log4j
-import org.slf4j.LoggerFactory
 
 @Log4j
 class ClosureOperationManager implements IOperationManager {
-
-    static log = LoggerFactory.getLogger(ClosureOperationManager.class)
 
 	protected Map<String, Closure> _operations = [:]
 	

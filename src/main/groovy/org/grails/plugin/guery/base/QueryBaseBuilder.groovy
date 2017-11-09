@@ -1,6 +1,6 @@
-package de.rrze.guery.base
+package org.grails.plugin.guery.base
 
-import de.rrze.guery.operator.IOperationManager
+import org.grails.plugin.guery.operator.IOperationManager
 import groovy.util.logging.Log4j
 
 @Log4j

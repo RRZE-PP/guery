@@ -1,4 +1,4 @@
-package de.rrze.guery.converters
+package org.grails.plugin.guery.converters
 
 import groovy.util.logging.Log4j
 import org.grails.web.json.JSONElement

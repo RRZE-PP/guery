@@ -1,9 +1,9 @@
-package de.rrze.guery
+package org.grails.plugin.guery
 
-import de.rrze.guery.base.Filter
-import de.rrze.guery.base.QueryBase
-import de.rrze.guery.base.QueryBaseBuilder
-import de.rrze.guery.policy.Policy
+import org.grails.plugin.guery.base.Filter
+import org.grails.plugin.guery.base.QueryBase
+import org.grails.plugin.guery.base.QueryBaseBuilder
+import org.grails.plugin.guery.policy.Policy
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 

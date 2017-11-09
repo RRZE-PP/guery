@@ -1,9 +1,9 @@
-package de.rrze.guery.base
+package org.grails.plugin.guery.base
 
-import de.rrze.guery.converters.Javascript
-import de.rrze.guery.operator.ClosureOperationManager
-import de.rrze.guery.operator.IOperationManager
-import de.rrze.guery.operator.Operator
+import org.grails.plugin.guery.converters.Javascript
+import org.grails.plugin.guery.operator.ClosureOperationManager
+import org.grails.plugin.guery.operator.IOperationManager
+import org.grails.plugin.guery.operator.Operator
 import groovy.util.logging.Log4j
 
 @Log4j

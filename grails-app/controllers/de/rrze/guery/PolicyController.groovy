@@ -1,6 +1,6 @@
 package de.rrze.guery
 
-import de.rrze.guery.converters.JavascriptCode
+import org.grails.plugin.guery.GueryInstance
 
 
 class PolicyController {
