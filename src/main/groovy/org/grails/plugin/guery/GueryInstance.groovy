@@ -181,13 +181,15 @@ class GueryInstance {
 	}
 
 
-    Object evaluateOne(String policyId, Map req) {
+    Object evaluateOne(Policy policy, Map req) {
         def immutableRequest = preprocessRequest(req)
+        policy.evaluate(immutableRequest) // result = [descision:xxx, status:xxx, obligations:xxx]
+    }
 
+    Object evaluateOne(String policyId, Map req) {
         def policy = getPolicy(policyId)
         if (!policy) throw new RuntimeException("Could not find policy '${id}'/'${policyId}'")
-        def result =  policy.evaluate(immutableRequest) // result = [descision:xxx, status:xxx, obligations:xxx]
-        result
+        evaluateOne(policy, req)
     }
 	
 	
