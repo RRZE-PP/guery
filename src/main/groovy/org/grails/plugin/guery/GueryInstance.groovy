@@ -141,6 +141,18 @@ class GueryInstance {
 	/*
 	 * PROCESSING
 	 */
+
+    Map preprocessRequest(Map req) {
+        def immutableRequest = req.asImmutable()
+        if (requestPreprocessor) {
+            log.trace("Calling requestPreprocessor Closure ...")
+            def preprocessedRequest = requestPreprocessor(this,immutableRequest)
+            if (!preprocessedRequest in Map) throw new RuntimeException("Request preprocessor Closure did not return an instance of Map!")
+            immutableRequest = ((Map)preprocessedRequest).asImmutable()
+        }
+        immutableRequest
+    }
+
 	Object evaluate(Map req, Closure c) {
 		def results = evaluate(req)
 		c(results)
@@ -158,14 +170,7 @@ class GueryInstance {
 
 	
 	Object evaluate(Map req) {
-		def immutableRequest = req.asImmutable()
-
-        if (requestPreprocessor) {
-            log.trace("Calling requestPreprocessor Closure ...")
-            def preprocessedRequest = requestPreprocessor(this,immutableRequest)
-            if (!preprocessedRequest in Map) throw new RuntimeException("Request preprocessor Closure did not return an instance of Map!")
-            immutableRequest = ((Map)preprocessedRequest).asImmutable()
-        }
+		def immutableRequest = preprocessRequest(req)
 
 		def results = []
 		getPolicies().each { policy ->
@@ -174,7 +179,16 @@ class GueryInstance {
 		}
 		return results
 	}
-	
+
+
+    Object evaluateOne(String policyId, Map req) {
+        def immutableRequest = preprocessRequest(req)
+
+        def policy = getPolicy(policyId)
+        if (!policy) throw new RuntimeException("Could not find policy '${id}'/'${policyId}'")
+        def result =  policy.evaluate(immutableRequest) // result = [descision:xxx, status:xxx, obligations:xxx]
+        result
+    }
 	
 	
 	/*
