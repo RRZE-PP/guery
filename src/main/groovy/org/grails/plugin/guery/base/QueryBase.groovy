@@ -18,8 +18,8 @@ class QueryBase {
 	
 	protected Boolean 				_sortable
 	protected Map<String,String>	_lang = [operators:[:], conditions:[:], errors:[:]]
-	protected Map<String,Filter> _filters = [:]
-	protected Map<String,Operator> _operators = [:]
+	protected Map<String,Filter>    _filters = [:]
+	protected Map<String,Operator>  _operators = [:]
 	protected List<String>			_conditions = null
 	protected String				_defaultCondition = null
 	protected Set<String>			_plugins // FIXME should be map with <String,String> <-- second string is JSON

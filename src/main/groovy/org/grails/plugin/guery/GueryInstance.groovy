@@ -21,7 +21,9 @@ class GueryInstance {
 	final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock(true)
 		
 	final GueryInstance parent
-	
+
+    Closure requestPreprocessor = null
+
 	def GueryInstance(String instanceId) {
 		this.id = instanceId
 	}
@@ -33,14 +35,26 @@ class GueryInstance {
 	
 	def GueryInstance(String instanceId, GueryInstance parentGi) {
 		this(instanceId)
-		if (parentGi) this.parent = parentGi
+		if (parentGi) {
+            this.parent = parentGi
+            this.requestPreprocessor = parentGi.requestPreprocessor
+        }
 	}
 	
 	def GueryInstance(String instanceId, QueryBase qb, GueryInstance parentGi) {
 		this(instanceId, parentGi)
 		if (qb) this.qb = qb
 	}
-	
+
+    /*
+     * GUERY INSTANCE
+     */
+    GueryInstance set(Closure c) {
+        this.with(c)
+        this
+    }
+
+
 	/*
 	 * QUERY BASE
 	 */
@@ -145,6 +159,14 @@ class GueryInstance {
 	
 	Object evaluate(Map req) {
 		def immutableRequest = req.asImmutable()
+
+        if (requestPreprocessor) {
+            log.trace("Calling requestPreprocessor Closure ...")
+            def preprocessedRequest = requestPreprocessor(this,immutableRequest)
+            if (!preprocessedRequest in Map) throw new RuntimeException("Request preprocessor Closure did not return an instance of Map!")
+            immutableRequest = ((Map)preprocessedRequest).asImmutable()
+        }
+
 		def results = []
 		getPolicies().each { policy ->
 			def result =  policy.evaluate(immutableRequest) // result = [descision:xxx, status:xxx, obligations:xxx]
