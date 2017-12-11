@@ -18,7 +18,14 @@ class RuleSet implements IEvaluateable {
 	
 	Set<String> tags = []
 	Boolean		readonly = false
-	
+
+    def stats = [
+            count : 0,
+            avgTime: 0,
+            maxTime: 0,
+            minTime: 0,
+    ]
+
 	def RuleSet(QueryBase qb, String queryBuilderResult) {
 		this.qb = qb
 		def ruleMap = jsonRecParse(queryBuilderResult)
@@ -34,6 +41,15 @@ class RuleSet implements IEvaluateable {
 		this.condition = condition
 		this.evals.addAll(evals)
 	}
+
+    protected void updateStats(timeMs) {
+        if (timeMs > stats.maxTime) stats.maxTime = timeMs
+        if (timeMs < stats.minTime) stats.minTime = timeMs
+
+        // travelling mean (see https://math.stackexchange.com/a/106720)
+        stats.avgTime = stats.avgTime + ((timeMs - stats.avgTime) / stats.count)
+        stats.count++
+    }
 
 	def parseRuleMap(Map queryMap) {
 		this.condition = queryMap.condition
@@ -103,13 +119,13 @@ class RuleSet implements IEvaluateable {
 	}
 	
 	Map evaluate(Map req, Map res) {
+        def startTime = System.currentTimeMillis()
+
 		if (!condition && !evals) {
 			if (log.isWarnEnabled()) log.warn("Emtpy ruleset evaluates to 'false' by default!")
 			res.decision = false
-			return res
 		}
-
-		if (this.condition == 'AND') {
+        else if (this.condition == 'AND') {
 			
 			for (IEvaluateable e : evals) { 
 				e.evaluateAnd(req, res)
@@ -117,25 +133,24 @@ class RuleSet implements IEvaluateable {
 				// AND condition
 				//if (res.decision == false) return res // no positive decision, && behaviour --> break here
 			}
-			
-			
-			return res
 		}
 		else if (this.condition == 'OR' || this.condition == 'EXECUTE') { // FIXME EXECUTE
 		
-			for (IEvaluateable e : evals) { 
-				e.evaluateOr(req, res)
-				
-				// OR condition
-				//if (res.decision == true) return res // positive decision, || behaviour --> break here
-			}
-			
-			
-			return res
+			for (IEvaluateable e : evals) {
+                e.evaluateOr(req, res)
+
+                // OR condition
+                //if (res.decision == true) return res // positive decision, || behaviour --> break here
+            }
 		}
 		else {
 			throw new RuntimeException("Unknown condition: ${this.condition}")
 		}
+
+        def stopTime = System.currentTimeMillis()
+        updateStats(stopTime-startTime)
+
+        return res
 	}
 	
 	def evaluateAnd(Map req, Map res) {

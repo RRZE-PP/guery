@@ -11,7 +11,14 @@ class Policy {
 	
 	final QueryBase qb
 	final RuleSet rs
-	
+
+    def stats = [
+            count : 0,
+            avgTime: 0,
+            maxTime: 0,
+            minTime: 0,
+    ]
+
 	def Policy(QueryBase queryBase) {
 		qb = queryBase
 	}
@@ -31,7 +38,16 @@ class Policy {
 		ruleSet.qb = this.qb
 		rs = ruleSet
 	}
-		
+
+    protected void updateStats(timeMs) {
+        if (timeMs > stats.maxTime) stats.maxTime = timeMs
+        if (timeMs < stats.minTime) stats.minTime = timeMs
+
+        // travelling mean (see https://math.stackexchange.com/a/106720)
+        stats.avgTime = stats.avgTime + ((timeMs - stats.avgTime) / stats.count)
+        stats.count++
+    }
+
 	Map toRuleMap() {
 		rs.toRuleMap()
 	}
@@ -77,9 +93,15 @@ class Policy {
 	}
 	
 	Object evaluate(Map req) {
+        def startTime = System.currentTimeMillis()
+
 		def immutableRequest = req.asImmutable()
 		def result = rs.evaluate(immutableRequest)
 		result.put('id', this.id)
+
+        def stopTime = System.currentTimeMillis()
+        updateStats(stopTime-startTime)
+
 		return result
 	}
 }

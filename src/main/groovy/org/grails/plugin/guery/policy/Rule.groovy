@@ -17,7 +17,14 @@ class Rule implements IEvaluateable {
 	
 	Set<String> tags = []
 	Boolean		readonly = false
-	
+
+    def stats = [
+            count : 0,
+            avgTime: 0,
+            maxTime: 0,
+            minTime: 0,
+    ]
+
 	def Rule(QueryBase qb, Map qm) {
 		this.qb = qb
 		parseRuleMap(qm)
@@ -37,7 +44,14 @@ class Rule implements IEvaluateable {
 		this.val = this.operator.mapper(val)
 	}
 	
-		
+    protected void updateStats(timeMs) {
+        if (timeMs > stats.maxTime) stats.maxTime = timeMs
+        if (timeMs < stats.minTime) stats.minTime = timeMs
+
+        // travelling mean (see https://math.stackexchange.com/a/106720)
+        stats.avgTime = stats.avgTime + ((timeMs - stats.avgTime) / stats.count)
+        stats.count++
+    }
 		
 	def parseRuleMap(Map qm) {
 		this.filter = qb.filters?.get(qm.id)
@@ -83,7 +97,14 @@ class Rule implements IEvaluateable {
 	}
 	
 	Object evaluate(Map req, Map res) {
-		this.operator.apply(val, req, res)
+        def startTime = System.currentTimeMillis()
+
+        def ret = this.operator.apply(val, req, res)
+
+        def stopTime = System.currentTimeMillis()
+        updateStats(stopTime-startTime)
+
+        return ret
 	}
 	
 	Object evaluateAnd(Map req, Map res) {
@@ -191,4 +212,5 @@ class Rule implements IEvaluateable {
 		else this.readonly = true
 		this
 	}
+
 }

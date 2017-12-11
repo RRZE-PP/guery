@@ -20,6 +20,14 @@ class Operator {
 	
 	JavascriptCode mongo
 
+    def stats = [
+            count : 0,
+            avgTime: 0,
+            maxTime: 0,
+            minTime: 0,
+    ]
+
+
     static Closure defaultMapper = { val ->
         if (multiple && val in String) {
             // auto-convert CSV values
@@ -36,7 +44,16 @@ class Operator {
     Closure mapper
 
 	Operator() { setMapper(Operator.defaultMapper) }
-	
+
+    protected void updateStats(timeMs) {
+        if (timeMs > stats.maxTime) stats.maxTime = timeMs
+        if (timeMs < stats.minTime) stats.minTime = timeMs
+
+        // travelling mean (see https://math.stackexchange.com/a/106720)
+        stats.avgTime = stats.avgTime + ((timeMs - stats.avgTime) / stats.count)
+        stats.count++
+    }
+
 	def setMongo(Boolean flag) {
 		if (flag) mongo = new JavascriptCode('function(v){ return v[0]; }')
 		else mongo = null
@@ -58,6 +75,8 @@ class Operator {
     }
 
 	Object apply(Object val, Map req, Map res) {
+        def startTime = System.currentTimeMillis()
+        
 		def result
 		
 		if (accept_values) {
@@ -68,6 +87,10 @@ class Operator {
 		}
 		
 		if (log.isTraceEnabled()) log.trace("Operator ${type} ===> ${result}")
+
+        def stopTime = System.currentTimeMillis()
+        updateStats(stopTime-startTime)
+
 		return result
 	}
 	
