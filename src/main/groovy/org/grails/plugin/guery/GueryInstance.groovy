@@ -24,6 +24,9 @@ class GueryInstance {
 
     Closure requestPreprocessor = null
 
+    Level statsLevel = Level.ALL
+    Level auditLevel = Level.OFF
+
 	def GueryInstance(String instanceId) {
 		this.id = instanceId
 	}
@@ -145,6 +148,8 @@ class GueryInstance {
 	 */
 
     Map preprocessRequest(Map req) {
+        if (!req.opts) req.opts = [statsLevel: statsLevel, auditLevel: auditLevel]
+
         def immutableRequest = req.asImmutable()
         if (requestPreprocessor) {
             log.trace("Calling requestPreprocessor Closure ...")

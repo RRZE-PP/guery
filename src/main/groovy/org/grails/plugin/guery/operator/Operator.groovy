@@ -109,8 +109,8 @@ class Operator {
 
         def stopTime = System.currentTimeMillis()
         def duration = stopTime-startTime
-        if (statsLevel.value >= Level.ALL.value) updateStats(duration)
-        if (auditLevel.value >= Level.ALL.value) updateAudit([duration:duration, results: [opResult]], ret)
+        if (req?.opts?.statsLevel != null && req.opts.statsLevel.value >= Level.ALL.value) updateStats(duration)
+        if (req?.opts?.auditLevel != null && req.opts.auditLevel.value >= Level.ALL.value) updateAudit([duration:duration, results:[opResult]], ret)
 
         return ret
 	}

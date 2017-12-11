@@ -123,15 +123,15 @@ class Rule implements IEvaluateable {
     Object evaluate(Map req, Map res) {
         def startTime = System.currentTimeMillis()
 
-        def result = _evaluate(val, req, res)
+        def opRet = _evaluate(val, req, res)
 
-        // the respone does not reflect the calculated result, yet!
-        def ret = [result:result, response:res]
+        // the response does not reflect the calculated opRet, yet!
+        def ret = [result:opRet, response:res]
 
         def stopTime = System.currentTimeMillis()
         def duration = stopTime-startTime
-        if (statsLevel.value >= Level.RULE.value) updateStats(duration)
-        if (auditLevel.value >= Level.RULE.value) updateAudit([duration:duration, results: [result]], ret)
+        if (req?.opts?.statsLevel != null && req.opts.statsLevel.value >= Level.RULE.value) updateStats(duration)
+        if (req?.opts?.auditLevel != null && req.opts.auditLevel.value >= Level.RULE.value) updateAudit([duration:duration, results:[opRet]], ret)
 
         return ret
     }
@@ -182,8 +182,8 @@ class Rule implements IEvaluateable {
 
         def stopTime = System.currentTimeMillis()
         def duration = stopTime-startTime
-        if (statsLevel.value >= Level.RULE.value) updateStats(duration)
-        if (auditLevel.value >= Level.RULE.value) updateAudit([duration:duration, results: [opRet]], ret)
+        if (req?.opts?.statsLevel != null && req.opts.statsLevel.value >= Level.RULE.value) updateStats(duration)
+        if (req?.opts?.auditLevel != null && req.opts.auditLevel.value >= Level.RULE.value) updateAudit([duration:duration, results:[opRet]], ret)
 
         return ret
 	}
@@ -226,8 +226,8 @@ class Rule implements IEvaluateable {
 
         def stopTime = System.currentTimeMillis()
         def duration = stopTime-startTime
-        if (statsLevel.value >= Level.RULE.value) updateStats(duration)
-        if (auditLevel.value >= Level.RULE.value) updateAudit([duration:duration, results: [opRet]], ret)
+        if (req?.opts?.statsLevel != null && req.opts.statsLevel.value >= Level.RULE.value) updateStats(duration)
+        if (req?.opts?.auditLevel != null && req.opts.auditLevel.value >= Level.RULE.value) updateAudit([duration:duration, results:[opRet]], ret)
 
         return ret
 	}

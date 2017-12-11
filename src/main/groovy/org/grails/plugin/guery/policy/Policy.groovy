@@ -21,9 +21,6 @@ class Policy {
             minTime: 0,
     ]
 
-    Level statsLevel = Level.ALL
-    Level auditLevel = Level.OFF
-
 	def Policy(QueryBase queryBase) {
 		qb = queryBase
 	}
@@ -130,8 +127,8 @@ class Policy {
 
         def stopTime = System.currentTimeMillis()
         def duration = stopTime-startTime
-        if (statsLevel.value >= Level.POLICY.value) updateStats(duration)
-        if (auditLevel.value >= Level.POLICY.value) updateAudit([duration:duration, results:childrenRet], ret)
+        if (req?.opts?.statsLevel != null && req.opts.statsLevel.value >= Level.POLICY.value) updateStats(duration)
+        if (req?.opts?.auditLevel != null && req.opts.auditLevel.value >= Level.POLICY.value) updateAudit([duration:duration, results:childrenRet], ret)
 
 		return ret
 	}
