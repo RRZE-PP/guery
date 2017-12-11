@@ -1,5 +1,6 @@
 package org.grails.plugin.guery.policy
 
+import org.grails.plugin.guery.Level
 import org.grails.plugin.guery.base.Filter
 import org.grails.plugin.guery.operator.Operator
 import org.grails.plugin.guery.base.QueryBase
@@ -19,11 +20,15 @@ class Rule implements IEvaluateable {
 	Boolean		readonly = false
 
     def stats = [
+            last : null,
             count : 0,
             avgTime: 0,
             maxTime: 0,
             minTime: 0,
     ]
+
+    Level statsLevel = Level.ALL
+    Level auditLevel = Level.OFF
 
 	def Rule(QueryBase qb, Map qm) {
 		this.qb = qb
@@ -44,15 +49,6 @@ class Rule implements IEvaluateable {
 		this.val = this.operator.mapper(val)
 	}
 	
-    protected void updateStats(timeMs) {
-        if (timeMs > stats.maxTime) stats.maxTime = timeMs
-        if (timeMs < stats.minTime) stats.minTime = timeMs
-
-        // travelling mean (see https://math.stackexchange.com/a/106720)
-        stats.avgTime = stats.avgTime + ((timeMs - stats.avgTime) / stats.count)
-        stats.count++
-    }
-		
 	def parseRuleMap(Map qm) {
 		this.filter = qb.filters?.get(qm.id)
 		if (!this.filter) throw new RuntimeException("Could not resolve filter id in given query base '${qb.id}': ${qm.id}")
@@ -95,36 +91,72 @@ class Rule implements IEvaluateable {
 	
 		return convert?(map as JSON):map
 	}
-	
-	Object evaluate(Map req, Map res) {
+
+
+    protected void updateStats(timeMs) {
+        this.stats.last = new Date()
+
+        if (timeMs > stats.maxTime) stats.maxTime = timeMs
+        if (timeMs < stats.minTime) stats.minTime = timeMs
+
+        // travelling mean (see https://math.stackexchange.com/a/106720)
+        stats.count++
+        stats.avgTime = stats.avgTime + ((timeMs - stats.avgTime) / stats.count)
+    }
+
+    protected updateAudit(data, dest) {
+        def wrapper = [:]
+        wrapper.type = 'Rule'
+        wrapper.time = new Date()
+        wrapper.duration = data.duration
+        if (this.stats.last) wrapper.stats = this.stats.clone()
+        wrapper.ref = this
+        wrapper.children = data?.results?.collect{ it.audit }
+
+        dest.audit = wrapper
+    }
+
+	private _evaluate(Map req, Map res) {
+       this.operator.apply(val, req, res)
+	}
+
+    Object evaluate(Map req, Map res) {
         def startTime = System.currentTimeMillis()
 
-        def ret = this.operator.apply(val, req, res)
+        def result = _evaluate(val, req, res)
+
+        // the respone does not reflect the calculated result, yet!
+        def ret = [result:result, response:res]
 
         def stopTime = System.currentTimeMillis()
-        updateStats(stopTime-startTime)
+        def duration = stopTime-startTime
+        if (statsLevel.value >= Level.RULE.value) updateStats(duration)
+        if (auditLevel.value >= Level.RULE.value) updateAudit([duration:duration, results: [result]], ret)
 
         return ret
-	}
-	
+    }
+
 	Object evaluateAnd(Map req, Map res) {
-		def evalResult = evaluate(req, res)
+        def startTime = System.currentTimeMillis()
+
+		def opRet = _evaluate(req, res)
+        def opRes = opRet.result
 		
-		if (!evalResult.is(res)) { // not same object
+		if (!opRes.is(res)) { // not same object
 			
-			if (evalResult) { // groovy truth
-				if (evalResult.is(true)) {
+			if (opRes) { // groovy truth
+				if (opRes.is(true)) {
 					// nothing to do here
 				}
 				else {
-					if (!(evalResult in Collection)) {
-						evalResult = [evalResult] as Set
+					if (!(opRes in Collection)) {
+						opRes = [opRes] as Set
 					}
 					
 					def acc = res.status.get(filter.field) as Set
-					if (!acc) res.status.put(filter.field, evalResult) // init on first use
+					if (!acc) res.status.put(filter.field, opRes) // init on first use
 					else {
-						def missing = acc.findAll { accit -> !(evalResult.find { accit.is(it) }) }
+						def missing = acc.findAll { accit -> !(opRes.find { accit.is(it) }) }
 						acc.removeAll(missing) // intersect
 						res.status.put(filter.field, acc)
 
@@ -144,31 +176,40 @@ class Rule implements IEvaluateable {
 			// --> will presume all actions have been taken care of
 			// TODO This feature needs some more work!!
 		}
-		
-		evalResult
+
+
+        def ret = [response:res]
+
+        def stopTime = System.currentTimeMillis()
+        def duration = stopTime-startTime
+        if (statsLevel.value >= Level.RULE.value) updateStats(duration)
+        if (auditLevel.value >= Level.RULE.value) updateAudit([duration:duration, results: [opRet]], ret)
+
+        return ret
 	}
 	
 	Object evaluateOr(Map req, Map res) {
-		def evalResult = evaluate(req, res)
-//		if (log.isDebugEnabled()) log.debug("RULE [${operator.type}] ${evalResult}")
-		
-		if (!evalResult.is(res)) { // not same object
+        def startTime = System.currentTimeMillis()
+
+        def opRet = _evaluate(req, res)
+        def opRes = opRet.result
+
+		if (!opRes.is(res)) { // not same object
 			
-			if (evalResult) { // groovy truth
-				
+			if (opRes) { // groovy truth
 				res.decision = true
-				if (evalResult.is(true)) {
+				if (opRes.is(true)) {
 					// nothing to do here
 				}
 				else {
-					if (!(evalResult in Collection)) {
-						evalResult = [evalResult] as Set
+					if (!(opRes in Collection)) {
+						opRes = [opRes] as Set
 					}
 					
 					def acc = res.status.get(filter.field) as Set
-					if (!acc) res.status.put(filter.field, evalResult) // init on first use
+					if (!acc) res.status.put(filter.field, opRes) // init on first use
 					else {
-						acc.addAll(evalResult) // join
+						acc.addAll(opRes) // join
 						res.status.put(filter.field, acc)
 					}
 				}
@@ -180,8 +221,15 @@ class Rule implements IEvaluateable {
 			// --> will presume all actions have been taken care of
 			// TODO This feature needs some more work!!
 		}
-		
-		evalResult
+
+        def ret = [response:res]
+
+        def stopTime = System.currentTimeMillis()
+        def duration = stopTime-startTime
+        if (statsLevel.value >= Level.RULE.value) updateStats(duration)
+        if (auditLevel.value >= Level.RULE.value) updateAudit([duration:duration, results: [opRet]], ret)
+
+        return ret
 	}
 	
 	String getType() {

@@ -2,7 +2,7 @@ package org.grails.plugin.guery.policy
 
 import groovy.util.logging.Log4j
 import grails.converters.JSON
-
+import org.grails.plugin.guery.Level
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONObject
 
@@ -20,11 +20,15 @@ class RuleSet implements IEvaluateable {
 	Boolean		readonly = false
 
     def stats = [
+            last : null,
             count : 0,
             avgTime: 0,
             maxTime: 0,
             minTime: 0,
     ]
+
+    Level statsLevel = Level.ALL
+    Level auditLevel = Level.OFF
 
 	def RuleSet(QueryBase qb, String queryBuilderResult) {
 		this.qb = qb
@@ -42,14 +46,6 @@ class RuleSet implements IEvaluateable {
 		this.evals.addAll(evals)
 	}
 
-    protected void updateStats(timeMs) {
-        if (timeMs > stats.maxTime) stats.maxTime = timeMs
-        if (timeMs < stats.minTime) stats.minTime = timeMs
-
-        // travelling mean (see https://math.stackexchange.com/a/106720)
-        stats.avgTime = stats.avgTime + ((timeMs - stats.avgTime) / stats.count)
-        stats.count++
-    }
 
 	def parseRuleMap(Map queryMap) {
 		this.condition = queryMap.condition
@@ -109,53 +105,101 @@ class RuleSet implements IEvaluateable {
 		return convert?(ruleMap as JSON):ruleMap
 	}
 	
-	Map evaluate(Map req) {
-		def res = [
-			decision : (this.condition == 'AND')?true:false,
-			status : [:],
-			obligations : [:],
-		]
-		evaluate(req, res)
-	}
-	
-	Map evaluate(Map req, Map res) {
-        def startTime = System.currentTimeMillis()
+    protected void updateStats(timeMs) {
+        this.stats.last = new Date()
 
-		if (!condition && !evals) {
-			if (log.isWarnEnabled()) log.warn("Emtpy ruleset evaluates to 'false' by default!")
-			res.decision = false
-		}
+        if (timeMs > stats.maxTime) stats.maxTime = timeMs
+        if (timeMs < stats.minTime) stats.minTime = timeMs
+
+        // travelling mean (see https://math.stackexchange.com/a/106720)
+        stats.count++
+        stats.avgTime = stats.avgTime + ((timeMs - stats.avgTime) / stats.count)
+    }
+
+    protected updateAudit(data, dest) {
+        def wrapper = [:]
+        wrapper.type = 'RuleSet'
+        wrapper.time = new Date()
+        wrapper.duration = data.duration
+        if (this.stats.last) wrapper.stats = this.stats.clone()
+        wrapper.ref = this
+        wrapper.children = data?.results?.collect{ it.audit }
+
+        dest.audit = wrapper
+    }
+
+    private _evaluate(Map req, Map res) {
+        def childrenRet = []
+
+        if (!condition && !evals) {
+            if (log.isWarnEnabled()) log.warn("Emtpy ruleset evaluates to 'false' by default!")
+            res.decision = false
+        }
         else if (this.condition == 'AND') {
-			
-			for (IEvaluateable e : evals) { 
-				e.evaluateAnd(req, res)
-				 
-				// AND condition
-				//if (res.decision == false) return res // no positive decision, && behaviour --> break here
-			}
-		}
-		else if (this.condition == 'OR' || this.condition == 'EXECUTE') { // FIXME EXECUTE
-		
-			for (IEvaluateable e : evals) {
-                e.evaluateOr(req, res)
+
+            for (IEvaluateable e : evals) {
+                childrenRet << e.evaluateAnd(req, res)
+
+                // AND condition
+                //if (res.decision == false) return res // no positive decision, && behaviour --> break here
+            }
+        }
+        else if (this.condition == 'OR' || this.condition == 'EXECUTE') { // FIXME EXECUTE equals OR
+
+            for (IEvaluateable e : evals) {
+                childrenRet << e.evaluateOr(req, res)
 
                 // OR condition
                 //if (res.decision == true) return res // positive decision, || behaviour --> break here
             }
-		}
-		else {
-			throw new RuntimeException("Unknown condition: ${this.condition}")
-		}
+        }
+        else {
+            throw new RuntimeException("Unknown condition: ${this.condition}")
+        }
+
+        return childrenRet
+    }
+
+    Map evaluate(Map req) {
+        def startTime = System.currentTimeMillis()
+
+        def res = [
+                decision : (this.condition == 'AND')?true:false,
+                status : [:],
+                obligations : [:],
+        ]
+
+        def childrenRet = _evaluate(req, res)
+        def ret = [response:res]
 
         def stopTime = System.currentTimeMillis()
-        updateStats(stopTime-startTime)
+        def duration = stopTime-startTime
+        if (statsLevel.value >= Level.RULESET.value) updateStats(duration)
+        if (auditLevel.value >= Level.RULESET.value) updateAudit([duration:duration, results: childrenRet], ret)
 
-        return res
+        return ret
+    }
+
+	Map evaluate(Map req, Map res) {
+        def startTime = System.currentTimeMillis()
+
+        def childrenRet = _evaluate(req,res)
+
+        def ret = [response:res]
+        def stopTime = System.currentTimeMillis()
+        def duration = stopTime-startTime
+        if (statsLevel.value >= Level.RULESET.value) updateStats(duration)
+        if (auditLevel.value >= Level.RULESET.value) updateAudit([duration:duration, results: childrenRet], ret)
+
+        return ret
 	}
 	
 	def evaluateAnd(Map req, Map res) {
+        def startTime = System.currentTimeMillis()
+        def childrenRet
+
 		if (this.condition == 'AND') {
-			return evaluate(req, res)
+            childrenRet = _evaluate(req, res)
 		}
 		else {
 			// Outer condition is 'AND'(intersect) - inner condition is 'OR'(join)
@@ -164,7 +208,7 @@ class RuleSet implements IEvaluateable {
 				status : [:],
 				obligations : [:],
 				]
-			evaluate(req, tmpResponse)
+            childrenRet = _evaluate(req, tmpResponse)
 			
 			// merge decision - AND
 			if (tmpResponse.decision == false) {
@@ -205,14 +249,23 @@ class RuleSet implements IEvaluateable {
 					}
 				}
 			}
-			
-			return res
 		}
+
+        def ret = [response:res]
+        def stopTime = System.currentTimeMillis()
+        def duration = stopTime-startTime
+        if (statsLevel.value >= Level.RULESET.value) updateStats(duration)
+        if (auditLevel.value >= Level.RULESET.value) updateAudit([duration:duration, results: childrenRet], ret)
+
+        return ret
 	}
 	
 	def evaluateOr(Map req, Map res) {
+        def startTime = System.currentTimeMillis()
+        def childrenRet
+
 		if (this.condition == 'OR') {
-			return evaluate(req, res)
+            childrenRet = _evaluate(req, res)
 		}
 		else {
 			// Outer condition is 'OR'(join) - inner condition is 'AND'(intersect)
@@ -221,7 +274,7 @@ class RuleSet implements IEvaluateable {
 				status : [:],
 				obligations : [:],
 				]
-			evaluate(req, tmpResponse)
+            childrenRet = _evaluate(req, tmpResponse)
 			
 			// merge decision - OR
 			if (tmpResponse.decision == true) {
@@ -260,9 +313,15 @@ class RuleSet implements IEvaluateable {
 					}
 				}
 			}
-			
-			return res
 		}
+
+        def ret = [response:res]
+        def stopTime = System.currentTimeMillis()
+        def duration = stopTime-startTime
+        if (statsLevel.value >= Level.RULESET.value) updateStats(duration)
+        if (auditLevel.value >= Level.RULESET.value) updateAudit([duration:duration, results: childrenRet], ret)
+
+        return ret
 	}
 	
 	def tag(String tag) {

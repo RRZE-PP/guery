@@ -24,13 +24,6 @@ class GueryInstance {
 
     Closure requestPreprocessor = null
 
-    def stats = [
-            count : 0,
-            avgTime: 0,
-            maxTime: 0,
-            minTime: 0,
-    ]
-
 	def GueryInstance(String instanceId) {
 		this.id = instanceId
 	}
@@ -57,14 +50,6 @@ class GueryInstance {
      * GUERY INSTANCE
      */
 
-    protected void updateStats(timeMs) {
-        if (timeMs > stats.maxTime) stats.maxTime = timeMs
-        if (timeMs < stats.minTime) stats.minTime = timeMs
-
-        // travelling mean (see https://math.stackexchange.com/a/106720)
-        stats.avgTime = stats.avgTime + ((timeMs - stats.avgTime) / stats.count)
-        stats.count++
-    }
 
     GueryInstance set(Closure c) {
         this.with(c)
@@ -170,34 +155,13 @@ class GueryInstance {
         immutableRequest
     }
 
-	Object evaluate(Map req, Closure c) {
-		def results = evaluate(req)
-		c(results)
-	}
-	
-	Object evaluateEach(Map req, Closure c) {
-		def results = evaluate(req)
-		results.each { result -> c(result)}
-	}
-
-	Object evaluateEachMatch(Map req, Closure c) {
-		def results = evaluate(req)
-		results.findAll { it.decision == true }.each { result -> c(result)}
-	}
-
-	
 	Object evaluate(Map req) {
-        def startTime = System.currentTimeMillis()
-
 		def immutableRequest = preprocessRequest(req)
 		def results = []
 		getPolicies().each { policy ->
-			def result =  policy.evaluate(immutableRequest) // result = [descision:xxx, status:xxx, obligations:xxx]
+			def result =  policy.evaluate(immutableRequest) // result = [id:xxx, decision:xxx, status:xxx, obligations:xxx, audit:xxx]
 			results << result
 		}
-
-        def stopTime = System.currentTimeMillis()
-        updateStats(stopTime-startTime)
 
 		return results
 	}
@@ -211,7 +175,7 @@ class GueryInstance {
     Object evaluateOne(String policyId, Map req) {
         def policy = getPolicy(policyId)
         if (!policy) throw new RuntimeException("Could not find policy '${id}'/'${policyId}'")
-        evaluateOne(policy, req)
+        evaluateOne(policy,req)
     }
 	
 	

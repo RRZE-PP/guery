@@ -1,5 +1,6 @@
 package org.grails.plugin.guery.operator
 
+import org.grails.plugin.guery.Level
 import org.grails.plugin.guery.base.Filter
 import org.grails.plugin.guery.base.QueryBase
 import org.grails.plugin.guery.converters.JavascriptCode
@@ -21,12 +22,15 @@ class Operator {
 	JavascriptCode mongo
 
     def stats = [
+            last: null,
             count : 0,
             avgTime: 0,
             maxTime: 0,
             minTime: 0,
     ]
 
+    Level statsLevel = Level.ALL
+    Level auditLevel = Level.OFF
 
     static Closure defaultMapper = { val ->
         if (multiple && val in String) {
@@ -44,15 +48,6 @@ class Operator {
     Closure mapper
 
 	Operator() { setMapper(Operator.defaultMapper) }
-
-    protected void updateStats(timeMs) {
-        if (timeMs > stats.maxTime) stats.maxTime = timeMs
-        if (timeMs < stats.minTime) stats.minTime = timeMs
-
-        // travelling mean (see https://math.stackexchange.com/a/106720)
-        stats.avgTime = stats.avgTime + ((timeMs - stats.avgTime) / stats.count)
-        stats.count++
-    }
 
 	def setMongo(Boolean flag) {
 		if (flag) mongo = new JavascriptCode('function(v){ return v[0]; }')
@@ -74,24 +69,50 @@ class Operator {
         mapper = mClone
     }
 
+    protected void updateStats(timeMs) {
+        this.stats.last = new Date()
+
+        if (timeMs > stats.maxTime) stats.maxTime = timeMs
+        if (timeMs < stats.minTime) stats.minTime = timeMs
+
+        // travelling mean (see https://math.stackexchange.com/a/106720)
+        stats.count++
+        stats.avgTime = stats.avgTime + ((timeMs - stats.avgTime) / stats.count)
+    }
+
+    protected updateAudit(data, dest) {
+        def wrapper = [:]
+        wrapper.type = 'Operator'
+        wrapper.time = new Date()
+        wrapper.duration = data.duration
+        if (this.stats.last) wrapper.stats = this.stats.clone()
+        wrapper.ref = this
+
+        dest.audit = wrapper
+    }
+
 	Object apply(Object val, Map req, Map res) {
         def startTime = System.currentTimeMillis()
-        
-		def result
+
+		def opResult
 		
 		if (accept_values) {
-			result = qb.operationManager.apply(type,val,req,res)
+			opResult = qb.operationManager.apply(type,val,req,res)
 		}
 		else {
-			result = qb.operationManager.apply(type,req,res)
+			opResult = qb.operationManager.apply(type,req,res)
 		}
 		
-		if (log.isTraceEnabled()) log.trace("Operator ${type} ===> ${result}")
+		if (log.isTraceEnabled()) log.trace("Operator ${type} ===> ${opResult}")
+
+        def ret = [result: opResult, response:res]
 
         def stopTime = System.currentTimeMillis()
-        updateStats(stopTime-startTime)
+        def duration = stopTime-startTime
+        if (statsLevel.value >= Level.ALL.value) updateStats(duration)
+        if (auditLevel.value >= Level.ALL.value) updateAudit([duration:duration, results: [opResult]], ret)
 
-		return result
+        return ret
 	}
 	
 	

@@ -1,5 +1,6 @@
 package org.grails.plugin.guery.policy
 
+import org.grails.plugin.guery.Level
 import org.grails.plugin.guery.base.QueryBase
 import groovy.util.logging.Log4j
 
@@ -13,11 +14,15 @@ class Policy {
 	final RuleSet rs
 
     def stats = [
+            last : null,
             count : 0,
             avgTime: 0,
             maxTime: 0,
             minTime: 0,
     ]
+
+    Level statsLevel = Level.ALL
+    Level auditLevel = Level.OFF
 
 	def Policy(QueryBase queryBase) {
 		qb = queryBase
@@ -38,15 +43,6 @@ class Policy {
 		ruleSet.qb = this.qb
 		rs = ruleSet
 	}
-
-    protected void updateStats(timeMs) {
-        if (timeMs > stats.maxTime) stats.maxTime = timeMs
-        if (timeMs < stats.minTime) stats.minTime = timeMs
-
-        // travelling mean (see https://math.stackexchange.com/a/106720)
-        stats.avgTime = stats.avgTime + ((timeMs - stats.avgTime) / stats.count)
-        stats.count++
-    }
 
 	Map toRuleMap() {
 		rs.toRuleMap()
@@ -91,17 +87,52 @@ class Policy {
 			return false
 		}
 	}
-	
+
+    protected void updateStats(duration) {
+        this.stats.last = new Date()
+
+        if (duration > stats.maxTime) stats.maxTime = duration
+        if (duration < stats.minTime) stats.minTime = duration
+
+        // travelling mean (see https://math.stackexchange.com/a/106720)
+        stats.count++
+        stats.avgTime = stats.avgTime + ((duration - stats.avgTime) / stats.count)
+    }
+
+    protected updateAudit(data, dest) {
+        def wrapper = [:]
+        wrapper.type = 'Policy'
+        wrapper.time = new Date()
+        wrapper.duration = data.duration
+        if (this.stats.last) wrapper.stats = this.stats.clone()
+        wrapper.ref = this
+        wrapper.children = data?.results?.collect{ it.audit }
+
+        dest.audit = wrapper
+    }
+
 	Object evaluate(Map req) {
         def startTime = System.currentTimeMillis()
 
 		def immutableRequest = req.asImmutable()
-		def result = rs.evaluate(immutableRequest)
-		result.put('id', this.id)
+        def childRet = rs.evaluate(immutableRequest)
+        def childrenRet = [childRet]
+
+        // ret = [id:xxx, decision:xxx, status:xxx, obligations:xxx, audit:xxx]
+        def response = childRet.response
+        def ret = [
+                id          : this.id,
+                decision    : response.decision,
+                status      : response.status,
+                obligations : response.obligations,
+        ]
+
 
         def stopTime = System.currentTimeMillis()
-        updateStats(stopTime-startTime)
+        def duration = stopTime-startTime
+        if (statsLevel.value >= Level.POLICY.value) updateStats(duration)
+        if (auditLevel.value >= Level.POLICY.value) updateAudit([duration:duration, results:childrenRet], ret)
 
-		return result
+		return ret
 	}
 }
