@@ -130,8 +130,8 @@ class Rule implements IEvaluateable {
 
         def stopTime = System.currentTimeMillis()
         def duration = stopTime-startTime
-        if (req?.opts?.statsLevel != null && req.opts.statsLevel.value >= Level.RULE.value) updateStats(duration)
-        if (req?.opts?.auditLevel != null && req.opts.auditLevel.value >= Level.RULE.value) updateAudit([duration:duration, results:[opRet]], ret)
+        if (Level.RULE.matches(req?.opts?.statsLevel)) updateStats(duration)
+        if (Level.RULE.matches(req?.opts?.auditLevel)) updateAudit([duration:duration, results:[opRet]], ret)
 
         return ret
     }
@@ -182,8 +182,8 @@ class Rule implements IEvaluateable {
 
         def stopTime = System.currentTimeMillis()
         def duration = stopTime-startTime
-        if (req?.opts?.statsLevel != null && req.opts.statsLevel.value >= Level.RULE.value) updateStats(duration)
-        if (req?.opts?.auditLevel != null && req.opts.auditLevel.value >= Level.RULE.value) updateAudit([duration:duration, results:[opRet]], ret)
+        if (Level.RULE.matches(req?.opts?.statsLevel)) updateStats(duration)
+        if (Level.RULE.matches(req?.opts?.auditLevel)) updateAudit([duration:duration, results:[opRet]], ret)
 
         return ret
 	}
@@ -226,8 +226,8 @@ class Rule implements IEvaluateable {
 
         def stopTime = System.currentTimeMillis()
         def duration = stopTime-startTime
-        if (req?.opts?.statsLevel != null && req.opts.statsLevel.value >= Level.RULE.value) updateStats(duration)
-        if (req?.opts?.auditLevel != null && req.opts.auditLevel.value >= Level.RULE.value) updateAudit([duration:duration, results:[opRet]], ret)
+        if (Level.RULE.matches(req?.opts?.statsLevel)) updateStats(duration)
+        if (Level.RULE.matches(req?.opts?.auditLevel)) updateAudit([duration:duration, results:[opRet]], ret)
 
         return ret
 	}

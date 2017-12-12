@@ -5,10 +5,9 @@ package org.grails.plugin.guery
  */
 enum Level {
     ALL(100),
-    RULE(80),
-    RULESET(60),
-    POLICY(40),
-    INSTANCE(20),
+    RULE(75),
+    RULESET(50),
+    POLICY(25),
     OFF(0)
 
     private final int value
@@ -19,5 +18,9 @@ enum Level {
 
     public String toString() {
         return name() + " = " + value
+    }
+
+    public matches(Level otherLevel) {
+        otherLevel != null && otherLevel.value >= this.value
     }
 }

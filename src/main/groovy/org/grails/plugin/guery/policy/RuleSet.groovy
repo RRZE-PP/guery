@@ -171,8 +171,8 @@ class RuleSet implements IEvaluateable {
 
         def stopTime = System.currentTimeMillis()
         def duration = stopTime-startTime
-        if (req?.opts?.statsLevel != null && req.opts.statsLevel.value >= Level.RULESET.value) updateStats(duration)
-        if (req?.opts?.auditLevel != null && req.opts.auditLevel.value >= Level.RULESET.value) updateAudit([duration:duration, results:childrenRet], ret)
+        if (Level.RULESET.matches(req?.opts?.statsLevel)) updateStats(duration)
+        if (Level.RULESET.matches(req?.opts?.auditLevel)) updateAudit([duration:duration, results:childrenRet], ret)
 
         return ret
     }
@@ -185,8 +185,8 @@ class RuleSet implements IEvaluateable {
         def ret = [response:res]
         def stopTime = System.currentTimeMillis()
         def duration = stopTime-startTime
-        if (req?.opts?.statsLevel != null && req.opts.statsLevel.value >= Level.RULESET.value) updateStats(duration)
-        if (req?.opts?.auditLevel != null && req.opts.auditLevel.value >= Level.RULESET.value) updateAudit([duration:duration, results:childrenRet], ret)
+        if (Level.RULESET.matches(req?.opts?.statsLevel)) updateStats(duration)
+        if (Level.RULESET.matches(req?.opts?.auditLevel)) updateAudit([duration:duration, results:childrenRet], ret)
 
         return ret
 	}
@@ -251,8 +251,8 @@ class RuleSet implements IEvaluateable {
         def ret = [response:res]
         def stopTime = System.currentTimeMillis()
         def duration = stopTime-startTime
-        if (req?.opts?.statsLevel != null && req.opts.statsLevel.value >= Level.RULESET.value) updateStats(duration)
-        if (req?.opts?.auditLevel != null && req.opts.auditLevel.value >= Level.RULESET.value) updateAudit([duration:duration, results:childrenRet], ret)
+        if (Level.RULESET.matches(req?.opts?.statsLevel)) updateStats(duration)
+        if (Level.RULESET.matches(req?.opts?.auditLevel)) updateAudit([duration:duration, results:childrenRet], ret)
 
         return ret
 	}
@@ -315,8 +315,8 @@ class RuleSet implements IEvaluateable {
         def ret = [response:res]
         def stopTime = System.currentTimeMillis()
         def duration = stopTime-startTime
-        if (req?.opts?.statsLevel != null && req.opts.statsLevel.value >= Level.RULESET.value) updateStats(duration)
-        if (req?.opts?.auditLevel != null && req.opts.auditLevel.value >= Level.RULESET.value) updateAudit([duration:duration, results:childrenRet], ret)
+        if (Level.RULESET.matches(req?.opts?.statsLevel)) updateStats(duration)
+        if (Level.RULESET.matches(req?.opts?.auditLevel)) updateAudit([duration:duration, results:childrenRet], ret)
 
         return ret
 	}

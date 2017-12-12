@@ -127,8 +127,9 @@ class Policy {
 
         def stopTime = System.currentTimeMillis()
         def duration = stopTime-startTime
-        if (req?.opts?.statsLevel != null && req.opts.statsLevel.value >= Level.POLICY.value) updateStats(duration)
-        if (req?.opts?.auditLevel != null && req.opts.auditLevel.value >= Level.POLICY.value) updateAudit([duration:duration, results:childrenRet], ret)
+
+        if (Level.POLICY.matches(req?.opts?.statsLevel)) updateStats(duration)
+        if (Level.POLICY.matches(req?.opts?.auditLevel)) updateAudit([duration:duration, results:childrenRet], ret)
 
 		return ret
 	}
