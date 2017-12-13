@@ -23,8 +23,8 @@ class RuleSet implements IEvaluateable {
             last : null,
             count : 0,
             avgTime: 0,
-            maxTime: null,
-            minTime: null,
+            maxTime: 0,
+            minTime: Long.MAX_VALUE,
     ]
 
 	def RuleSet(QueryBase qb, String queryBuilderResult) {
@@ -106,8 +106,8 @@ class RuleSet implements IEvaluateable {
     protected void updateStats(duration) {
         this.stats.last = new Date()
 
-        if (stats.maxTime == null || duration > stats.maxTime) stats.maxTime = duration
-        if (stats.minTime == null || duration < stats.minTime) stats.minTime = duration
+        if (duration > stats.maxTime) stats.maxTime = duration
+        if (duration < stats.minTime) stats.minTime = duration
 
 
         // travelling mean (see https://math.stackexchange.com/a/106720)

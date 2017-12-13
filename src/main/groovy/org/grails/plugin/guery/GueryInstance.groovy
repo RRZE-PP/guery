@@ -177,6 +177,13 @@ class GueryInstance {
 
 
     Object evaluateOne(Policy policy, Map req) {
+        // no stats or auditing per default on single policy evaluation to not influence the overall stats of the instance
+        if (!req.opts) req.opts = [statsLevel: Level.OFF, auditLevel: Level.OFF]
+        else {
+            if (!req.opts.statsLevel) req.opts.statsLevel = Level.OFF
+            if (!req.opts.auditLevel) req.opts.auditLevel = Level.OFF
+        }
+
         def immutableRequest = preprocessRequest(req)
         policy.evaluate(immutableRequest) // result = [descision:xxx, status:xxx, obligations:xxx]
     }
@@ -317,5 +324,37 @@ class GueryInstance {
 		
 		p
 	}
-	
+
+
+    /* STATS */
+
+    def getPerfstats() {
+        def stats = [
+                last : null,
+                count : 0,
+                avgTime: 0,
+                maxTime: 0,
+                minTime: Long.MAX_VALUE,
+                slowest: null,
+        ]
+        getPolicies().each { policy -> updateStats(policy, stats) }
+        stats
+    }
+
+    protected static void updateStats(Policy policy, destStats) {
+        def srcStats = policy.stats
+
+        if (!destStats.last || destStats.last.time < srcStats.last.time) destStats.last = srcStats.last
+
+        if (srcStats.maxTime > destStats.maxTime) {
+            destStats.maxTime = srcStats.maxTime
+            destStats.slowest = policy
+        }
+        if (srcStats.minTime < destStats.minTime) {
+            destStats.minTime = srcStats.minTime
+        }
+
+        destStats.count += srcStats.count
+        destStats.avgTime += srcStats.avgTime
+    }
 }
