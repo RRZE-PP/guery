@@ -149,6 +149,10 @@ class GueryInstance {
 
     Map preprocessRequest(Map req) {
         if (!req.opts) req.opts = [statsLevel: statsLevel, auditLevel: auditLevel]
+        else {
+            if (!req.opts.statsLevel) req.opts.statsLevel = statsLevel
+            if (!req.opts.auditLevel) req.opts.auditLevel = auditLevel
+        }
 
         def immutableRequest = req.asImmutable()
         if (requestPreprocessor) {

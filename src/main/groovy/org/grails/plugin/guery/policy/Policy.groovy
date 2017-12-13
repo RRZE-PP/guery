@@ -17,8 +17,8 @@ class Policy {
             last : null,
             count : 0,
             avgTime: 0,
-            maxTime: 0,
-            minTime: 0,
+            maxTime: null,
+            minTime: null,
     ]
 
 	def Policy(QueryBase queryBase) {
@@ -88,8 +88,8 @@ class Policy {
     protected void updateStats(duration) {
         this.stats.last = new Date()
 
-        if (duration > stats.maxTime) stats.maxTime = duration
-        if (duration < stats.minTime) stats.minTime = duration
+        if (stats.maxTime == null || duration > stats.maxTime) stats.maxTime = duration
+        if (stats.minTime == null || duration < stats.minTime) stats.minTime = duration
 
         // travelling mean (see https://math.stackexchange.com/a/106720)
         stats.count++
@@ -98,11 +98,10 @@ class Policy {
 
     protected updateAudit(data, dest) {
         def wrapper = [:]
-        wrapper.type = 'Policy'
+        wrapper.ref = this
         wrapper.time = new Date()
         wrapper.duration = data.duration
         if (this.stats.last) wrapper.stats = this.stats.clone()
-        wrapper.ref = this
         wrapper.children = data?.results?.collect{ it.audit }
 
         dest.audit = wrapper
@@ -123,7 +122,6 @@ class Policy {
                 status      : response.status,
                 obligations : response.obligations,
         ]
-
 
         def stopTime = System.currentTimeMillis()
         def duration = stopTime-startTime

@@ -23,8 +23,8 @@ class RuleSet implements IEvaluateable {
             last : null,
             count : 0,
             avgTime: 0,
-            maxTime: 0,
-            minTime: 0,
+            maxTime: null,
+            minTime: null,
     ]
 
 	def RuleSet(QueryBase qb, String queryBuilderResult) {
@@ -74,6 +74,7 @@ class RuleSet implements IEvaluateable {
 		
 		def ruleMap = [
 			condition : this.condition,
+            data: [:],
 		]
 		if (tags) ruleMap.tags = tags
 		if (readonly != null) ruleMap.readonly = readonly
@@ -102,24 +103,24 @@ class RuleSet implements IEvaluateable {
 		return convert?(ruleMap as JSON):ruleMap
 	}
 	
-    protected void updateStats(timeMs) {
+    protected void updateStats(duration) {
         this.stats.last = new Date()
 
-        if (timeMs > stats.maxTime) stats.maxTime = timeMs
-        if (timeMs < stats.minTime) stats.minTime = timeMs
+        if (stats.maxTime == null || duration > stats.maxTime) stats.maxTime = duration
+        if (stats.minTime == null || duration < stats.minTime) stats.minTime = duration
+
 
         // travelling mean (see https://math.stackexchange.com/a/106720)
         stats.count++
-        stats.avgTime = stats.avgTime + ((timeMs - stats.avgTime) / stats.count)
+        stats.avgTime = stats.avgTime + ((duration - stats.avgTime) / stats.count)
     }
 
     protected updateAudit(data, dest) {
         def wrapper = [:]
-        wrapper.type = 'RuleSet'
+        wrapper.ref = this
         wrapper.time = new Date()
         wrapper.duration = data.duration
         if (this.stats.last) wrapper.stats = this.stats.clone()
-        wrapper.ref = this
         wrapper.children = data?.results?.collect{ it.audit }
 
         dest.audit = wrapper

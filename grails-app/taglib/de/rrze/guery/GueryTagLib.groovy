@@ -30,7 +30,12 @@ class GueryTagLib {
 				log.warn("Unable to parse data from 'plugins' parameter: ${attrs.plugins}")
 			}
 		}
-		
+
+        if (attrs.readonly && attrs.readonly in ['true', true, Map]) {
+            if (attrs.readonly in Map) gueryParams.plugins.put('readonly',attrs.readonly)
+            else gueryParams.plugins.put('readonly',null)
+        }
+
 		if (attrs.instance) {
 			def instance = attrs.instance
 			gueryAttrs.builderConfig = instance.baseToJsString(gueryParams)
@@ -129,9 +134,9 @@ class GueryTagLib {
 
 		def data = attrs.jsonData
 		def dataId = attrs.identifier
-		
+
 		builderElement.attrs += ['data-id':dataId]
-		
+
 		out << """
 	<script>
 			console.log('Installing afterInit.${builderElementId} trigger...');
