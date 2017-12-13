@@ -24,8 +24,9 @@ class GueryInstance {
 
     Closure requestPreprocessor = null
 
-    Level statsLevel = Level.ALL
+    Level statsLevel = Level.POLICY
     Level auditLevel = Level.OFF
+
 
 	def GueryInstance(String instanceId) {
 		this.id = instanceId
@@ -330,12 +331,12 @@ class GueryInstance {
 
     def getPerfstats() {
         def stats = [
-                last : null,
-                count : 0,
                 avgTime: 0,
-                maxTime: 0,
-                minTime: Long.MAX_VALUE,
-                slowest: null,
+
+                policyCount : 0,
+                policyLast : null,
+                policyMaxAvg: 0,
+                policySlowest: null,
         ]
         getPolicies().each { policy -> updateStats(policy, stats) }
         stats
@@ -344,17 +345,14 @@ class GueryInstance {
     protected static void updateStats(Policy policy, destStats) {
         def srcStats = policy.stats
 
-        if (!destStats.last || destStats.last.time < srcStats.last.time) destStats.last = srcStats.last
+        if (!destStats.policyLast || destStats.policyLast.time < srcStats.last.time) destStats.policyLast = srcStats.last
 
-        if (srcStats.maxTime > destStats.maxTime) {
-            destStats.maxTime = srcStats.maxTime
-            destStats.slowest = policy
-        }
-        if (srcStats.minTime < destStats.minTime) {
-            destStats.minTime = srcStats.minTime
+        if (srcStats.avgTime > destStats.policyMaxAvg) {
+            destStats.policyMaxAvg = srcStats.maxTime
+            destStats.policySlowest = policy
         }
 
-        destStats.count += srcStats.count
+        destStats.policyCount += srcStats.count
         destStats.avgTime += srcStats.avgTime
     }
 }
