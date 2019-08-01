@@ -135,6 +135,61 @@ class Rule implements IEvaluateable {
         return ret
     }
 
+    /**
+     * Classic method
+     * @param acc
+     * @param opRes
+     * @return
+     */
+    private Collection intersect(Collection acc, Collection opRes) {
+        def missing = acc.findAll { accit -> !(opRes.find { accit.is(it) }) }
+        acc.removeAll(missing) // intersect
+        acc
+    }
+
+    /**
+     * Faster method by unrz157
+     *
+     * This method is a bit weaker then the classic intersect because it does not really check
+     * object identity (a.is(b)) but uses object equality (a.equals(b))
+     *
+     * @param acc
+     * @param opRes
+     * @return
+     */
+    private Collection intersectWithEqualityMap(Collection acc, Collection opRes) {
+        def grp = opRes.groupBy { it -> it }
+        def acc2 = []
+        acc.each { a ->
+            if (grp.containsKey(a)) {
+                acc2.add(a)
+            }
+        }
+        acc2
+    }
+
+    /**
+     * Faster method based on method by unrz157
+     *
+     * This methods uses a HashMap to archieve O(1) lookup performance but uses an IdentityHashMap to
+     * maintain the check for object identity at the same time.
+     *
+     * @param acc
+     * @param opRes
+     * @return
+     */
+    private Collection intersectWithIdentityMap(Collection acc, Collection opRes) {
+        def grp = new IdentityHashMap(opRes.size())
+        opRes.each { grp.put(it,null) }
+        def acc2 = []
+        acc.each { a ->
+            if (grp.containsKey(a)) {
+                acc2.add(a)
+            }
+        }
+        acc2
+    }
+
 	Object evaluateAnd(Map req, Map res) {
         def startTime = System.currentTimeMillis()
 
@@ -155,12 +210,16 @@ class Rule implements IEvaluateable {
 					def acc = res.status.get(filter.field) as Set
 					if (!acc) res.status.put(filter.field, opRes) // init on first use
 					else {
-						def missing = acc.findAll { accit -> !(opRes.find { accit.is(it) }) }
-						acc.removeAll(missing) // intersect
-						res.status.put(filter.field, acc)
+                        def result
+
+                        //result = intersect(acc,opRes)
+//                        result = intersectWithEqualityMap(acc,opRes)
+                        result = intersectWithIdentityMap(acc,opRes)
+
+                        res.status.put(filter.field, result)
 
 						// rule had results but intersection had none --> decision is false from now on						
-						if (acc.size() == 0) res.decision = false
+						if (result.size() == 0) res.decision = false
 					}
 				}
 			}
