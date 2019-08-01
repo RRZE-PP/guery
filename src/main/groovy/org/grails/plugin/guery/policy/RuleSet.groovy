@@ -3,6 +3,7 @@ package org.grails.plugin.guery.policy
 import groovy.util.logging.Log4j
 import grails.converters.JSON
 import org.grails.plugin.guery.Level
+import org.grails.plugin.guery.util.IntersectUtil
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONObject
 
@@ -217,17 +218,17 @@ class RuleSet implements IEvaluateable {
 			// merge status updates on positive decision (e.g. the subordinate Rule or RuleSet were applicable)
 			if (tmpResponse.decision == true) {
 				tmpResponse.status.each { filterId, evalResult ->
-					if (!(evalResult in Collection)) {
-						evalResult = [evalResult] as Set
-					}
-					
+					if (!(evalResult in Collection)) evalResult = [evalResult] as Set
+
 					def acc = res.status.get(filterId) as Set
 					if (!acc) res.status.put(filterId, evalResult) // init on first use
 					else {
 						// intersect
-						def missing = acc.findAll { accit -> !(evalResult.find { accit.is(it) }) }
-						acc.removeAll(missing)
-						res.status.put(filterId, acc)
+                        def result
+
+                        result = IntersectUtil.intersectWithIdentityMap(acc,evalResult)
+
+						res.status.put(filterId, result)
 					}
 				}
 			}
