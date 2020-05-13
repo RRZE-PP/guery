@@ -83,6 +83,7 @@ class QueryBase {
 				type			: it.type,
 				accept_values	: (it.nb_inputs > 0),
 				apply_to		: it.apply_to,
+                multiple        : it.multiple,
 			])
 
 			if (qbMap.queryBase?.lang?.operators?."${it.type}")
