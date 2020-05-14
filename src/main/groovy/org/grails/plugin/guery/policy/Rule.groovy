@@ -238,15 +238,15 @@ class Rule implements IEvaluateable {
 
         return ret
 	}
-	
+
 	String getType() {
 		operator.type
 	}
-	
+
 	String getFilterId() {
 		filter.id
 	}
-	
+
 	def tag(String tag) {
 		this.tags.add(tag)
 		this
@@ -267,5 +267,26 @@ class Rule implements IEvaluateable {
 		else this.readonly = true
 		this
 	}
+
+
+    /*
+     * Shortcuts for easy access to a rule's infos
+     */
+    String getFilterField() {
+        filter.field
+    }
+
+    String getOperatorType() {
+        operator.type
+    }
+
+    Object getRuleValue() {
+        val
+    }
+
+    Object getValue() {
+        val
+    }
+
 
 }
