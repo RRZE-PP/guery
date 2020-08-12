@@ -338,12 +338,31 @@ class RuleSet implements IEvaluateable {
 		this
 	}
 	
-	def readonly(Boolean sw = null) {
-		if (sw != null) this.readonly = sw
-		else this.readonly = true
-		this
-	}
-	
+
+    def readonly(Boolean sw = null) {
+        if (sw != null) this.readonly = sw
+        else this.readonly = true
+        evals.each { it.readonly(sw) }
+        this
+    }
+
+    def readonlyRulesByFilterId(Collection <String> filterIds, Boolean sw = null) {
+        this.evals.each { it.readonlyRulesByFilterId(filterIds, sw) }
+        this
+    }
+
+    Collection<Rule> findAllByFilterIds(Collection<String> filterIds, Collection<Rule> result = []) {
+        this.evals.each { it.findAllByFilterIds(filterIds, result) }
+        result
+    }
+
+
+    def readonlyStructure(Boolean sw = null) {
+        if (sw != null) this.readonly = sw
+        else this.readonly = true
+        evals.each { it.readonlyStructure(sw) }
+        this
+    }
 	
 	Boolean isEmpty() {
 		toRuleMap().isEmpty()

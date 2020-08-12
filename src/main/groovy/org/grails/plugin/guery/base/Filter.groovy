@@ -21,7 +21,7 @@ class Filter {
 	Boolean 				multiple
 	String 					placeholder
 	Boolean 				vertical
-	Collection<Operator> operators = []
+	Collection<Operator>    operators = []
 	Object					values // FIXME implement some type safety later
     String                  plugin
     Map<String,String>      plugin_config

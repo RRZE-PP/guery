@@ -13,12 +13,14 @@ class Rule implements IEvaluateable {
 
 	QueryBase qb
 	
-	Filter filter
-	Operator operator
+	Filter      filter
+	Operator    operator
 	Object 		val
 	
 	Set<String> tags = []
 	Boolean		readonly = false
+
+    Map         flags = [:]
 
     def stats = [
             last : null,
@@ -59,7 +61,8 @@ class Rule implements IEvaluateable {
 		
 		if (qm.tags) this.tags = qm.tags
 		if (qm.readonly) this.readonly = Boolean.parseBoolean(qm.readonly.toString())
-		
+        if (qm.flags) this.falgs = qm.flags
+
 		this.val = this.operator.mapper(qm.value)
 	}
 	
@@ -72,7 +75,8 @@ class Rule implements IEvaluateable {
 		if (operator.type) map.operator = operator.type
 		if (val) map.value = val
 		if (readonly != null) map.readonly = readonly
-				
+        if (flags) map.flags = flags
+
 		if (tags) map.tags = tags
 	
 		map
@@ -87,8 +91,9 @@ class Rule implements IEvaluateable {
 		if (operator.type) map.operator = operator.type
 		if (val) map.value = val
 		if (readonly != null) map.readonly = readonly
-				
-		if (tags) map.data.tags = tags?.join(';')
+        if (flags) map.flags = flags
+
+        if (tags) map.data.tags = tags?.join(';')
 	
 		return convert?(map as JSON):map
 	}
@@ -267,6 +272,21 @@ class Rule implements IEvaluateable {
 		else this.readonly = true
 		this
 	}
+
+    def readonlyRulesByFilterId(Collection <String> filterIds, Boolean sw = null) {
+        if (this.filter.id in filterIds) this.readonly(sw)
+        this
+    }
+
+    Collection<Rule> findAllByFilterIds(Collection<String> filterIds, Collection<Rule> result = []) {
+        if (this.filter.id in filterIds) result << this
+        result
+    }
+
+    def readonlyStructure(Boolean sw = null) {
+        // NO-OP because rules are no structural/grouping elements
+        this
+    }
 
 
     /*

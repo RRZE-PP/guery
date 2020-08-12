@@ -3,6 +3,7 @@ package org.grails.plugin.guery.policy
 import org.grails.plugin.guery.Level
 import org.grails.plugin.guery.base.QueryBase
 import groovy.util.logging.Log4j
+import org.grails.plugin.guery.operator.Operator
 
 @Log4j
 class Policy {
@@ -42,6 +43,13 @@ class Policy {
 		rs = ruleSet
 	}
 
+    /*
+     * RULESET
+     */
+    def getRuleSet() {
+        this.rs
+    }
+
 	Map toRuleMap() {
 		rs.toRuleMap()
 	}
@@ -49,23 +57,72 @@ class Policy {
 	String toJSON() {
 		rs.toJSON()
 	}
-	
-	def getRuleSet() {
-		this.rs
-	}
-	
+
+    Boolean isEmpty() {
+        this.rs.isEmpty()
+    }
+
+    /**
+     * Mark everything as readonly
+     *
+     * @param sw Can be set to false to remove a previous mark as readonly
+     * @return
+     */
+    def readonly(Boolean sw = null) {
+        this.rs.readonly(sw)
+        this
+    }
+
+    /**
+     * Marks all rulesets as readonly. Rules are not touched.
+     * @param sw Can be set to false to remove a previous mark as readonly
+     * @return
+     */
+    def readonlyStructure(Boolean sw = null) {
+        this.rs.readonlyStructure(sw)
+        this
+    }
+
+    /**
+     * Marks all rules that use a filter matching one of the specified filterIds as readonly.
+     * @param filterIds Filters to look for
+     * @param sw Can be set to false to remove a previous mark as readonly
+     * @return
+     */
+    def readonlyRulesByFilterId(Collection <String> filterIds, Boolean sw = null) {
+        this.rs.readonlyRulesByFilterId(filterNames, sw)
+        this
+    }
+
+    Collection<Rule> findAllByFilterId(String filterId) {
+        findAllByFilterIds([filterId])
+    }
+
+    Collection<Rule> findAllByFilterIds(Collection<String> filterIds) {
+        def result = []
+        this.rs.findAllByFilterIds(filterIds, result)
+        result
+    }
+
+    /*
+     * QUERY BASE
+     */
 	def getQueryBase() {
 		this.qb
 	}
-	
-	Boolean isEmpty() {
-		this.rs.isEmpty()
-	}
-	
+
+    Map<String, Operator> getOperators() {
+        this.qb.getOperators()
+    }
+
+    Collection<String> getOperatorIds() {
+        this.qb.getOperatorIds()
+    }
+
 	
 	
 //	Map toMongoFilter() {
-//			
+// TODO implement this for backend mongo queries
 //	}
 	
 	

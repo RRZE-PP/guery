@@ -36,6 +36,10 @@ class QueryBase {
 	Map<String,Operator> getOperators() {
 		_operators
 	}
+
+    Collection<String> getOperatorIds() {
+        _operators.keySet()
+    }
 	
 	Map<String,Filter> getFilters() {
 		_filters
